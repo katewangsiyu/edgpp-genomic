@@ -1,13 +1,17 @@
 """Evaluate a scores parquet with TraitGym-style metrics.
 
-Expected columns: label (0/1), chrom (str), plus one or more score columns
-(e.g. score_mag, score_uncert, score_edg).
+SCOPE WARNING: this script evaluates on whatever variants are in the input
+scores parquet. When that parquet comes from 06_train.py, it contains only
+the val-chrom split (chr{17,18,19,20,21,22,X} ≈ 1030/3380 variants for
+mendelian_traits_matched_9). The resulting AUPRC_per_chrom is NOT on the
+same scale as the TraitGym leaderboard — which computes the metric across
+ALL chroms of the test set.
 
-Metrics per score column:
-  * AUPRC, AUROC
-  * AUPRC_per_chrom_weighted_avg (TraitGym main metric)
-  * Brier score  (on min-max normalized score)
-  * ECE         (on min-max normalized score)
+For leaderboard-scale numbers on zero-shot features (no training), use
+scripts/08_zero_shot_eval.py. For distilled students, the full-test
+comparison requires chrom leave-one-out, not a single train/val split.
+
+Expected columns: label (0/1), chrom (str), plus one or more score columns.
 """
 from __future__ import annotations
 import argparse
@@ -72,7 +76,9 @@ def main():
     assert cols, "no score columns found"
 
     out = {}
-    print(f"\n=== {args.scores} | n={len(df)} pos={df.label.sum()} ===")
+    n_chr = len(set(df["chrom"].astype(str)))
+    scope = "full-test" if n_chr >= 18 else f"val-chroms only ({n_chr} chroms, INTERNAL — not leaderboard-comparable)"
+    print(f"\n=== {args.scores} | n={len(df)} pos={df.label.sum()} | scope: {scope} ===")
     for col in cols:
         m = compute(df, col)
         out[col] = m
