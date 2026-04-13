@@ -1,0 +1,47 @@
+name: t4_ablation_noMagSide
+hardware: T4
+device: cuda
+precision: fp16
+seed: 42
+
+teacher:
+  kind: precomputed
+  n_tracks: 6
+
+student:
+  kind: compact_cnn
+  n_tracks: 6
+  hidden: 64
+  n_layers: 4
+
+reliability:
+  kind: mlp
+  input_dim: 1          # tss_only → 1-D side feature
+  hidden: [64, 32]
+
+data:
+  kind: traitgym
+  test_parquet: data/raw/traitgym/mendelian_traits_matched_9/test.parquet
+  teacher_parquet: data/raw/traitgym/mendelian_traits_matched_9/features/Borzoi_L2_L2.parquet
+  fasta_path: data/raw/hg38.fa
+  seq_len: 32768
+  batch_size: 2
+  num_workers: 0
+  max_rows: null
+  side_features_mode: tss_only   # C: strip teacher magnitude from reliability input
+
+training:
+  lr: 3.0e-4
+  n_epochs: 2
+  max_steps: 500
+  grad_checkpoint: false
+  gate_threshold: 0.5
+  gate_adaptive: true
+  gate_adaptive_alpha: 0.5
+  lambda_task: 0.1
+  w_reg_lambda: 0.05
+  w_reg_target: 0.5
+
+logging:
+  log_every_n_steps: 25
+  save_dir: outputs/ablation_noMagSide

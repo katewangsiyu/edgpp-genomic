@@ -30,6 +30,7 @@ class TraitGymDataset(Dataset):
         max_rows: int | None = None,
         seed: int = 42,
         normalize_teacher: bool = True,
+        side_features_mode: str = "full",
     ):
         test = pd.read_parquet(test_parquet)
         teacher = pd.read_parquet(teacher_parquet)
@@ -51,12 +52,20 @@ class TraitGymDataset(Dataset):
         tss = df["tss_dist"].astype(np.float32).to_numpy()
         teacher_raw = df[BORZOI_L2L2_COLS].astype(np.float32).to_numpy().copy()
 
-        # Side features use RAW teacher magnitude (has physical meaning).
-        self._side = np.stack([
-            np.log1p(np.abs(tss)),
-            np.linalg.norm(teacher_raw, axis=1),
-            teacher_raw.std(axis=1),
-        ], axis=1).astype(np.float32).copy()
+        # Side features. `full` matches original paper setup (contains teacher
+        # magnitude, which dominates Mendelian ranking — see Day 5 sanity).
+        # `tss_only` strips all teacher info, leaving only positional context;
+        # used to test whether reliability learns anything beyond teacher mag.
+        if side_features_mode == "full":
+            self._side = np.stack([
+                np.log1p(np.abs(tss)),
+                np.linalg.norm(teacher_raw, axis=1),
+                teacher_raw.std(axis=1),
+            ], axis=1).astype(np.float32).copy()
+        elif side_features_mode == "tss_only":
+            self._side = np.log1p(np.abs(tss)).astype(np.float32).reshape(-1, 1).copy()
+        else:
+            raise ValueError(f"unknown side_features_mode: {side_features_mode}")
 
         # Teacher target is normalized (prevents fp16 overflow in distill MSE).
         if normalize_teacher:
@@ -95,4 +104,5 @@ def build_traitgym(cfg: DictConfig) -> TraitGymDataset:
         max_rows=cfg.get("max_rows", None),
         seed=cfg.get("seed", 42),
         normalize_teacher=cfg.get("normalize_teacher", True),
+        side_features_mode=cfg.get("side_features_mode", "full"),
     )
