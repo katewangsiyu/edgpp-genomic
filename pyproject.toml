@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edgpp_genomic"
+version = "0.1.0"
+description = "Reliability-gated selective distillation for variant effect prediction."
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.4",
+    "numpy",
+    "pandas",
+    "omegaconf",
+    "einops",
+    "pyfaidx",
+    "scikit-learn",
+    "scipy",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

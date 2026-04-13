@@ -1,0 +1,42 @@
+name: gpu5090_smoke
+hardware: 5090
+device: cuda
+precision: bf16
+seed: 42
+
+teacher:
+  kind: flashzoi_single
+  replicate: 0
+
+student:
+  kind: compact_cnn
+  n_tracks: 7611          # Flashzoi human track count — verify after download
+  hidden: 256
+  n_layers: 6
+
+reliability:
+  kind: mlp
+  input_dim: 3
+  hidden: [128, 64]
+
+data:
+  snp_subset_path: data/debug/snp_100.parquet
+  fasta_path: data/raw/hg38.fa
+  seq_len: 32768          # smoke stays short even on 5090
+  batch_size: 2
+  num_workers: 2
+  side_feature_cols: [teacher_var, maf, phylop]
+  label_col: coef
+
+training:
+  lr: 3.0e-4
+  n_epochs: 1
+  max_steps: 50
+  grad_checkpoint: true
+  gate_threshold: 0.5
+  gate_adaptive: false
+  lambda_task: 0.1
+
+logging:
+  log_every_n_steps: 5
+  save_dir: outputs/gpu5090_smoke

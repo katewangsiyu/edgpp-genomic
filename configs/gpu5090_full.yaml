@@ -1,0 +1,53 @@
+name: gpu5090_full
+hardware: 5090
+device: cuda
+precision: bf16
+seed: 42
+
+teacher:
+  kind: flashzoi_4rep
+
+student:
+  kind: compact_cnn
+  n_tracks: 7611
+  hidden: 512
+  n_layers: 8
+
+reliability:
+  kind: mlp
+  input_dim: 5             # teacher_var, maf, phylop, dist_to_tss, ancestry_bin
+  hidden: [256, 128]
+
+data:
+  # Real QTL benchmark
+  qtl_type: eqtl
+  tissue: Whole_Blood
+  fold: f3c0               # Borzoi test fold, held out from teacher training
+  pos_vcf: data/raw/qtl_vcf/Whole_Blood_pos.vcf
+  neg_vcf: data/raw/qtl_vcf/Whole_Blood_neg.vcf
+  fasta_path: data/raw/hg38.fa
+  seq_len: 524288
+  batch_size: 2
+  num_workers: 4
+  side_feature_cols: [teacher_var, maf, phylop, dist_to_tss, ancestry_bin]
+  label_col: coef
+
+training:
+  method: edgpp            # {baseline, degu, edgpp} for ablation
+  lr: 1.0e-4
+  n_epochs: 20
+  max_steps: null
+  grad_checkpoint: true
+  gate_threshold: 0.5
+  gate_adaptive: true      # EDG++: global + local median mix
+  gate_adaptive_alpha: 0.5
+  lambda_task: 0.3
+
+teacher_cache:
+  enabled: true
+  path: data/teacher_scores/f3c0_blood.parquet
+
+logging:
+  log_every_n_steps: 10
+  save_dir: outputs/gpu5090_full
+  wandb_project: edgpp_genomic

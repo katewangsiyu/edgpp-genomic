@@ -1,0 +1,46 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+.env
+
+# data — never commit
+data/raw/
+data/cache/
+data/teacher_scores/
+data/debug/
+!data/debug/.gitkeep
+*.vcf
+*.vcf.gz
+*.vcf.gz.tbi
+*.fa
+*.fa.gz
+*.fai
+*.parquet
+*.npz
+*.npy
+*.h5
+*.hdf5
+
+# model checkpoints
+outputs/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# baseline clones (git clone into here, not tracked)
+baselines/*/
+!baselines/README.md
+
+# logs / ide
+logs/
+wandb/
+*.log
+.ipynb_checkpoints/
+.DS_Store
+.idea/
+.vscode/
+*.swp
