@@ -1,0 +1,46 @@
+name: t4_real
+hardware: T4
+device: cuda
+precision: fp16
+seed: 42
+
+# Teacher is precomputed in TraitGym parquet (Borzoi_L2_L2, 6 assays).
+# The teacher module below is unused at runtime, kept for config symmetry.
+teacher:
+  kind: precomputed
+  n_tracks: 6
+
+student:
+  kind: compact_cnn
+  n_tracks: 6
+  hidden: 64
+  n_layers: 4
+
+reliability:
+  kind: mlp
+  input_dim: 3
+  hidden: [64, 32]
+
+data:
+  kind: traitgym
+  test_parquet: data/raw/traitgym/mendelian_traits_matched_9/test.parquet
+  teacher_parquet: data/raw/traitgym/mendelian_traits_matched_9/features/Borzoi_L2_L2.parquet
+  fasta_path: data/raw/hg38.fa
+  seq_len: 32768
+  batch_size: 2
+  num_workers: 0
+  max_rows: 200
+
+training:
+  lr: 3.0e-4
+  n_epochs: 1
+  max_steps: 50
+  grad_checkpoint: false
+  gate_threshold: 0.5
+  gate_adaptive: true
+  gate_adaptive_alpha: 0.5
+  lambda_task: 0.1
+
+logging:
+  log_every_n_steps: 5
+  save_dir: outputs/t4_real
