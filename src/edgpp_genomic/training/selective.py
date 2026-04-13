@@ -14,7 +14,9 @@ import torch.nn.functional as F
 class SelectiveDistillLoss(nn.Module):
     def __init__(self, gate_threshold: float = 0.5, lambda_task: float = 0.3,
                  adaptive: bool = False, adaptive_alpha: float = 0.5,
-                 ema_beta: float = 0.99):
+                 ema_beta: float = 0.99,
+                 w_reg_lambda: float = 0.05,
+                 w_reg_target: float = 0.5):
         super().__init__()
         self.threshold = gate_threshold
         self.lambda_task = lambda_task
@@ -22,6 +24,9 @@ class SelectiveDistillLoss(nn.Module):
         self.alpha = adaptive_alpha
         self._ema_beta = ema_beta
         self._global_median = 0.5  # EMA state
+        # Prevent reliability collapse: L2 penalty pulling w toward target (0.5).
+        self.w_reg_lambda = w_reg_lambda
+        self.w_reg_target = w_reg_target
 
     def _get_threshold(self, w: torch.Tensor) -> float:
         if not self.adaptive:
@@ -55,6 +60,11 @@ class SelectiveDistillLoss(nn.Module):
             task_loss = (inv * per_snp_task).sum() / (inv.sum() + 1e-8)
             total = distill_loss + self.lambda_task * task_loss
             comp["task"] = task_loss.detach()
+
+        if self.w_reg_lambda > 0:
+            w_reg = (w - self.w_reg_target).pow(2).mean()
+            total = total + self.w_reg_lambda * w_reg
+            comp["w_reg"] = w_reg.detach()
 
         comp["total"] = total.detach()
         comp["threshold"] = torch.tensor(float(thresh))

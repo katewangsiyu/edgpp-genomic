@@ -29,6 +29,7 @@ class TraitGymDataset(Dataset):
         seq_len: int,
         max_rows: int | None = None,
         seed: int = 42,
+        normalize_teacher: bool = True,
     ):
         test = pd.read_parquet(test_parquet)
         teacher = pd.read_parquet(teacher_parquet)
@@ -48,13 +49,24 @@ class TraitGymDataset(Dataset):
         self.extractor = WindowExtractor(fasta_path, seq_len)
 
         tss = df["tss_dist"].astype(np.float32).to_numpy()
-        teacher_mat = df[BORZOI_L2L2_COLS].astype(np.float32).to_numpy().copy()
+        teacher_raw = df[BORZOI_L2L2_COLS].astype(np.float32).to_numpy().copy()
+
+        # Side features use RAW teacher magnitude (has physical meaning).
         self._side = np.stack([
             np.log1p(np.abs(tss)),
-            np.linalg.norm(teacher_mat, axis=1),
-            teacher_mat.std(axis=1),
+            np.linalg.norm(teacher_raw, axis=1),
+            teacher_raw.std(axis=1),
         ], axis=1).astype(np.float32).copy()
-        self._teacher = teacher_mat
+
+        # Teacher target is normalized (prevents fp16 overflow in distill MSE).
+        if normalize_teacher:
+            self.teacher_mean = teacher_raw.mean(0, keepdims=True).astype(np.float32)
+            self.teacher_std = (teacher_raw.std(0, keepdims=True) + 1e-6).astype(np.float32)
+            self._teacher = ((teacher_raw - self.teacher_mean) / self.teacher_std).astype(np.float32).copy()
+        else:
+            self.teacher_mean = np.zeros((1, teacher_raw.shape[1]), dtype=np.float32)
+            self.teacher_std = np.ones((1, teacher_raw.shape[1]), dtype=np.float32)
+            self._teacher = teacher_raw
 
     def __len__(self) -> int:
         return len(self.df)
@@ -82,4 +94,5 @@ def build_traitgym(cfg: DictConfig) -> TraitGymDataset:
         seq_len=cfg.seq_len,
         max_rows=cfg.get("max_rows", None),
         seed=cfg.get("seed", 42),
+        normalize_teacher=cfg.get("normalize_teacher", True),
     )
