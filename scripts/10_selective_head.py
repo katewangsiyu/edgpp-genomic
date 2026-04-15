@@ -77,12 +77,12 @@ def coverage_curve(y, s, conf, coverages=COVERAGES):
     return out
 
 
-def fit_reliability_gbm(X_train, r_train):
+def fit_reliability_gbm(X_train, r_train, seed=42):
     pipe = Pipeline([
         ("imputer", SimpleImputer(strategy="mean", keep_empty_features=True)),
         ("gbm", GradientBoostingRegressor(
             n_estimators=100, max_depth=3, subsample=0.8,
-            random_state=42, learning_rate=0.1,
+            random_state=seed, learning_rate=0.1,
         )),
     ])
     pipe.fit(X_train, r_train)
@@ -141,7 +141,7 @@ def main():
     r_hat = np.full(len(V), np.nan, dtype=float)
     for c in sorted(set(chroms)):
         tr = chroms != c; te = chroms == c
-        pipe = fit_reliability_gbm(X_rel[tr], residual[tr])
+        pipe = fit_reliability_gbm(X_rel[tr], residual[tr], seed=args.seed)
         r_hat[te] = pipe.predict(X_rel[te])
     r_hat = np.clip(r_hat, 0.0, 1.0)
     w = 1.0 - r_hat
