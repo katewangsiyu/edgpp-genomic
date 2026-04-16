@@ -2,7 +2,11 @@
 
 ## 硬性目标（不可动）
 
-**论文出口**: P0 = ICLR 2027 (~2026-09 截稿) 或 RECOMB 2027 (~2026-11 截稿)。P1 = Nature Methods rolling。里程碑：2026-08 bioRxiv preprint。
+**论文出口**:
+- **P0（硬目标，无时间约束）**: NeurIPS 2027 main (~2027-05) — Path A conformalized heteroscedastic VEP
+- **P1（保底）**: NeurIPS 2026 D&B Track (~2026-06) — Day 10 GBM+conformal 素材独立打包
+- **P2（期刊保底）**: npj AI（直接对标 DEGU）
+- **里程碑**: 2026-08 bioRxiv preprint 占坑
 
 **评测基准**: TraitGym (Benegas/Eraslan/Song, bioRxiv 2025)
 - Mendelian matched_9（3380 变异）+ complex_traits matched_9
@@ -10,17 +14,29 @@
 - 主指标：**`AUPRC_by_chrom_weighted_average`**（leaderboard 唯一认可口径）
 - 副指标：AUPRC、AUROC、Brier、ECE
 
-**要击败的对手**: DEGU (Zhou & Koo, npj AI 2026) —— 蒸馏 + 异方差 NLL 的直接竞品。注意：DEGU 尚无 TraitGym 公开结果。
+**要击败的对手**: DEGU (Zhou, Rizzo, Christensen, Tang, Koo, npj AI 2026) —— **Deep Ensemble with Gaussian Uncertainty**（非异方差 NLL；student 用标准 MSE 拟合 [ensemble_mean, ensemble_logvar]）。其 heteroscedastic NLL 只是对照 baseline。DEGU **abstract 已提 conformal prediction**，是 Path A 的直接威胁。
+- DEGU 官方 repo：https://github.com/zrcjessica/ensemble_distillation（TF/Keras, MPRA 回归）
+- DEGU **无 TraitGym 数字**，**无 Borzoi pipeline**，无分类 loss
+- 差异化点：我们做 VEP 分类 + heteroscedastic NLL + class-conditional + local coverage theorem
 
 **关键发现（Day 5–8 已验证）**:
 - Day 4 头条"score_difficulty AUPRC=0.551"**已被证伪**：reliability MLP 通过 side_features 中的 ||teacher|| 泄漏了教师幅度信号；去除后崩塌至 0.170
 - CompactStudent 从头蒸馏**不可行**：5000 step 训练后 train Pearson~0.9 / val Pearson~0.03（0.87M 参数 CNN 在 2350 变异上无法泛化）
 - **已 pivot 到 P1 路线**：后 Borzoi 聚合器 + 选择性可靠度头
 
-**当前方法（P1 selective head）**:
-在复现 TraitGym 标准 LogReg 聚合器（Borzoi → 0.4930，完美匹配 leaderboard）基础上，训练 GBM 预测 LogReg 残差 |p_i − y_i|，combined confidence = margin + λ·reliability。λ 由内层 chrom-LOO CV 选择。多种子（3 seeds）Mendelian 稳定 Δ>0，complex 弱/不显著。
+**当前方法（Path A — conformalized heteroscedastic VEP）**:
+- Aggregator: Day 10 的 GBM (CADD+Borzoi) 0.889 / (CADD+GPN-MSA+Borzoi) **0.900** 作为 base
+- Heteroscedastic reliability head: σ(x) 预测 chrom-LOO |residual|，两种实现（GBM regressor / joint NN）
+- Feature-dep nonconformity score: s(x,y) = |y - p̂(x)| / σ(x)
+- Class-conditional 分层 conformal calibration
+- 理论 target：T1 marginal / T2 class-cond / T3 local / T4 chrom-shift robustness
 
-**硬件现实**: T4×8 (SM 7.5，**无 BF16 硬件**)。P1 仅需 CPU（sklearn GBM），不受 GPU 限制。
+**历史方法状态**:
+- Day 0–5 CompactStudent 蒸馏 + reliability MLP：**CLOSED**（已 falsified）
+- Day 6–8 P1 selective head：**CLOSED**（CADD+Borzoi λ=0，feature overlap）
+- Day 9–10 GBM + class-cond conformal：**ACTIVE**，作为 Path A baseline 与 D&B 保底素材
+
+**硬件现实**: T4×8 (SM 7.5，**无 BF16 硬件**)。Path A 的 aggregator 与 ensemble 主要 CPU（sklearn），joint NN 版 hetero head 用 GPU；DEGU reimpl 需要 TF/PyTorch + GPU。
 
 ## 软性方法（可变）
 
