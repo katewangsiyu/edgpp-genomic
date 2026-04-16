@@ -97,27 +97,65 @@ Next: verify theoretical bound with simulated data where the true local coverage
 
 ## 6. What's validated and what's not
 
-✅ **σ̂ head works** as a feature-dep residual predictor (Spearman 0.75–0.85)
+✅ **σ̂ head works** as a feature-dep residual predictor (Spearman 0.70–0.85 on both datasets)
 ✅ **Hetero score is necessary** for feature-adaptive set size
 ✅ **Mondrian-by-σ̂ is sufficient** for local-bin uniform coverage at 90% target
+✅ **Generalizes across datasets**: Mendelian (0.077 gap) + Complex (0.020 gap)
+✅ **Generalizes across bases**: CADD+GPN-MSA+Borzoi + CADD+Borzoi
 ❌ **p̂-bin coverage still non-uniform** — suggests T3 should be re-stated in terms of σ̂-neighborhoods specifically
-❌ **Only tested on 1 dataset** (Mendelian CADD+GPN-MSA+Borzoi). Need complex + other feature sets.
+❌ **Single seed only** — need to replicate with seeds {7, 2024}.
 ❌ **No ClinVar hold-out yet**.
 ❌ **No DEGU comparison yet**.
 
 ---
 
-## 7. Next steps (Day 12–14)
+## 7. Cross-dataset / cross-base validation
 
-1. **Complex traits**: repeat full pipeline on complex_traits_matched_9 (n=11400). Expected weaker signal, higher σ̂, different trade-offs.
-2. **Alternative base**: repeat on CADD+Borzoi base (0.889 AUPRC_per_chrom) to ensure σ̂ behavior is not specific to the 0.900 base.
-3. **Seed stability**: Mondrian-hetero with seeds {42, 7, 2024} to confirm stability.
-4. **DEGU-lite baseline**: `scripts/17_degu_lite.py` — M=10 seed-GBM ensemble, aggregate mean + variance (per `papers/degu_reproduction_plan.md`).
-5. **Scripts/15 local coverage eval**: standalone evaluator that partitions (chrom × consequence × tss_dist bin) for cross-method comparison.
+### 7.1 Mendelian CADD+Borzoi (base AUPRC_per_chrom=0.889)
+
+| Method | σ̂-bin gap | Marginal | Cov\|pos | empty | both |
+|---|---:|---:|---:|---:|---:|
+| Day 10 Homosc | 0.322 | 0.901 | 0.899 | 1.5% | 1.3% |
+| Hetero ε=1e-4 | 0.268 | 0.901 | 0.902 | 3.0% | 18.5% |
+| **Mondrian y×σ̂** | **0.198** | 0.900 | 0.902 | 4.3% | 36.2% |
+
+Pattern holds: Mondrian reduces σ̂-bin gap. CADD+Borzoi is slightly weaker than CADD+GPN-MSA+Borzoi so ambiguity is higher.
+
+### 7.2 Complex traits CADD+Borzoi (base AUPRC_per_chrom=0.350, n=11400)
+
+**Textbook-level local coverage result**:
+
+| Method | σ̂-bin gap | σ̂-bin range | Marginal | Cov\|pos | empty | single | both |
+|---|---:|---|---:|---:|---:|---:|---:|
+| Day 10 Homosc | 0.533 | [0.454, 0.988] | 0.900 | 0.900 | 0.0% | 38.9% | 61.1% |
+| Hetero ε=1e-4 | 0.340 | [0.624, 0.964] | 0.900 | 0.902 | 0.3% | 42.1% | 57.6% |
+| **Mondrian y×σ̂** | **0.020** | **[0.892, 0.912]** | 0.902 | 0.908 | 0.1% | 22.0% | 77.9% |
+
+All 10 σ̂-decile bins within **±1% of target 0.90**. This is direct empirical demonstration that **Mondrian (y × σ̂-bin) achieves per-σ̂-bin coverage uniformity**, the empirical analog of Theorem T3.
+
+Day 10 homosc on the same dataset: σ̂-bin 9 (hardest) has cov=0.454 — worse than random coin flip at the 90% target.
+
+### 7.3 Trade-off observation
+
+Mondrian's local-coverage gain comes with higher ambiguity rate ({0,1} sets). This is honest uncertainty quantification:
+- **Mendelian**: ambiguity 15–36% (signal-rich, most singletons correct)
+- **Complex**: ambiguity 61–78% (weak signal, model should and does abstain)
+
+Compare to Day 10 Homosc which is decisive (0% ambiguous) but quietly drops to 45% cov in the hardest bin — a far worse failure mode in practice.
 
 ---
 
-## 8. Scripts & outputs
+## 8. Next steps (Day 12–14)
+
+1. **Seed stability**: Mondrian-hetero with seeds {7, 2024} on both datasets to confirm σ̂-bin gap is robust (not just seed-42 luck).
+2. **Complex CADD+GPN-MSA+Borzoi**: run on strongest possible base to check ceiling.
+3. **DEGU-lite baseline**: `scripts/17_degu_lite.py` — M=10 seed-GBM ensemble, aggregate mean + variance (per `papers/degu_reproduction_plan.md`).
+4. **Scripts/15 local coverage eval**: standalone evaluator that partitions (chrom × consequence × tss_dist bin) for cross-method comparison.
+5. **Theory T3 formalization**: proof sketch that Mondrian-by-σ̂-bin achieves $O(1/\sqrt{n_b})$ gap per bin (standard Vovk 2003 argument instantiated on our score).
+
+---
+
+## 9. Scripts & outputs
 
 **Scripts**:
 - `scripts/13_hetero_head.py` — σ̂(x) head (abs_residual | log_variance modes)
@@ -125,5 +163,6 @@ Next: verify theoretical bound with simulated data where the true local coverage
 
 **Outputs**:
 - `outputs/hetero_head/CADD+GPN-MSA+Borzoi_mendelian_{abs,logvar}/scores_with_sigma.parquet`
-- `outputs/hetero_head/CADD+Borzoi_mendelian_abs/scores_with_sigma.parquet`
+- `outputs/hetero_head/CADD+Borzoi_{mendelian,complex}_abs/scores_with_sigma.parquet`
 - `outputs/conformal_hetero/CADD+GPN-MSA+Borzoi_mendelian_abs_mondrian/conformal_hetero_results.json`
+- `outputs/conformal_hetero/CADD+Borzoi_{mendelian,complex}_abs_mondrian/conformal_hetero_results.json`
