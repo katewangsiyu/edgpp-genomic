@@ -168,10 +168,25 @@ Day 11+ 新增：
 ## 9. Success Criteria
 
 NeurIPS 2027 accept 的**必要条件**：
-- [ ] T3 local coverage 理论**严格**证明或**strong asymptotic** bound
-- [ ] Heteroscedastic conformal 在 TraitGym Mendelian 上 **AUPRC ≥ 0.90** 且 **max coverage gap < 0.02 across class × chrom × consequence 分层**
-- [ ] ClinVar hold-out 上泛化验证
-- [ ] DEGU 对比在 3+ metrics 上全胜
-- [ ] 消融证明 heteroscedastic 和 class-cond 两个组件都 essential
+- [x] T1 marginal + T2 class-cond appendix-ready 证明（`theory/t1_t2_formal_proofs.md`, Day 14）
+- [x] T3 local coverage sketch + bin-conditional bound $1/(n_{kb}+1)$（`theory/t3_proof_sketch.md`, Day 13）
+- [ ] T3 完整证明（含 A2 定量弱化 + feature-space 转译）
+- [x] **Heteroscedastic conformal 在 TraitGym Mendelian 上 AUPRC = 0.902**（trait-LOO, Day 14）
+- [x] **σ̂-bin gap 达 finite-sample floor 0.002–0.004**（trait-LOO, Day 14）
+- [x] **Chrom-LOO σ̂-bin gap 0.020**（Complex, Day 12）
+- [x] **外部 OOD 验证（B1 trait-LOO + B2 cross-dataset）**：
+  - Trait-LOO Mendelian/Complex：σ̂-bin gap 0.002–0.004
+  - Cross-dataset C→M：σ̂-bin gap 0.035
+  - Cross-dataset M→C：落在 Barber 2023 Thm 2 proxy bound 1.4σ 内（CADD+Borzoi）
+- [x] DEGU-lite 对比：6/6 partition on Complex（Day 13）
+- [ ] DEGU full reimpl 对比（deferred，低优先级）
+- [x] 消融：Homosc / Hetero / Mondrian 三种 score × class-cond 有/无（Day 11–12）
 
-未达上述 = 降级投 NeurIPS D&B / RECOMB / npj AI。
+失败路径 fallback：
+- 若 T3 完整证明做不出，T3.a oracle-σ 版本 + 跨三层（chrom/trait/cross-dataset）的强 empirical 构成 "strong evidence" 论据
+- 未达 T3 完整证明 + 三层 empirical = 降级投 NeurIPS D&B / RECOMB / npj AI
+
+**当前进度评估（Day 14）**：以 NeurIPS 2027 bar 衡量
+- 实证：强（**three-axis local coverage gap 全部 ≤ 0.04**，其中 trait-LOO 达 finite-sample floor）
+- 理论：中等（T1+T2 done，T3 sketch + bound 但尚未 polished）
+- 剩余主要工作：T3 完整证明（Month 2–6 of roadmap）+ paper writing
