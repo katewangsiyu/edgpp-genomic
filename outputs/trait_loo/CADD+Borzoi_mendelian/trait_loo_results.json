@@ -1,0 +1,52 @@
+{
+  "feature_set": "CADD+Borzoi",
+  "trait_col": "OMIM",
+  "n": 3380,
+  "n_traits": 113,
+  "alpha": 0.1,
+  "AUPRC_trait_loo": 0.9014769421102639,
+  "AUROC_trait_loo": 0.9677658734326919,
+  "marginal_coverage": 0.9014792899408284,
+  "coverage_pos": 0.9023668639053254,
+  "coverage_neg": 0.9013806706114399,
+  "frac_empty": 0.05088757396449704,
+  "frac_singleton": 0.6890532544378698,
+  "frac_both": 0.26005917159763314,
+  "sigma_bin_gap": 0.004437869822485174,
+  "sigma_bin_coverage": [
+    {
+      "bin": 0,
+      "n": 676,
+      "coverage": 0.8994082840236687,
+      "sigma_mean": 0.004419666617434633
+    },
+    {
+      "bin": 1,
+      "n": 676,
+      "coverage": 0.8994082840236687,
+      "sigma_mean": 0.025066401294263175
+    },
+    {
+      "bin": 2,
+      "n": 676,
+      "coverage": 0.9038461538461539,
+      "sigma_mean": 0.052324098853346296
+    },
+    {
+      "bin": 3,
+      "n": 676,
+      "coverage": 0.9038461538461539,
+      "sigma_mean": 0.09604231380702706
+    },
+    {
+      "bin": 4,
+      "n": 676,
+      "coverage": 0.900887573964497,
+      "sigma_mean": 0.19834693943415269
+    }
+  ],
+  "n_traits_reported": 30,
+  "per_trait_AUPRC_median": 1.0,
+  "per_trait_coverage_gap_max_minus_min": 0.19999999999999996,
+  "per_trait_coverage_std": 0.04894603857778721
+}
