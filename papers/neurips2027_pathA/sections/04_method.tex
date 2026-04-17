@@ -1,0 +1,41 @@
+% Claim: HCCP is a post-hoc pipeline on top of any probabilistic aggregator.
+% Source: formulation_v0.md §2, scripts/11/12/13/14
+
+\TODO{Draft after §3 polished. Algorithm box + pipeline figure.}
+
+\subsection{Pipeline}
+
+HCCP has three components applied in sequence on top of a probabilistic aggregator:
+\begin{enumerate}
+    \item \textbf{Aggregator $\phat$}: any probabilistic classifier with chrom-LOO out-of-fold predictions. We use HistGradientBoostingClassifier (depth 2, 100 iters, class-balanced).
+    \item \textbf{Heteroscedastic head $\shat$}: regressor fit on $(X_i, r_i)$ with $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ under Gaussian NLL (Eq.~\ref{eq:gll}). Same GBM backbone.
+    \item \textbf{Mondrian $(y \times \shat\text{-bin})$ conformal}: partition calibration set into $2 K$ cells, compute per-cell thresholds $\qhat_{k,b}$, predict via Eq.~\ref{eq:pset}.
+\end{enumerate}
+
+\begin{algorithm}[t]
+\caption{HCCP calibration and prediction}
+\label{alg:hccp}
+\begin{algorithmic}[1]
+\Require Data $\D$, test chrom $c^\star$, miscoverage $\alpha$, bins $K$
+\State $\D_{\mathrm{tr}} \gets \{i : C_i \neq c^\star\}$;\; $\D_{\mathrm{te}} \gets \{i : C_i = c^\star\}$
+\State Fit $\phat$ on $\D_{\mathrm{tr}}$; produce chrom-LOO OOF predictions within $\D_{\mathrm{tr}}$
+\State Fit $\shat$ on $\D_{\mathrm{tr}}$ targets $\{r_i = |Y_i - \phat^{(-C_i)}(X_i)|\}$
+\State Compute calibration scores $s_i = |Y_i - \phat(X_i)| / \shat(X_i)$ for $i \in \D_{\mathrm{tr}}$
+\State Partition $\D_{\mathrm{tr}}$ by $(Y_i, \mathrm{bin}_K(\shat(X_i)))$; compute $\qhat_{k, b}$ per cell
+\For{$x \in \D_{\mathrm{te}}$}
+    \State $b \gets \mathrm{bin}_K(\shat(x))$;\; output $\pset(x) = \{k : |k - \phat(x)| \leq \qhat_{k,b} \cdot \shat(x)\}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Why Mondrian on $(y \times \shat\text{-bin})$?}
+
+Class-conditional (Mondrian on $y$) alone: matches marginal-class coverage but does not address within-class local heterogeneity. $\shat$-bin alone: adapts locally but can under-cover the minority class. The product partition ensures both, at the cost of requiring $n_{k,b} \geq 1/\alpha$ per cell (satisfied on TraitGym with $K = 5$).
+
+\subsection{Comparison to prior scores}
+
+\begin{itemize}
+    \item Split conformal (Vovk 2005): $s = |y - \phat(x)|$, feature-independent.
+    \item CQR (Romano 2019): quantile regression; regression-only.
+    \item DEGU-lite + split: reports $\shat$ but uses split score. \TODO{Full table in §\ref{sec:experiments}.}
+\end{itemize}

@@ -1,0 +1,50 @@
+% Source: theory/t1_t2_formal_proofs.md, theory/t3_proof_sketch.md, theory/theorems_roadmap.md
+
+\TODO{Main-text version: theorem statements + 1-paragraph proof sketches; full proofs in App.~\ref{app:proofs}.}
+
+\subsection{Marginal and class-conditional coverage}
+
+\begin{theorem}[T1 marginal coverage]
+\label{thm:t1}
+Under Assumptions~\ref{ass:A1}--\ref{ass:A2}, for test point $(X, Y) \sim P_{c^\star}$ independent of the calibration fold,
+\[
+P\bigl(Y \in \pset(X)\bigr) \geq 1 - \alpha.
+\]
+\end{theorem}
+
+\begin{theorem}[T2 class-conditional coverage]
+\label{thm:t2}
+Under the conditions of Theorem~\ref{thm:t1}, for each $k \in \{0, 1\}$,
+\[
+P\bigl(Y \in \pset(X) \mid Y = k\bigr) \geq 1 - \alpha.
+\]
+\end{theorem}
+
+\TODO{Proof sketch (1 paragraph): standard split-CP with Vovk 2003 Mondrian partitioning on $Y$. Full proof App.~\ref{app:proofs}.}
+
+\subsection{Local (bin-conditional) coverage}
+
+\begin{theorem}[T3 bin-conditional coverage --- informal]
+\label{thm:t3}
+Under Assumptions~\ref{ass:A1}--\ref{ass:A2} plus a stationarity condition on the $\shat$-bin edges across folds, for each $(k, b)$,
+\[
+P\bigl(Y \in \pset(X) \mid Y = k, \mathrm{bin}_K(\shat(X)) = b\bigr) \geq 1 - \alpha - \frac{1}{n_{k, b} + 1}.
+\]
+\end{theorem}
+
+\TODO{Connection to Barber 2020 impossibility: Theorem~\ref{thm:t3} is a coarsened (bin-conditional) guarantee, which Barber 2020 does not preclude; it complements rather than contradicts the pointwise impossibility.}
+
+\TODO{Proof sketch: apply T2 within each $\shat$-bin cell, using A2 to justify bin-edge stationarity; finite-sample term from standard split-CP quantile with sample size $n_{k,b}$.}
+
+\subsection{Chrom-shift robustness}
+
+\begin{theorem}[T4 chrom-shift bound --- Barber 2023 Thm 2 applied]
+\label{thm:t4}
+Let $\tilde{w}_i$ be weights assigned to calibration-fold chroms. Then
+\[
+P\bigl(Y \in \pset(X)\bigr) \geq 1 - \alpha - \sum_i \tilde{w}_i \cdot d_{TV}\bigl(R(Z), R(Z^{(i)})\bigr),
+\]
+where $R(Z)$ is the residual vector and $R(Z^{(i)})$ is the swap-one residual vector.
+\end{theorem}
+
+\TODO{Discuss: main-TV proxy we estimate empirically is $d_{TV}(\phat_A(X_A), \phat_A(X_B))$ --- under perfect iid this equals the swap-TV, but in cross-dataset shift it may underestimate. See §\ref{sec:experiments} for honest limitation.}

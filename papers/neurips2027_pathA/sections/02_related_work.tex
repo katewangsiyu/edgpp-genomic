@@ -1,0 +1,15 @@
+% Claim structure: 3 buckets (CP theory / heteroscedastic UQ / VEP + conformal).
+% Literature anchors: papers/literature_v0.md
+
+\TODO{Full related work; target 0.5 page main + ~1 page appendix extension.}
+
+\paragraph{Conformal prediction.}
+Split conformal \citep{vovk2005algorithmic}, CQR \citep{romano2019cqr}, weighted CP under covariate shift \citep{tibshirani2019weighted}, jackknife+ \citep{barber2021jackknife}, and CP beyond exchangeability \citep{barber2023exchangeability} form the theoretical backbone. Mondrian conformal \citep{vovk2003mondrian} provides class-conditional coverage via partitioned calibration. Barber's pointwise conditional coverage impossibility \citep{barber2020limits} motivates our coarsened $\shat$-bin guarantee.
+
+\paragraph{Heteroscedastic uncertainty.}
+Nix \& Weigend \citep{nix1994nll} introduced Gaussian NLL for learned variance. DEGU \citep{zhou2026degu} applies this to MPRA regression via deep ensemble distillation, mentioning conformal in abstract but without formal guarantees or non-regression tasks. Bootstrapping, MC dropout, and deep ensembles \citep{lakshminarayanan2017simple} offer alternative $\shat$ sources we compare in ablations (§\ref{sec:experiments}).
+
+\paragraph{Variant effect prediction benchmarks.}
+CADD \citep{kircher2014cadd}, Borzoi \citep{linder2025borzoi}, GPN-MSA \citep{benegas2023gpnmsa}, and the TraitGym benchmark \citep{benegas2025traitgym} define the current SOTA pipeline. TraitGym's published supervised LogReg aggregator reaches 0.752 Mendelian AUPRC; we revisit this with GBM (§\ref{sec:experiments}).
+
+\TODO{Possible subsection: "selective prediction" vs "conformal" distinction, cite Geifman \& El-Yaniv 2017, Angelopoulos \& Bates 2022.}

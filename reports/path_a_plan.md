@@ -175,7 +175,7 @@ NeurIPS 2027 accept 的**必要条件**：
 - [x] **σ̂-bin gap 达 finite-sample floor 0.002–0.004**（trait-LOO, Day 14）
 - [x] **Chrom-LOO σ̂-bin gap 0.020**（Complex, Day 12）
 - [x] **外部 OOD 验证（B1 trait-LOO + B2 cross-dataset）**：
-  - Trait-LOO Mendelian/Complex：σ̂-bin gap 0.002–0.004
+  - Trait-LOO 2×2 matrix 完整（Day 14 + Day 15）：σ̂-bin gap 0.002–0.004 全部达 finite-sample floor；GPN-MSA 在 Complex per-trait cov std 收窄 15%（0.020→0.017）
   - Cross-dataset C→M：σ̂-bin gap 0.035
   - Cross-dataset M→C：落在 Barber 2023 Thm 2 proxy bound 1.4σ 内（CADD+Borzoi）
 - [x] DEGU-lite 对比：6/6 partition on Complex（Day 13）
@@ -186,7 +186,8 @@ NeurIPS 2027 accept 的**必要条件**：
 - 若 T3 完整证明做不出，T3.a oracle-σ 版本 + 跨三层（chrom/trait/cross-dataset）的强 empirical 构成 "strong evidence" 论据
 - 未达 T3 完整证明 + 三层 empirical = 降级投 NeurIPS D&B / RECOMB / npj AI
 
-**当前进度评估（Day 14）**：以 NeurIPS 2027 bar 衡量
-- 实证：强（**three-axis local coverage gap 全部 ≤ 0.04**，其中 trait-LOO 达 finite-sample floor）
+**当前进度评估（Day 15）**：以 NeurIPS 2027 bar 衡量
+- 实证：强（**three-axis local coverage gap 全部 ≤ 0.04**，trait-LOO 2×2 matrix 完整，全部达 finite-sample floor）
 - 理论：中等（T1+T2 done，T3 sketch + bound 但尚未 polished）
-- 剩余主要工作：T3 完整证明（Month 2–6 of roadmap）+ paper writing
+- 写作：skeleton 落盘（`papers/neurips2027_pathA/`）
+- 剩余主要工作：T3 完整证明（Month 2–6 of roadmap）+ paper writing（§3/§5/§6 正文化）

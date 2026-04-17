@@ -1,0 +1,121 @@
+% NeurIPS 2027 submission — Conformalized Heteroscedastic VEP
+% Working draft; switch to official neurips_2027.sty when released.
+
+\documentclass{article}
+
+% If NeurIPS 2027 style not yet released, fall back to 2024 style locally.
+\usepackage[preprint]{neurips_2024}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{assumption}{Assumption}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\phat}{\hat{p}}
+\newcommand{\shat}{\hat{\sigma}}
+\newcommand{\qhat}{\hat{q}}
+\newcommand{\pset}{\mathcal{C}_\alpha}
+\newcommand{\TODO}[1]{\textcolor{red}{[TODO: #1]}}
+
+\title{Conformalized Heteroscedastic Variant Effect Prediction\\
+with Local Coverage Guarantees}
+
+\author{%
+  Anonymous Authors \\
+  \TODO{deanon at camera-ready}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\TODO{Draft — replace after §6 results locked.}
+Variant effect prediction (VEP) powers clinical interpretation of genomic variants, yet production deployments lack calibrated uncertainty. We introduce \textbf{HCCP} (Heteroscedastic Class-Conditional Conformal Prediction), a post-hoc framework that pairs a gradient-boosted aggregator over pre-trained genomic features with a learned variance head and a Mondrian conformal calibration stratified by $(y \times \shat\text{-bin})$. On TraitGym \citep{benegas2025traitgym}, HCCP matches SOTA AUPRC (0.900 Mendelian, 0.350 Complex) while providing finite-sample marginal, class-conditional, and $\shat$-bin-local coverage. We prove these guarantees under a chrom-group exchangeability assumption and establish a bin-conditional coverage bound $1/(n_{k,b}+1)$ compatible with Barber's (2020) pointwise impossibility. Three-axis OOD evaluation (chromosome-LOO, trait-LOO, cross-dataset) shows $\shat$-bin coverage gap $\leq 0.04$ across all regimes, including a gap of $0.002$–$0.004$ reaching the finite-sample floor under trait-LOO. Our ablations position HCCP as a principled strengthening of DEGU's heteroscedastic distillation \citep{zhou2026degu}.
+\end{abstract}
+
+% -----------------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+\input{sections/01_introduction.tex}
+
+% -----------------------------------------------------------------------------
+\section{Related work}
+\label{sec:related}
+
+\input{sections/02_related_work.tex}
+
+% -----------------------------------------------------------------------------
+\section{Problem formulation}
+\label{sec:formulation}
+
+\input{sections/03_formulation.tex}
+
+% -----------------------------------------------------------------------------
+\section{Method: HCCP}
+\label{sec:method}
+
+\input{sections/04_method.tex}
+
+% -----------------------------------------------------------------------------
+\section{Theory}
+\label{sec:theory}
+
+\input{sections/05_theory.tex}
+
+% -----------------------------------------------------------------------------
+\section{Experiments}
+\label{sec:experiments}
+
+\input{sections/06_experiments.tex}
+
+% -----------------------------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+
+\input{sections/07_discussion.tex}
+
+% -----------------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+\input{sections/08_conclusion.tex}
+
+% -----------------------------------------------------------------------------
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+% -----------------------------------------------------------------------------
+\appendix
+
+\section{Full proofs of T1--T4}
+\label{app:proofs}
+\input{sections/A_proofs.tex}
+
+\section{Data and training details}
+\label{app:data}
+\input{sections/B_data.tex}
+
+\section{Per-partition tables}
+\label{app:tables}
+\input{sections/C_tables.tex}
+
+\end{document}

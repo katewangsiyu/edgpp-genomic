@@ -132,6 +132,54 @@ Per-trait AUPRC 范围：
 | 3 | 676 | 0.097 | 0.904 |
 | 4 | 676 | 0.186 | 0.899 |
 
+### 2.7 Complex CADD+GPN-MSA+Borzoi trait-LOO (Day 15 — 2×2 matrix 补齐)
+
+同样 top-28 trait subset（`--filter-min-pos-per-trait 10`，n=6700），feature set 加入 GPN-MSA。
+
+| 指标 | CADD+Borzoi (§2.5) | **CADD+GPN-MSA+Borzoi** |
+|---|---:|---:|
+| AUPRC (OOF) | 0.273 | **0.278** |
+| AUROC | 0.708 | 0.699 |
+| Marginal cov | 0.9022 | 0.9021 |
+| Cov\|pos | 0.912 | 0.910 |
+| Cov\|neg | 0.901 | 0.901 |
+| **σ̂-bin gap (K=5)** | **0.002** | **0.003** |
+| frac {empty, single, both} | 0.1% / 20.6% / 79.3% | 0.2% / 20.2% / **79.6%** |
+| Per-trait cov std (28 traits) | 0.020 | **0.017** |
+| Per-trait cov max−min | n/a | 0.071 |
+| Per-trait AUPRC median | n/a | 0.317 |
+
+σ̂-bin 表：
+| bin | n | σ̂̄ | coverage |
+|---:|---:|---:|---:|
+| 0 | 1340 | 0.253 | 0.9000 |
+| 1 | 1340 | 0.321 | 0.9022 |
+| 2 | 1340 | 0.370 | 0.9022 |
+| 3 | 1340 | 0.428 | 0.9030 |
+| 4 | 1340 | 0.516 | 0.9030 |
+
+**Finding**：Complex 下两 feature set 的 σ̂-bin gap 都停在 finite-sample floor（0.002–0.003 统计不可区分），但 **per-trait coverage std 从 0.020 ↓ 0.017**（-15%），即 GPN-MSA 让 trait-level coverage **更稳定**（而非更准确）。AUPRC 从 0.273 微升 0.278（+0.5pp）— 与 Mendelian trait-LOO 中观察的"GPN-MSA 主要收紧 uncertainty 而非改善 marginal accuracy"完全一致。
+
+Per-trait AUPRC 头尾：
+- 最高：WHRadjBMI (0.572)、Hb,Ht (0.455)、HDLC (0.420)、HbA1c (0.419)、CRP (0.406)
+- 最低：eGFRcys (0.164)、RBC (0.184)、PP (0.188)、Urea (0.213)、BW (0.216)
+
+与 CADD+Borzoi 排名对比：WHRadjBMI 仍领先（0.58→0.57）；HDLC/HbA1c 稳定；eGFRcys（0.18→0.16）、BW（0.18→0.22）在 GPN-MSA 下略抖但量级不变。**trait-level 排名结构稳健**，说明 AUPRC 细微差异来自 σ̂-bin 重分配而非信号重排。
+
+### 2.8 Trait-LOO 2×2 matrix 完整对比（Day 15 汇总）
+
+| Dataset × Feature set | AUPRC | σ̂-bin gap | Per-trait cov std | singleton |
+|---|---:|---:|---:|---:|
+| Mendelian × CADD+Borzoi | 0.902 | **0.004** | 0.049 | 69% |
+| Mendelian × CADD+GPN-MSA+Borzoi | 0.902 | **0.004** | 0.052 | **75%** |
+| Complex × CADD+Borzoi | 0.273 | **0.002** | 0.020 | 21% |
+| Complex × CADD+GPN-MSA+Borzoi | 0.278 | **0.003** | **0.017** | 20% |
+
+**汇总 finding**：
+1. **σ̂-bin gap**：四个格全部 ≤ 0.004，达到 finite-sample floor；GPN-MSA 无系统性影响（Mendelian 持平 0.004，Complex 0.002↔0.003 统计不可区分）
+2. **Per-trait std（trait-level 分散度）**：GPN-MSA 在 Complex 收窄 15%（0.020→0.017），但在 Mendelian 略增 6%（0.049→0.052）— 因为 Mendelian 本就在 per-trait 极高基数（rare disease outlier MIM 188000 等主导）下，GPN-MSA 不能消除 rare-disease 尾部
+3. **Set composition**：GPN-MSA 在 Mendelian 显著变果断（singleton 69%→75%），在 Complex 已接近 singleton 下限（21%→20% 基本饱和）—— 符合 Complex trait 本身不确定性更高的先验
+
 ---
 
 ## 3. Plan B2 — Cross-dataset shift
@@ -197,6 +245,7 @@ Paper 处理方式：
 > - [x] **Trait-LOO（B1）Mendelian CADD+Borzoi**：marginal cov 0.9015；σ̂-bin gap 0.004；per-trait coverage std 0.049（30 traits）
 > - [x] **Trait-LOO（B1）Complex CADD+Borzoi top-28**：marginal cov 0.9022；σ̂-bin gap **0.002**（repo 最小）；per-trait std 0.020
 > - [x] **Trait-LOO（B1）Mendelian CADD+GPN-MSA+Borzoi**：marginal cov 0.9018；σ̂-bin gap 0.004；GPN-MSA 使 singleton 占比从 69% ↑75%
+> - [x] **Trait-LOO（B1）Complex CADD+GPN-MSA+Borzoi top-28** (Day 15)：marginal cov 0.9021；σ̂-bin gap 0.003；per-trait std 0.017（比 CADD+Borzoi 的 0.020 收窄 15%）— 2×2 matrix 补齐
 > - [x] **Cross-dataset shift（B2）CADD+Borzoi**：Complex→Mendelian cov 0.901 σ̂-bin gap 0.035；Mendelian→Complex 落在 Barber proxy bound 1.4σ 内
 > - [x] **Cross-dataset shift（B2）CADD+GPN-MSA+Borzoi**：Complex→Mendelian cov 0.896 σ̂-bin gap 0.036；Mendelian→Complex proxy 违反 0.036（honest limitation）
 > - [ ] （可选 Appendix）ClinVar 3′UTR 小对照表（B3）
@@ -236,6 +285,7 @@ Paper 处理方式：
 | Trait-LOO | Mendelian | CADD+GPN-MSA+Borzoi | 0.902 | 0.902 | 0.902 | 0.004 | 75% | 20% |
 | Chrom-LOO (Day 12) | Complex | CADD+Borzoi | 0.350 | 0.902 | 0.908 | 0.020 | 22% | 78% |
 | **Trait-LOO top-28** | Complex | CADD+Borzoi | 0.273 | 0.902 | 0.912 | **0.002** | 21% | 79% |
+| Trait-LOO top-28 | Complex | CADD+GPN-MSA+Borzoi | 0.278 | 0.902 | 0.910 | **0.003** | 20% | **80%** |
 | Cross M→C | Complex | CADD+Borzoi | 0.205 | 0.738 | 0.117 | 0.331 | 83% | 0% |
 | Cross M→C | Complex | CADD+GPN-MSA+Borzoi | 0.203 | 0.727 | 0.097 | 0.530 | 82% | 0% |
 | **Cross C→M** | Mendelian | CADD+Borzoi | **0.665** | **0.901** | 0.929 | **0.035** | 62% | 37% |
@@ -255,11 +305,19 @@ Paper T3 主 empirical claim：**Mondrian(y×σ̂-bin) 在三种不同 shift 下
 
 Paper T4 主 empirical claim：**M→C 崩溃 + Barber 2023 Thm 2 proxy bound tight on cov=0.738 vs 0.742** 提供理论锚点。honest limitation: proxy TV 在 CADD+GPN-MSA+Borzoi M→C 下低估真实 swap TV（差 0.036），说明未来工作需要更精确的 residual-swap TV 估计。
 
-## 9. Day 15 todo
+## 9. Day 15 进度
 
-1. ~~Complex trait-LOO （top-10+ subset）~~ 完成
-2. ~~Mendelian trait-LOO with CADD+GPN-MSA+Borzoi~~ 完成
-3. 更新 `path_a_plan.md` §9 success criteria 反映 B1/B2 完成
-4. （可选）Complex trait-LOO CADD+GPN-MSA+Borzoi — 补齐 2×2 matrix
-5. 开始 paper skeleton（Path A §7 Timeline Phase 5 前置）
-6. （可选 Appendix）ClinVar 3′UTR 小对照表 B3 — rebuttal 素材
+1. ~~Complex trait-LOO （top-10+ subset）~~ 完成（Day 14）
+2. ~~Mendelian trait-LOO with CADD+GPN-MSA+Borzoi~~ 完成（Day 14）
+3. ~~更新 `path_a_plan.md` §9 success criteria 反映 B1/B2 完成~~ 完成（Day 14 末）
+4. ~~Complex trait-LOO CADD+GPN-MSA+Borzoi — 补齐 2×2 matrix~~ 完成（Day 15，§2.7–§2.8 + §7 表格）
+5. ~~起草 paper skeleton（Path A §7 Timeline Phase 5 前置）~~ 完成（Day 15，`papers/neurips2027_pathA/`）
+6. （可选 Appendix）ClinVar 3′UTR 小对照表 B3 — rebuttal 素材 — 延后到 Phase 4
+
+## 10. Day 16+ 待办（优先级排序）
+
+1. **T3 完整证明**：polish `theory/t3_proof_sketch.md` → appendix-ready，含 A2 定量弱化 + feature-space 转译（theory/ 最大剩余工作）
+2. **§3 formulation 正文化**：从 `theory/formulation_v0.md` 直接 port 到 `papers/neurips2027_pathA/sections/03_formulation.tex`
+3. **§6 experiments 正文化**：填入 Day 10–15 数字到 Table 1 + Table 2（from `reports/phase2_day11_hetero_conformal.md` + 本报告 §7）
+4. **Figure 1 concept 图**：设计 CP pipeline 示意 + σ̂-bin prediction-set 几何
+5. **DEGU-lite vs HCCP head-to-head**：Table 3 ablation（σ̂ source）的主对照

@@ -1,0 +1,43 @@
+% Source: theory/formulation_v0.md §1-2
+
+\TODO{Polish from formulation_v0.md §1.1-1.4 (data + A1 + aggregator + $\shat$ head) and §2.1-2.3 (score + Mondrian + prediction set).}
+
+\subsection{Setup}
+\label{sec:formulation:setup}
+
+Let $X \in \X \subseteq \mathbb{R}^d$ denote a variant feature vector, $Y \in \{0, 1\}$ its pathogenic label, and $C \in \mathcal{C} = \{1, \ldots, 22, X\}$ its chromosome. We observe $\D = \{(X_i, Y_i, C_i)\}_{i=1}^n$. TraitGym's chrom-LOO protocol fixes a test chromosome $c^\star$ and uses $\D^{(-c^\star)}$ for train + calibration.
+
+\begin{assumption}[Chrom-group exchangeability]
+\label{ass:A1}
+Conditional on $C = c$, the samples $\{(X_i, Y_i) : C_i = c\}$ are exchangeable; no assumption is made across chromosomes.
+\end{assumption}
+
+\begin{assumption}[Score stationarity across folds]
+\label{ass:A2}
+The trained score function $s(\cdot, \cdot; \phat, \shat)$ is invariant to the held-out chrom rotation within the training fold (proof-level detail; empirically verified via KS test on per-chrom score distributions, Day 13).
+\end{assumption}
+
+\subsection{Base aggregator and heteroscedastic head}
+\label{sec:formulation:heads}
+
+$\phat: \X \to [0, 1]$ is a gradient-boosted probabilistic classifier. $\shat: \X \to \mathbb{R}_+$ is a second regressor trained on chrom-LOO residuals $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ with Gaussian log-likelihood objective (Nix-Weigend / DEGU's hetero baseline).
+
+\subsection{Nonconformity score and prediction set}
+\label{sec:formulation:score}
+
+We define the feature-dependent score
+\begin{equation}
+\label{eq:score}
+s(x, y) := \frac{|y - \phat(x)|}{\shat(x) + \epsilon}, \qquad \epsilon = 10^{-6}.
+\end{equation}
+
+For each class $k \in \{0, 1\}$ and $\shat$-bin $b \in \{1, \ldots, K\}$, the Mondrian threshold is
+\[
+\qhat_{k,b} = \mathrm{Quantile}\bigl(S_{k,b}, \lceil (n_{k,b} + 1)(1 - \alpha) \rceil / n_{k,b}\bigr),
+\]
+where $S_{k,b}$ collects calibration scores in the $(k, b)$ cell. The prediction set is
+\begin{equation}
+\label{eq:pset}
+\pset(x) = \bigl\{k \in \{0, 1\} : s(x, k) \leq \qhat_{k, b(x)}\bigr\},
+\end{equation}
+with $b(x)$ the $\shat$-bin index of $x$ under the calibration-fold bin edges.

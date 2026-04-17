@@ -1,0 +1,20 @@
+% Claim: VEP in clinic needs uncertainty; existing conformal for VEP is marginal-only;
+% HCCP closes the gap with feature-dependent + class-cond + local.
+% Evidence anchors: Day 10 GBM SOTA; Day 14 three-axis OOD.
+
+\TODO{Intro draft: 3 paragraphs.}
+
+\paragraph{Paragraph 1 --- clinical motivation (0.3 page).}
+\TODO{Frame: variant effect prediction output is a probability, but downstream pathogenic vs benign decisions are made at thresholds. Without calibrated prediction sets, clinicians cannot quantify "how many alternative labels are consistent with this variant's score?" Cite ACMG pathogenic variant guidelines (2015) for clinical framing.}
+
+\paragraph{Paragraph 2 --- gap in current VEP + UQ (0.4 page).}
+\TODO{Frame: TraitGym \citep{benegas2025traitgym} uses LogReg aggregators with no UQ. DEGU \citep{zhou2026degu} introduces heteroscedastic NLL for MPRA regression, teases conformal in abstract but doesn't deliver. Gap: feature-dependent + class-conditional + local conformal guarantees for VEP.}
+
+\paragraph{Paragraph 3 --- contributions (0.3 page).}
+Our contributions are:
+\begin{itemize}
+    \item \textbf{HCCP framework} (§\ref{sec:method}): GBM aggregator $\phat$ + heteroscedastic $\shat$ head + Mondrian conformal stratified by $(y \times \shat\text{-bin})$.
+    \item \textbf{Theoretical guarantees} (§\ref{sec:theory}): under chrom-group exchangeability (A1), we prove (T1) marginal coverage, (T2) class-conditional coverage, (T3) $\shat$-bin-local coverage with finite-sample rate $1/(n_{k,b}+1)$, and (T4) a chrom-shift robustness bound via Barber 2023 Thm 2.
+    \item \textbf{Empirical three-axis OOD validation} (§\ref{sec:experiments}): $\shat$-bin coverage gap $\leq 0.04$ across chromosome-LOO, trait-LOO, and cross-dataset shifts; trait-LOO reaches finite-sample floor $0.002$--$0.004$.
+    \item \textbf{Benchmark audit byproduct}: GBM aggregator on TraitGym features exceeds published LogReg SOTA by 14.9pp on Mendelian (0.900 vs 0.752).
+\end{itemize}
