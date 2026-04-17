@@ -73,6 +73,41 @@ Trait-LOO 30 traits: coverage std = 0.049。
 
 Trait-LOO 粒度更细、更异质，std 约 60% 大，但仍在 binomial SE(α=0.1, n=30) = 0.055 的同一量级 — 即多数 per-trait coverage 偏差可解释为抽样噪声，而非系统性偏差。
 
+### 2.5 Complex CADD+Borzoi trait-LOO (top-28 trait subset)
+
+`--filter-min-pos-per-trait 10` 过滤到 28 个 trait、6700 变异（~12k 原始样本的 59%）。跑完 ~30 min。
+
+| 指标 | Complex trait-LOO (top-28) | 对照 Complex chrom-LOO (Day 12 CADD+Borzoi) |
+|---|---:|---:|
+| AUPRC (OOF) | **0.273** | 0.350 (AUPRC_per_chrom) |
+| Marginal cov | **0.9022** | 0.900 |
+| Cov\|pos | 0.912 | 0.908 |
+| Cov\|neg | 0.901 | 0.902 |
+| **σ̂-bin gap (K=5)** | **0.002** | 0.020 |
+| frac {empty, single, both} | 0.1% / 20.6% / **79.3%** | 0.1% / 22.0% / 77.9% |
+| Per-trait cov std | **0.020** (28 traits) | n/a |
+
+σ̂-bin table：
+| bin | n | σ̂̄ | coverage |
+|---:|---:|---:|---:|
+| 0 | 1340 | 0.256 | 0.9015 |
+| 1 | 1340 | 0.327 | 0.9015 |
+| 2 | 1340 | 0.379 | 0.9022 |
+| 3 | 1340 | 0.435 | 0.9022 |
+| 4 | 1340 | 0.513 | 0.9037 |
+
+**σ̂-bin gap 0.002** — 全 repo 最小的局部覆盖率 gap（超过 Mendelian trait-LOO 0.004）。所有 5 个 bin 几乎完美对齐 target 0.90。
+
+**AUPRC trait-shift vs chrom-shift**：Complex AUPRC 在 trait-shift 下掉 22%（0.35→0.27），而 Mendelian trait-shift 下涨 1.4%（0.89→0.90）。原因：
+- Mendelian：每个 OMIM 的变异因致病机制不同，但 feature space 上的信号结构类似（coding-adjacent 保守区）。trait-LOO 等效于"同一特征模式换标签"，模型易泛化。
+- Complex：每个 trait 的因果变异落在不同 tissue-specific regulatory 元件。trait-LOO 等效于"完全不同的 tissue signal"，模型难以外推。
+
+Per-trait AUPRC 范围：
+- 最高：WHRadjBMI (0.58)、Balding_Type4 (0.48)、HDLC (0.42)、HbA1c (0.41)
+- 最低：BW (0.18)、eGFRcys (0.18)、RBC (0.20)
+
+低 AUPRC traits 的 coverage 仍接近 0.90（如 eGFRcys cov 0.914），说明即使模型预测崩，Mondrian conformal 能通过大 {0,1} set 诚实标记"不知道"。frac_both 高达 79% 正反映这种 honest uncertainty。
+
 ---
 
 ## 3. Plan B2 — Cross-dataset shift
