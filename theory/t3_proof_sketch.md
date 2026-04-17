@@ -144,10 +144,12 @@ $$
 P(s_{\text{test}} \leq \hat{q}_{kb}) \geq 1 - \alpha.
 $$
 
-**When A2 approximately holds** (the realistic case): T4's chrom-shift bound quantifies the coverage degradation:
+**When A2 approximately holds** (the realistic case): T4's chrom-shift bound quantifies the coverage degradation (Barber et al. 2023 Theorem 2, verified form has **no factor of 2**):
 $$
-|P(s_{\text{test}} \leq \hat{q}_{kb}) - (1-\alpha)| \leq 2 \cdot d_{\text{TV}}(P_{c^*}^{kb}, P_{\text{cal}}^{kb}) + \frac{1}{n_{kb}+1}
+P(s_{\text{test}} \leq \hat{q}_{kb}) \;\geq\; (1-\alpha) - d_{\text{TV}}(P_{c^*}^{kb}, P_{\text{cal}}^{kb})
 $$
+
+with upper bound $(1-\alpha) + 1/(n_{kb}+1)$ from the finite-sample exchangeable case (which recovers under exact A2).
 
 where $P_{c^*}^{kb}$ and $P_{\text{cal}}^{kb}$ are the score distributions in cell $(k, b)$ for the test chrom and pooled calibration chroms, respectively.
 
@@ -175,7 +177,7 @@ Standard conformal quantile → P(Y ∈ C(X) | Y=k, σ̂∈B_b) ≥ 1-α  [T3]
     ↓
 Gap bound: ≤ 1/(n_kb+1)
     ↓
-If A2 only approximate: + 2·d_TV(P_c*, P_cal)  [combines with T4]
+If A2 only approximate: coverage ≥ (1-α) − d_TV(P_c*, P_cal)  [Barber 2023 Thm 2, no 2×]
     ↓
 If σ̂ is L-Lipschitz: local coverage in x-space balls of radius r/L
 ```

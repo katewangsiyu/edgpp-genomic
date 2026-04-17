@@ -134,9 +134,9 @@ $$
 P\left( Y_{\text{test}} \in \mathcal{C}_\alpha(X_{\text{test}}) \right) \geq 1 - \alpha
 $$
 
-**证明草图**：在单 chrom $c^*$ 内应用 Barber et al 2023 Theorem 1（split conformal under exchangeability），A1 提供 chrom 内 exchangeability。
+**证明草图**：标准 split conformal + A1' (chrom-wise i.i.d.) + A2 (score stationarity)；appendix-ready 版本见 `theory/t1_t2_formal_proofs.md` §4。注意 Barber 2023 里是 Theorem 2（weighted, 带 TV 项）而非 Theorem 1；之前 sketch 写错。
 
-**状态**：标准结果的直接套用。写作约 1 页。
+**状态**：appendix-ready v1 已落盘（2026-04-17）。
 
 ### T2 Class-conditional coverage
 
@@ -147,7 +147,7 @@ $$
 
 **证明草图**：Vovk 2003 Mondrian CM 的直接推广。按 $Y$ 分层相当于 Mondrian partition。需要假设每个类别 calibration 非空（$n_k \geq 1/\alpha$）。
 
-**状态**：已有结果扩展。写作约 1–1.5 页。
+**状态**：appendix-ready v1 已落盘（`theory/t1_t2_formal_proofs.md` §5）。
 
 ### T3 Local (feature-neighborhood) coverage ★★ 主贡献
 
@@ -173,10 +173,10 @@ $$
 
 **Theorem T4 (informal)**. 若 $P_{c^*}$ 与 calibration 使用的 $P_{c'}$ 在 total variation 距离 $\leq \delta$：
 $$
-\left| P_{c^*}\left( Y \in \mathcal{C}_\alpha(X) \right) - (1 - \alpha) \right| \leq 2\delta + \text{finite-sample}.
+P_{c^*}\!\left( Y \in \mathcal{C}_\alpha(X) \right) \;\geq\; (1 - \alpha) - \delta - \text{finite-sample}.
 $$
 
-**证明思路**：Barber et al 2023 Theorem 3 (beyond exchangeability) 可直接套。需要估计 chrom 之间的 TV 距离（实证 + bound）。
+**证明思路**：Barber et al 2023 Theorem 2 （weighted, $\sum \tilde{w}_i d_{TV}$ bound，**no factor of 2** — 详见 `theory/t1_t2_formal_proofs.md` §6）。需要估计 chrom 之间的 TV 距离（实证 + bound）。
 
 **状态**：标准结果套用；写作约 1.5–2 页。实证需要跨 chrom TV 距离估计。
 

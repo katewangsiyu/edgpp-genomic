@@ -97,8 +97,10 @@ $$
 
 **形式**:
 $$
-\left| P_{c^*}\left( Y \in \mathcal{C}_\alpha(X) \right) - (1 - \alpha) \right| \leq 2 \cdot d_{\text{TV}}(P_{c^*}, P_{\text{cal}}) + O(n^{-1/2})
+P_{c^*}\!\left( Y \in \mathcal{C}_\alpha(X) \right) \;\geq\; (1 - \alpha) - d_{\text{TV}}(P_{c^*}, P_{\text{cal}}) - O(n^{-1/2})
 $$
+
+(Barber et al. 2023 Thm 2; **no factor of 2** — earlier drafts of this roadmap had this wrong.)
 
 where $P_{\text{cal}} = \text{mixture of calibration chroms' distributions}$.
 
