@@ -48,7 +48,22 @@ $$
 
 ## T3 — Local (Feature-Neighborhood) Coverage ★★★ MAIN NOVELTY
 
-### T3.a — Oracle version
+**状态更新（Day 16, 2026-04-17）**: T3 核心 + T3' robust + T3-loc 特征空间 + T3.b σ̂ 扰动 已 appendix-ready（`theory/t3_formal_proof.md`）。剩余理论工作是 T3.a oracle-asymptotic 版（下文，Month 5–7）。
+
+### T3 (finite-sample bin-conditional) — ✅ DONE
+
+**形式**:
+$$
+\Bigl|P\!\left(Y \in \mathcal{C}_\alpha(X) \mid Y = k,\; b(X) = b\right) - (1-\alpha)\Bigr| \;\leq\; \frac{1}{n_{kb}+1}
+$$
+
+**工具**：Vovk 2003 Mondrian CM 的直接套用（with taxonomy $\kappa(X,Y) = (Y, b(X))$）。对 A1 only 情况用 Barber 2023 Thm 2 per-cell 给 robust 版。
+
+**位置**：`theory/t3_formal_proof.md` §4 (exact), §5 (robust), §6 (feature-space), §7 (perturbation).
+
+**难度**：★★☆☆☆（比之前 roadmap 估计简单 — 关键洞察：σ̂-bin 是合法 Mondrian taxon，不需要 CQR-style 局部 quantile 推导）。
+
+### T3.a — Oracle asymptotic version（未做，Month 5–7）
 
 **形式**（assuming $\hat{\sigma} = \sigma_{\text{true}}$）:
 $$
@@ -76,20 +91,7 @@ where $\epsilon_1(r, \alpha) \to 0$ as $r \to 0$ (at known rate).
 
 **写作长度**：2–3 页 + 3–5 页 appendix
 
-### T3.b — Realistic version (with $\hat{\sigma}$ estimation error)
-
-**形式**:
-$$
-\left| P\left( Y \in \mathcal{C}_\alpha(X) \mid X \in B(x_0, r) \right) - (1 - \alpha) \right| \leq \epsilon_1(r, \alpha) + \epsilon_2(\|\hat{\sigma} - \sigma_{\text{true}}\|_\infty)
-$$
-
-**证明工具**：Perturbation analysis on T3.a + Lipschitz continuity of coverage in score function.
-
-**难度**：★★★★★
-
-**时间**：2–3 周 (after T3.a)
-
-**风险**：高。这是整个 paper 的 crown jewel。如果只能证 T3.a，就把 T3.b 放进 Discussion / Future Work，以 empirical evidence 支撑。
+（原 T3.b realistic version 的 σ̂ 估计误差 perturbation 已在 `t3_formal_proof.md` §7 以有限样本形式证完，不再归入 T3.a asymptotic 分支。）
 
 ---
 
@@ -118,50 +120,53 @@ where $P_{\text{cal}} = \text{mixture of calibration chroms' distributions}$.
 
 ---
 
-## 时间排期
+## 时间排期（Day 16 刷新）
 
-| 月 | T1 | T2 | T3.a | T3.b | T4 |
-|---|---|---|---|---|---|
-| 1 | ✅ draft | ✅ draft | — | — | — |
-| 2 | polish | polish | 🔄 start | — | 🔄 start |
-| 3 | done | done | 🔄 technical lemmas | — | TV empirics |
-| 4 | — | — | 🔄 main proof | — | ✅ draft |
-| 5 | — | — | polish | 🔄 start | polish |
-| 6 | — | — | done | 🔄 main proof | done |
-| 7 | — | — | — | polish | — |
-| 8 | — | — | — | done | — |
+| 月 | T1 / T2 | T3 / T3' / T3-loc / T3.b | T3.a asym | T4 |
+|---|---|---|---|---|
+| 1 | ✅ draft (`t1_t2_formal_proofs.md` Day 14) | ✅ sketch (`t3_proof_sketch.md` Day 13) | — | ✅ sketch Day 14 |
+| **2 (当前)** | ✅ appendix-ready | ✅ appendix-ready (`t3_formal_proof.md` Day 16) | — | ✅ in `t1_t2_formal_proofs.md` §6 |
+| 3 | paper §5 正文化 | paper §5 正文化 | 🔄 start（Romano 2019 §3 精读） | TV empirics sweep |
+| 4 | — | — | 🔄 oracle lemma | ✅ done |
+| 5–6 | — | — | 🔄 main proof + polish | — |
+| 7 | — | — | done 或降级 future work | — |
 
-总计 8 个月理论工作（可与实验并行）。
+**注**: 原 roadmap 把 T3.b 视作 crown jewel + 8 月路径。Day 16 发现 T3.b 有限样本形式可用简单 bin-reassignment 论证 (§7 of `t3_formal_proof.md`)，不必等 T3.a asymptotic — 提前完成。剩余 T3.a asymptotic 是 "锦上添花"，不是 blocker。
 
 ---
 
-## 证明依赖图
+## 证明依赖图（Day 16 刷新）
 
 ```
          T1 (marginal CP)
-         /       |
-        /        |
-  T2 (class-cond)  T4 (chrom shift)
-        \
-         \
-       T3.a (local, oracle σ)
-          \
-           \
-          T3.b (local, realistic σ)
+         /       \
+        T2       T4 (chrom shift, Barber 2023 Thm 2)
+        |
+        |
+        T3 (bin-cond, exact under A2-cell)     ◀── main novelty headline
+      /   \
+  T3' (robust,   T3-loc (feature-ball via σ̂ Lipschitz)
+   A1 only)      |
+                 |
+               T3.b (σ̂ perturbation)
+                 |
+                 |
+              T3.a (local asymptotic r→0, future work)
 ```
 
-T3.b 依赖 T3.a（直接扩展）。T3.a 实务上不依赖 T2，但行文上应放在 T2 后面。T4 与 T3 并行独立。
+T3 是 headline；T3' / T3-loc / T3.b 是 reviewer-proofing；T3.a 是延伸但非必需。
 
 ---
 
-## 和 NeurIPS 主会 bar 的对应
+## 和 NeurIPS 主会 bar 的对应（Day 16 更新）
 
-| Theorem | 对应 reviewer 问题 | 充分性 |
+| Theorem set | 对应 reviewer 问题 | 充分性 |
 |---|---|---|
-| T1 only | "你保证了 coverage 吗？" | 不够 — reviewer 会说"这是 standard result" |
-| T1 + T2 | "class imbalance 怎么办？" | 勉强 — 但这是 Vovk 2003 的已知结果 |
-| T1 + T2 + T4 | "分布偏移怎么办？" | 仍不够 — Barber 2023 已经做过 |
-| **T1 + T2 + T3.a + T4** | 充分 | T3.a 是 **novel contribution** |
-| **T1 + T2 + T3.a + T3.b + T4** | strong accept 候选 | T3.b 是 **novelty + practical** |
+| T1 only | "你保证了 coverage 吗？" | 不够 — standard result |
+| T1 + T2 | "class imbalance 怎么办？" | 勉强 — Vovk 2003 已知 |
+| T1 + T2 + T4 | "分布偏移怎么办？" | 仍不够 — Barber 2023 已做 |
+| T1 + T2 + T4 + **T3** | "local coverage 呢？" | 达 novelty threshold — 有限样本 bin-conditional 是 new |
+| T1 + T2 + T4 + **T3 + T3' + T3-loc + T3.b** (当前) | "σ̂ 学错怎么办？feature space？A2 违反？" | **NeurIPS main bar 够** — 三个 reviewer 问题全部 covered |
+| + T3.a asymptotic | "pointwise limit 呢？" | strong accept 候选 |
 
-结论：**T3 必须做到 a.（b. 能做就做）**。T3 不做 = 降级投 NeurIPS D&B。
+**结论（Day 16 更新）**: **T1 + T2 + T4 + T3 + T3' + T3-loc + T3.b 已全部 appendix-ready**。NeurIPS 主会理论 bar 已达。T3.a 是延伸工作，不再是 blocker。

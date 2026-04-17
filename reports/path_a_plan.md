@@ -170,7 +170,7 @@ Day 11+ 新增：
 NeurIPS 2027 accept 的**必要条件**：
 - [x] T1 marginal + T2 class-cond appendix-ready 证明（`theory/t1_t2_formal_proofs.md`, Day 14）
 - [x] T3 local coverage sketch + bin-conditional bound $1/(n_{kb}+1)$（`theory/t3_proof_sketch.md`, Day 13）
-- [ ] T3 完整证明（含 A2 定量弱化 + feature-space 转译）
+- [x] **T3 完整证明 appendix-ready**（`theory/t3_formal_proof.md`, Day 16）— 包括 T3 exact（A1'+A2-cell）、T3' robust（A1 only, Barber 2023 per-cell，no factor of 2）、T3-loc feature-ball（σ̂ $L$-Lipschitz + A3-loc）、T3.b σ̂ perturbation（bin-reassignment mass $\leq 2\eta\bar\sigma/\Delta$）
 - [x] **Heteroscedastic conformal 在 TraitGym Mendelian 上 AUPRC = 0.902**（trait-LOO, Day 14）
 - [x] **σ̂-bin gap 达 finite-sample floor 0.002–0.004**（trait-LOO, Day 14）
 - [x] **Chrom-LOO σ̂-bin gap 0.020**（Complex, Day 12）
@@ -186,8 +186,8 @@ NeurIPS 2027 accept 的**必要条件**：
 - 若 T3 完整证明做不出，T3.a oracle-σ 版本 + 跨三层（chrom/trait/cross-dataset）的强 empirical 构成 "strong evidence" 论据
 - 未达 T3 完整证明 + 三层 empirical = 降级投 NeurIPS D&B / RECOMB / npj AI
 
-**当前进度评估（Day 15）**：以 NeurIPS 2027 bar 衡量
-- 实证：强（**three-axis local coverage gap 全部 ≤ 0.04**，trait-LOO 2×2 matrix 完整，全部达 finite-sample floor）
-- 理论：中等（T1+T2 done，T3 sketch + bound 但尚未 polished）
-- 写作：skeleton 落盘（`papers/neurips2027_pathA/`）
-- 剩余主要工作：T3 完整证明（Month 2–6 of roadmap）+ paper writing（§3/§5/§6 正文化）
+**当前进度评估（Day 16）**：以 NeurIPS 2027 bar 衡量
+- 实证：强（**three-axis local coverage gap 全部 ≤ 0.04**，trait-LOO 2×2 matrix 完整）
+- 理论：**达 NeurIPS main bar**（T1+T2+T1'+T2'+T3+T3'+T3-loc+T3.b+T4 全 appendix-ready；T3.a asymptotic 延伸为 future work 不 blocker — 见 `theory/theorems_roadmap.md` Day 16 刷新）
+- 写作：skeleton 落盘（`papers/neurips2027_pathA/`），§5 theory + App A 对应 T3 四个定理已占位
+- 剩余主要工作：paper 正文化（§3/§4/§6）+ Figure 生成 + 可选 DEGU-full reimpl

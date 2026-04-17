@@ -1,23 +1,43 @@
-% Source: theory/t1_t2_formal_proofs.md (appendix-ready), theory/t3_proof_sketch.md
+% Source: theory/t1_t2_formal_proofs.md (T1, T2, T1', T2', T4), theory/t3_formal_proof.md (T3, T3', T3-loc, T3.b)
 
-\TODO{Port from theory/t1\_t2\_formal\_proofs.md verbatim. T1 + T2 appendix-ready already written on 2026-04-17.}
+\TODO{Direct port of the two theory documents. Both are appendix-ready (Day 14 + Day 16). Estimated appendix length: 5--7 pages for T1/T2/T1'/T2'/T4 + 4--6 pages for T3 family.}
+
+\subsection{Assumptions hierarchy}
+
+\TODO{From \texttt{theory/t1\_t2\_formal\_proofs.md} §2: A1 (chrom-group exchangeability), A1' (chrom-wise i.i.d.), A2 hierarchy (marginal $\subset$ class $\subset$ cell). Add A3-loc (local stationarity) + B1 ($\hat\sigma$ relative error) from \texttt{theory/t3\_formal\_proof.md} §3 and §7.}
 
 \subsection{Proof of Theorem~\ref{thm:t1} (marginal coverage)}
 
-\TODO{Source: theory/t1\_t2\_formal\_proofs.md §4. Standard split-CP under chrom-group exchangeability A1 + score stationarity A2. Details: rank invariance argument; quantile definition; finite-sample excess $1/(n+1)$.}
+\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §4.2.}
 
 \subsection{Proof of Theorem~\ref{thm:t2} (class-conditional coverage)}
 
-\TODO{Source: theory/t1\_t2\_formal\_proofs.md §5. Vovk 2003 Mondrian partitioning on $Y$; apply T1 within each $(Y=k)$ stratum.}
+\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §5.2.}
 
-\subsection{Proof of Theorem~\ref{thm:t3} (bin-conditional coverage)}
+\subsection{Robust fallback: T1'/T2' under A1 only}
 
-\TODO{Source: theory/t3\_proof\_sketch.md. Apply T2 within $\shat$-bin partition; bin-edge stationarity via A2; finite-sample rate $1/(n_{k,b}+1)$. Current status: sketch + bound, needs full polish.}
+\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §6 (Barber 2023 Thm 2 derivation).}
 
-\subsection{Proof of Theorem~\ref{thm:t4} (chrom-shift robustness)}
+\subsection{Proof of Theorem~\ref{thm:t3} (bin-conditional coverage, exact)}
 
-\TODO{Source: theory/t1\_t2\_formal\_proofs.md §6. Barber 2023 Thm 2 applied; swap-one residual formulation; proxy TV vs true swap TV discussion.}
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §4.2. Four steps: cell restriction, A1'+A2-cell gives i.i.d.\ $F_{kb}$, exchangeable CP quantile, finite-sample rank uniform.}
+
+\subsection{Proof of Theorem~\ref{thm:t3prime} (robust)}
+
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §5.2. Barber 2023 Thm 2 with cell-indicator weights; within-cell swap-TV bounded by chrom-TV.}
+
+\subsection{Proof of Theorem~\ref{thm:t3loc} (feature-ball)}
+
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §6.2. Five steps: Lipschitz $\hat\sigma$ → bounded $\hat\sigma$-range, pigeonhole $\leq 2$ bins, A3-loc → within-cell restriction preserves distribution, apply T3 per cell, sandwich.}
+
+\subsection{Proof of Theorem~\ref{thm:t3b} ($\hat\sigma$ perturbation)}
+
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §7.3. Two contributions: bin-reassignment mass $\leq 2\eta\bar\sigma/\Delta$; score-rescaling invariance (quantile preserved under monotone transform).}
+
+\subsection{Proof of Theorem~\ref{thm:t4} (chrom-shift)}
+
+\TODO{Corollary of T1' with weighted residual-swap formulation; see \texttt{theory/t1\_t2\_formal\_proofs.md} §6.2.}
 
 \subsection{Auxiliary lemmas}
 
-\TODO{Rank invariance, empirical quantile concentration, chrom-TV estimation.}
+\TODO{Rank invariance, empirical quantile concentration, bin-boundary mass bound, monotone score rescaling invariance.}

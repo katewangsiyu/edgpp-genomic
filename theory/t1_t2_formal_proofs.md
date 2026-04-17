@@ -282,10 +282,13 @@ Under A1' + A2, CL2 gives exact T1/T2 coverage without the in-sample-bias caveat
 | T2 | A1' + A2-class | per-class $\text{cov} \in [1-\alpha, 1-\alpha+1/(n_k+1)]$ | §5, proven |
 | T1' | A1 only | $\text{cov} \geq 1-\alpha - \bar{\delta}_{\text{TV}}$ | §6, Barber 2023 corollary |
 | T2' | A1 only | per-class $\text{cov} \geq 1-\alpha - \bar{\delta}_{\text{TV}}^{(k)}$ | §6, Barber 2023 corollary |
-| T3 (bin-cond) | A1' + A2-cell | per-cell $\text{cov} \in [1-\alpha, 1-\alpha+1/(n_{kb}+1)]$ | `t3_proof_sketch.md`, same machinery |
+| T3 (bin-cond, exact) | A1' + A2-cell | per-cell $\text{cov} \in [1-\alpha, 1-\alpha+1/(n_{kb}+1)]$ | `t3_formal_proof.md` §4, same machinery |
+| T3' (bin-cond, robust) | A1 only | per-cell $\text{cov} \geq 1-\alpha - \bar\delta_{\text{TV}}^{(k,b)}$ | `t3_formal_proof.md` §5, Barber 2023 Thm 2 per-cell |
+| T3-loc (feature-ball) | A1' + A2-cell + A3-loc + σ̂ $L$-Lipschitz | $|\text{cov}(B_\ell(x_0, r)) - (1-\alpha)| \leq 1/(n_{\min}(x_0,r)+1)$, for $r < \Delta/(2L)$ | `t3_formal_proof.md` §6 |
+| T3.b (σ̂ perturbation) | A1' + A2-cell + B1 ($\|\hat\sigma - \sigma^\star\|_\infty/\inf\sigma^\star \leq \eta$) | coverage shift $\leq 2\eta\bar\sigma/\Delta + 1/(n_{\min}+1)$ | `t3_formal_proof.md` §7 |
 | T4 | A1 | coverage-gap $\leq \bar{\delta}_{\text{TV}}$ across chrom shift | direct from §6 |
 
-**For NeurIPS main (Path A) reviewer-facing claim**: T1 + T2 are prerequisite; T3 is the novelty. The T1/T2 proofs in this document set up the machinery and explicitly handle the chrom-LOO-specific "no calibration data from test chrom" issue (via A2 and Barber 2023 TV bound). T1' and T2' are our honest robustness statements — they directly tie empirical per-chrom cov-gap observations to a theoretically bounded quantity.
+**For NeurIPS main (Path A) reviewer-facing claim**: T1 + T2 are prerequisite; T3 is the novelty. The T1/T2 proofs in this document set up the machinery and explicitly handle the chrom-LOO-specific "no calibration data from test chrom" issue (via A2 and Barber 2023 TV bound). T1' and T2' are our honest robustness statements — they directly tie empirical per-chrom cov-gap observations to a theoretically bounded quantity. The T3-family (T3 / T3' / T3-loc / T3.b) extends this machinery to bin-conditional, robust, feature-local, and σ̂-perturbation settings — fully appendix-ready in `t3_formal_proof.md` (Day 16).
 
 **For D&B backup paper (Day 10 deliverable)**: T2 (class-conditional) is the main theoretical content, directly justifying why Day 10's class-conditional conformal fixes the pathogenic-coverage collapse of homoscedastic. This is ~1.5 pages of appendix.
 
