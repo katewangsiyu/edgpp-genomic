@@ -1,43 +1,81 @@
-% Source: theory/formulation_v0.md §1-2
-
-\TODO{Polish from formulation_v0.md §1.1-1.4 (data + A1 + aggregator + $\shat$ head) and §2.1-2.3 (score + Mondrian + prediction set).}
+% Source: theory/formulation_v0.md §1-2, theory/t1_t2_formal_proofs.md §1-3
+% Target length: ~1 page main text.
 
 \subsection{Setup}
 \label{sec:formulation:setup}
 
-Let $X \in \X \subseteq \mathbb{R}^d$ denote a variant feature vector, $Y \in \{0, 1\}$ its pathogenic label, and $C \in \mathcal{C} = \{1, \ldots, 22, X\}$ its chromosome. We observe $\D = \{(X_i, Y_i, C_i)\}_{i=1}^n$. TraitGym's chrom-LOO protocol fixes a test chromosome $c^\star$ and uses $\D^{(-c^\star)}$ for train + calibration.
+Let $X \in \X \subseteq \mathbb{R}^d$ denote a variant feature vector, $Y \in \{0, 1\}$ its pathogenic label, and $C \in \mathcal{C} = \{1, \ldots, 22, X\}$ its chromosome. We observe $\D = \{(X_i, Y_i, C_i)\}_{i=1}^n$. We adopt TraitGym's \citep{benegas2025traitgym} chrom-LOO evaluation: for each test chromosome $c^\star \in \mathcal{C}$, set $\D^{(-c^\star)} = \{i : C_i \neq c^\star\}$ for train~+~calibration and $\D^{(c^\star)} = \{i : C_i = c^\star\}$ for test. The benchmark's primary metric is AUPRC weighted by test-chromosome size.
 
-\begin{assumption}[Chrom-group exchangeability]
+\paragraph{Exchangeability.} We anchor our analysis on a triple of structured exchangeability assumptions, of increasing strength:
+
+\begin{assumption}[A1 Chrom-group exchangeability]
 \label{ass:A1}
-Conditional on $C = c$, the samples $\{(X_i, Y_i) : C_i = c\}$ are exchangeable; no assumption is made across chromosomes.
+Conditional on $C = c$, $\{(X_i, Y_i) : C_i = c\}$ are exchangeable with chrom-specific law $P_c$. Different chromosomes are mutually independent.
 \end{assumption}
 
-\begin{assumption}[Score stationarity across folds]
-\label{ass:A2}
-The trained score function $s(\cdot, \cdot; \phat, \shat)$ is invariant to the held-out chrom rotation within the training fold (proof-level detail; empirically verified via KS test on per-chrom score distributions, Day 13).
+\begin{assumption}[A1' Chrom-wise i.i.d.]
+\label{ass:A1prime}
+Conditional on $C = c$, $\{(X_i, Y_i) : C_i = c\}$ are i.i.d.\ $P_c$. Strict strengthening of \ref{ass:A1}.
 \end{assumption}
+
+\begin{assumption}[A2 Score stationarity across chromosomes]
+\label{ass:A2}
+The score law is chrom-invariant at some granularity: A2-marginal, A2-class (conditional on $Y=k$), or A2-cell (conditional on $Y=k$ and $\hat\sigma$-bin membership $b(X) = b$). Hierarchy: $\text{A2-cell} \Rightarrow \text{A2-class} \Rightarrow \text{A2-marginal}$.
+\end{assumption}
+
+\ref{ass:A1} is load-bearing (empirical chrom-LOO protocol). \ref{ass:A1prime} and \ref{ass:A2} enable finite-sample \emph{exact} coverage; under \ref{ass:A1} alone we obtain \emph{robust} coverage with a chromosome total-variation gap (§\ref{sec:theory}). Empirically, \ref{ass:A2} holds approximately: our within-cell KS audit (155 tests, App.~\ref{app:data}) shows $12.3\%$ rejection at $p<0.05$, mildly elevated from the $5\%$ null.
 
 \subsection{Base aggregator and heteroscedastic head}
 \label{sec:formulation:heads}
 
-$\phat: \X \to [0, 1]$ is a gradient-boosted probabilistic classifier. $\shat: \X \to \mathbb{R}_+$ is a second regressor trained on chrom-LOO residuals $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ with Gaussian log-likelihood objective (Nix-Weigend / DEGU's hetero baseline).
+\paragraph{Aggregator $\phat$.}
+A probabilistic classifier $\phat : \X \to [0, 1]$ fit on $\D^{(-c^\star)}$. In experiments we use \textit{HistGradientBoostingClassifier} (depth 2, 100 iters, class-balanced), which is both an ablation variant of TraitGym's LogReg baseline and the current SOTA aggregator on Mendelian (§\ref{sec:experiments}).
 
-\subsection{Nonconformity score and prediction set}
+\paragraph{Heteroscedastic reliability head $\shat$.}
+A second regressor $\shat : \X \to \mathbb{R}_{+}$ predicting the expected chrom-LOO residual magnitude:
+\begin{equation}
+\label{eq:sigma_target}
+\shat(x) \;\approx\; \sqrt{\mathbb{E}\bigl[(Y - \phat^{(-C)}(X))^2 \,\big|\, X = x\bigr]}.
+\end{equation}
+We train $\shat$ on residual targets $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ with a Gaussian negative log-likelihood objective:
+\begin{equation}
+\label{eq:gll}
+\mathcal{L}_{\text{GLL}}(\shat) = \sum_{i \in \D^{(-c^\star)}} \left[ \frac{r_i^2}{2 \shat(X_i)^2} + \log \shat(X_i) \right] + \lambda \|\theta\|^2,
+\end{equation}
+matching DEGU's heteroscedastic baseline \citep{zhou2026degu} so that the $\shat$ head is apples-to-apples with prior art. We use the same GBM backbone for $\shat$ and $\phat$.
+
+\subsection{Nonconformity score and Mondrian prediction set}
 \label{sec:formulation:score}
 
-We define the feature-dependent score
+The \emph{feature-dependent} nonconformity score is
 \begin{equation}
 \label{eq:score}
-s(x, y) := \frac{|y - \phat(x)|}{\shat(x) + \epsilon}, \qquad \epsilon = 10^{-6}.
+s(x, y) \;:=\; \frac{|y - \phat(x)|}{\shat(x) + \epsilon}, \qquad \epsilon = 10^{-6}.
 \end{equation}
+This is a binary-classification analog of CQR \citep{romano2019cqr}: large $\shat(x)$ yields a more permissive threshold, shrinking the effective radius in high-confidence regions.
 
-For each class $k \in \{0, 1\}$ and $\shat$-bin $b \in \{1, \ldots, K\}$, the Mondrian threshold is
-\[
-\qhat_{k,b} = \mathrm{Quantile}\bigl(S_{k,b}, \lceil (n_{k,b} + 1)(1 - \alpha) \rceil / n_{k,b}\bigr),
-\]
-where $S_{k,b}$ collects calibration scores in the $(k, b)$ cell. The prediction set is
+\paragraph{Mondrian-$(y \times \shat\text{-bin})$ calibration.}
+Fix $K \in \mathbb{N}$ and define $K$ $\shat$-bins by the calibration-fold quantile edges $e_0 < \cdots < e_K$ with $B_b = (e_{b-1}, e_b]$. Let $b(x)$ be the bin index of $x$. For each cell $(k, b)$ collect $\mathcal{I}_{kb}^{(-c^\star)} = \{i \in \D^{(-c^\star)} : Y_i = k,\ \shat(X_i) \in B_b\}$ of size $n_{kb}$, compute the per-cell threshold
+\begin{equation}
+\label{eq:qhat}
+\qhat_{k, b} \;=\; \mathrm{Quantile}\!\left(\{s(X_i, k) : i \in \mathcal{I}_{kb}^{(-c^\star)}\},\; \frac{\lceil (n_{kb}+1)(1-\alpha) \rceil}{n_{kb}}\right),
+\end{equation}
+and predict
 \begin{equation}
 \label{eq:pset}
-\pset(x) = \bigl\{k \in \{0, 1\} : s(x, k) \leq \qhat_{k, b(x)}\bigr\},
+\pset(x) \;=\; \bigl\{k \in \{0, 1\} : s(x, k) \leq \qhat_{k, b(x)}\bigr\}.
 \end{equation}
-with $b(x)$ the $\shat$-bin index of $x$ under the calibration-fold bin edges.
+Equivalently, $k \in \pset(x)$ iff $|k - \phat(x)| \leq \qhat_{k, b(x)} \cdot \shat(x)$, so the decision radius scales with local heteroscedasticity.
+
+\paragraph{Comparison to prior scores.}
+Split conformal \citep{vovk2005algorithmic} uses $s = |y - \phat(x)|$, independent of $x$. CQR \citep{romano2019cqr} uses quantile regression, regression-only. DEGU \citep{zhou2026degu} learns $\shat$ but does not fold it into the score. Our score \eqref{eq:score} combines DEGU's $\shat$ machinery with the Mondrian partition of \citet{vovk2003mondrian} stratified by $(y, b(x))$; this is the smallest modification that simultaneously delivers class-conditional (T2) and bin-conditional (T3) coverage (§\ref{sec:theory}).
+
+\paragraph{Coverage targets.}
+Given $\alpha \in (0, 1)$, we require:
+\begin{enumerate}
+    \item[(i)]  \emph{Marginal coverage} $P(Y \in \pset(X)) \geq 1 - \alpha$ (T1);
+    \item[(ii)] \emph{Class-conditional coverage} $P(Y \in \pset(X) \mid Y = k) \geq 1 - \alpha$ for each $k$ (T2);
+    \item[(iii)] \emph{$\shat$-bin local coverage} $P(Y \in \pset(X) \mid Y = k, b(X) = b) \approx 1 - \alpha$ for each $(k, b)$ (T3);
+    \item[(iv)] \emph{Chrom-shift robustness}: the (i)–(iii) gaps degrade gracefully under total-variation drift between $P_{c^\star}$ and the calibration mixture (T4).
+\end{enumerate}
+Pointwise conditional coverage $P(Y \in \pset(X) \mid X = x) \geq 1 - \alpha$ is ruled out in finite samples \citep{barber2020limits}; our (iii) is the coarsest practically useful strengthening.

@@ -1,41 +1,75 @@
-% Claim: HCCP is a post-hoc pipeline on top of any probabilistic aggregator.
-% Source: formulation_v0.md §2, scripts/11/12/13/14
+% Source: theory/formulation_v0.md §2, scripts/11-14, reports/phase2_day11_hetero_conformal.md
+% Target length: ~1.5 pages.
 
-\TODO{Draft after §3 polished. Algorithm box + pipeline figure.}
+\subsection{Pipeline overview}
 
-\subsection{Pipeline}
+HCCP is a three-stage post-hoc framework on top of any probabilistic classifier: (1) aggregator $\phat$, (2) heteroscedastic head $\shat$, (3) Mondrian-$(y \times \shat\text{-bin})$ conformal calibration. Each stage is decoupled, so HCCP accepts any $(\phat, \shat)$ pair as a drop-in; we instantiate with gradient boosting for reproducibility and CPU tractability on TraitGym scale ($n \leq 11{,}400$).
 
-HCCP has three components applied in sequence on top of a probabilistic aggregator:
 \begin{enumerate}
-    \item \textbf{Aggregator $\phat$}: any probabilistic classifier with chrom-LOO out-of-fold predictions. We use HistGradientBoostingClassifier (depth 2, 100 iters, class-balanced).
-    \item \textbf{Heteroscedastic head $\shat$}: regressor fit on $(X_i, r_i)$ with $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ under Gaussian NLL (Eq.~\ref{eq:gll}). Same GBM backbone.
-    \item \textbf{Mondrian $(y \times \shat\text{-bin})$ conformal}: partition calibration set into $2 K$ cells, compute per-cell thresholds $\qhat_{k,b}$, predict via Eq.~\ref{eq:pset}.
+    \item \textbf{Aggregator $\phat$.} Trained on $\D^{(-c^\star)}$ with chrom-LOO out-of-fold (OOF) predictions retained for the $\shat$ fit. We use HistGradientBoostingClassifier (depth 2, 100 iters, class-balanced); §\ref{sec:experiments} shows this strictly dominates TraitGym's LogReg aggregator on Mendelian ($+14.9$\,pp AUPRC).
+    \item \textbf{Heteroscedastic head $\shat$.} Trained on OOF residual targets $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ with the Gaussian NLL objective of Eq.~\eqref{eq:gll}. Same GBM backbone. Using OOF residuals (rather than in-sample) avoids an optimistic bias; §\ref{sec:experiments} ablates in-sample alternatives.
+    \item \textbf{Mondrian calibration.} Partition $\D^{(-c^\star)}$ into $2K$ cells via $(Y_i, \mathrm{bin}_K(\shat(X_i)))$. Per-cell thresholds $\qhat_{k,b}$ of Eq.~\eqref{eq:qhat}. Prediction set of Eq.~\eqref{eq:pset}.
 \end{enumerate}
 
+Algorithm~\ref{alg:hccp} states the full pipeline.
+
 \begin{algorithm}[t]
-\caption{HCCP calibration and prediction}
+\caption{HCCP — Heteroscedastic Class-Conditional Conformal Prediction}
 \label{alg:hccp}
 \begin{algorithmic}[1]
-\Require Data $\D$, test chrom $c^\star$, miscoverage $\alpha$, bins $K$
-\State $\D_{\mathrm{tr}} \gets \{i : C_i \neq c^\star\}$;\; $\D_{\mathrm{te}} \gets \{i : C_i = c^\star\}$
-\State Fit $\phat$ on $\D_{\mathrm{tr}}$; produce chrom-LOO OOF predictions within $\D_{\mathrm{tr}}$
-\State Fit $\shat$ on $\D_{\mathrm{tr}}$ targets $\{r_i = |Y_i - \phat^{(-C_i)}(X_i)|\}$
-\State Compute calibration scores $s_i = |Y_i - \phat(X_i)| / \shat(X_i)$ for $i \in \D_{\mathrm{tr}}$
-\State Partition $\D_{\mathrm{tr}}$ by $(Y_i, \mathrm{bin}_K(\shat(X_i)))$; compute $\qhat_{k, b}$ per cell
-\For{$x \in \D_{\mathrm{te}}$}
-    \State $b \gets \mathrm{bin}_K(\shat(x))$;\; output $\pset(x) = \{k : |k - \phat(x)| \leq \qhat_{k,b} \cdot \shat(x)\}$
+\Require Data $\D$, test chrom $c^\star$, miscoverage $\alpha$, bin count $K$
+\State $\D_{\text{tr}} \gets \{i : C_i \neq c^\star\}$, $\D_{\text{te}} \gets \{i : C_i = c^\star\}$
+\State Fit $\phat$ on $\D_{\text{tr}}$; compute chrom-LOO OOF predictions $\{\phat^{(-C_i)}(X_i)\}_{i \in \D_{\text{tr}}}$
+\State Fit $\shat$ on targets $\{|Y_i - \phat^{(-C_i)}(X_i)|\}_{i \in \D_{\text{tr}}}$ under Gaussian NLL (Eq.~\ref{eq:gll})
+\State Compute $\shat$-bin edges $e_0 < \cdots < e_K$ from $\{\shat(X_i)\}_{i \in \D_{\text{tr}}}$ quantiles
+\State Compute calibration scores $s_i = |Y_i - \phat(X_i)| / (\shat(X_i) + \epsilon)$ for $i \in \D_{\text{tr}}$
+\State Partition $\D_{\text{tr}}$ by $(Y_i, \mathrm{bin}_K(\shat(X_i)))$; compute $\qhat_{k, b}$ via Eq.~\eqref{eq:qhat}
+\For{each test point $x \in \D_{\text{te}}$}
+    \State $b \gets \mathrm{bin}_K(\shat(x))$
+    \State $\pset(x) \gets \{k \in \{0,1\} : |k - \phat(x)| \leq \qhat_{k, b} \cdot \shat(x)\}$
 \EndFor
+\State \Return $\{(x, \pset(x)) : x \in \D_{\text{te}}\}$
 \end{algorithmic}
 \end{algorithm}
 
 \subsection{Why Mondrian on $(y \times \shat\text{-bin})$?}
 
-Class-conditional (Mondrian on $y$) alone: matches marginal-class coverage but does not address within-class local heterogeneity. $\shat$-bin alone: adapts locally but can under-cover the minority class. The product partition ensures both, at the cost of requiring $n_{k,b} \geq 1/\alpha$ per cell (satisfied on TraitGym with $K = 5$).
+Pure class-conditional calibration (Mondrian on $y$ alone) \citep{vovk2003mondrian} fixes the imbalance pathology of split conformal — without stratifying by $y$, the minority class (positives, $\approx$10\% on TraitGym) is systematically under-covered — but leaves within-class local coverage unaddressed. Our Day 10 experiments \citep{DayTenReport} confirm this: class-conditional~+~homoscedastic calibration reached $\mathrm{cov}_{|Y=1} = 0.896$ on Complex but the hardest $\shat$-decile had coverage $0.454$. The $\shat$-bin stratification folds heteroscedastic information into the partition itself, restoring near-uniform coverage across $\shat$-bins (§\ref{sec:experiments}).
 
-\subsection{Comparison to prior scores}
+Stratifying by $\shat$-bin alone, without $y$, re-introduces the minority-class pathology because the $\shat$-distribution is dominated by negatives. The product partition $(y \times \shat\text{-bin})$ is the smallest that simultaneously corrects both modes, at the cost of requiring $n_{k,b} \geq \lceil 1/\alpha \rceil$ per cell; this is comfortably satisfied on TraitGym at $K = 5$ (App.~\ref{app:data} sample-size audit).
+
+\subsection{Bin-edge design}
+
+We use equiprobable $\shat$-bins from calibration-fold quantiles, so that $n_{k,b}$ is roughly balanced across $b$ for each fixed $k$. $K = 5$ is our default: larger $K$ shrinks $n_{k,b}$ (widening the T3 finite-sample $1/(n_{k,b}+1)$ gap), while smaller $K$ coarsens the locality guarantee. Day 13 ablations (App.~\ref{app:tables}) sweep $K \in \{3, 5, 10, 20\}$ and show the $K = 5$ choice near-optimal on Complex; Mendelian is less sensitive.
+
+\subsection{Score comparison}
+
+Table~\ref{tab:scores} places our score among common baselines.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Nonconformity scores. Our $s(x, y) = |y - \phat(x)| / \shat(x)$ is the unique combination of DEGU-style $\shat$ \citep{zhou2026degu} and a classification-compatible score; paired with Mondrian-$(y \times \shat\text{-bin})$, it yields bin-conditional coverage (T3).}
+\label{tab:scores}
+\begin{tabular}{lll}
+\toprule
+Score & Uses $\shat(x)$? & Task type \\
+\midrule
+Split conformal \citep{vovk2005algorithmic} & No & Any \\
+CQR \citep{romano2019cqr} & Via $q_\alpha, q_{1-\alpha}$ & Regression only \\
+DEGU + split CP \citep{zhou2026degu} & Reports $\shat$, not in score & Regression (MPRA) \\
+\textbf{HCCP (ours)}, Eq.~\eqref{eq:score} & \textbf{In score + partition} & \textbf{Binary classification} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The score is a binary analog of CQR: the CQR numerator $\max(\hat q_{\alpha/2} - y,\; y - \hat q_{1-\alpha/2})$ becomes $|y - \phat(x)|$ (with $y \in \{0, 1\}$), and the implicit interval half-width $(\hat q_{1-\alpha/2} - \hat q_{\alpha/2})/2$ becomes our learned $\shat(x)$. The Mondrian partition then extends class-conditional Mondrian of \citet{vovk2003mondrian} with a data-dependent second taxon level.
+
+\subsection{Implementation details}
 
 \begin{itemize}
-    \item Split conformal (Vovk 2005): $s = |y - \phat(x)|$, feature-independent.
-    \item CQR (Romano 2019): quantile regression; regression-only.
-    \item DEGU-lite + split: reports $\shat$ but uses split score. \TODO{Full table in §\ref{sec:experiments}.}
+    \item \textbf{Chrom-LOO OOF} for $\phat$ uses the 22+X chrom fold rotation natively (not $k$-fold); this is exact for the residual target in Eq.~\eqref{eq:gll}.
+    \item \textbf{$\epsilon = 10^{-6}$} in Eq.~\eqref{eq:score} prevents division issues when $\shat \to 0$; sensitivity analysis in App.~\ref{app:tables} shows results invariant for $\epsilon \in [10^{-8}, 10^{-4}]$.
+    \item \textbf{Bin-edge perturbation} when recomputed from the full dataset (not just $\D^{(-c^\star)}$) causes a coverage shift $\leq K/(n+1) \approx 10^{-3}$ in our regime (App.~\ref{app:proofs}, T3 Remark §2.1).
+    \item \textbf{Small cells ($n_{k,b} < 5$)}: we fall back to the pooled class-conditional threshold $\qhat_k$ of T2. This fallback never triggers on TraitGym at $K \leq 10$.
 \end{itemize}
