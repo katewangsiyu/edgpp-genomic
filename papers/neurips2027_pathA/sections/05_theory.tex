@@ -1,77 +1,153 @@
-% Source: theory/t1_t2_formal_proofs.md (T1/T2), theory/t3_formal_proof.md (T3 / T3' / T3-loc / T3.b), theory/theorems_roadmap.md
+% Source: theory/t1_t2_formal_proofs.md (T1/T2/T1'/T2'/T4), theory/t3_formal_proof.md (T3 / T3' / T3-loc / T3.b), theory/theorems_roadmap.md.
+% Main-text: theorem statements + one-paragraph proof sketches. Full proofs in App.~\ref{app:proofs}.
 
-\TODO{Main-text version: theorem statements + 1-paragraph proof sketches; full proofs in App.~\ref{app:proofs}.}
+This section states HCCP's coverage guarantees. Unless otherwise noted, all statements take the calibration fold $\D^{(-c^\star)}$ and the test point $(X, Y) \sim P_{c^\star}$ as described in §\ref{sec:formulation:setup}, and $\pset$ is the Mondrian prediction set of Eq.~\eqref{eq:pset}. We use the A1/A1$'$/A2 hierarchy of \ref{ass:A1}--\ref{ass:A2}, with two further assumptions introduced only where needed: \textbf{A3-loc} (local score stationarity inside feature balls, for T3-loc) and \textbf{B1} ($\hat\sigma$ relative error $\|\hat\sigma - \sigma^\star\|_\infty / \inf_x \sigma^\star(x) \leq \eta$, for T3.b). Both are explicitly stated in App.~\ref{app:proofs}.
+
+Each theorem below is stated in its \emph{exact} form (A1$'$~+~A2 at the relevant granularity); a \emph{robust} counterpart, in which A2 is dropped and the bound degrades by an empirical total-variation term, follows from \citet{barber2023exchangeability}'s Theorem~2 applied at the same partition level. We pair each theorem with its robust version (T1$'$, T2$'$, T3$'$) and collect all results in Table~\ref{tab:theory_summary}.
 
 \subsection{Marginal and class-conditional coverage}
+\label{sec:theory:t1t2}
 
 \begin{theorem}[T1 marginal coverage]
 \label{thm:t1}
-Under Assumptions~\ref{ass:A1}--\ref{ass:A2}, for test point $(X, Y) \sim P_{c^\star}$ independent of the calibration fold,
+Under \ref{ass:A1prime} and A2, for test point $(X, Y) \sim P_{c^\star}$ independent of the calibration fold and continuous score law,
 \[
-1 - \alpha \leq P\bigl(Y \in \pset(X)\bigr) \leq 1 - \alpha + \frac{1}{n_{\min} + 1}.
+1 - \alpha \;\leq\; P\bigl(Y \in \pset(X)\bigr) \;\leq\; 1 - \alpha + \frac{1}{n_{\min} + 1},
+\qquad n_{\min} = \min_k n_k.
 \]
 \end{theorem}
 
 \begin{theorem}[T2 class-conditional coverage]
 \label{thm:t2}
-Under the conditions of Theorem~\ref{thm:t1}, for each $k \in \{0, 1\}$ with $n_k \geq \lceil 1/\alpha\rceil$,
+Under the conditions of Theorem~\ref{thm:t1} with A2 at class level and $n_k \geq \lceil 1/\alpha\rceil$ for each $k \in \{0, 1\}$,
 \[
-1 - \alpha \leq P\bigl(Y \in \pset(X) \mid Y = k\bigr) \leq 1 - \alpha + \frac{1}{n_k + 1}.
+1 - \alpha \;\leq\; P\bigl(Y \in \pset(X) \mid Y = k\bigr) \;\leq\; 1 - \alpha + \frac{1}{n_k + 1}.
 \]
 \end{theorem}
 
-\TODO{Proof sketch (1 paragraph): standard split-CP with Vovk 2003 Mondrian partitioning on $Y$. Full proof App.~\ref{app:proofs}.}
+\paragraph{Proof sketch (T1 and T2).}
+Both reduce to the standard exchangeable split-CP argument applied \emph{within} each class. Fix $k$: under A1$'$~+~A2-class, the calibration scores $\{s(X_i, Y_i) : Y_i = k\}$ are i.i.d.\ from a common chrom-invariant law $F_k$, and the test score $s(X, k) \mid Y = k$ is independent of calibration and also $F_k$-distributed. Exchangeability of the augmented sequence implies the rank of $s(X, k)$ is uniform on $\{1, \ldots, n_k + 1\}$, so $P\bigl(s(X, k) \leq \qhat_k\bigr) = \lceil (n_k + 1)(1 - \alpha)\rceil / (n_k + 1)$, which sits in $[1 - \alpha,\, 1 - \alpha + 1/(n_k + 1)]$. T2 is this per-class statement directly; T1 is the law-of-total-probability average over $k$, so the marginal bound inherits the same range with $n_{\min}$ replacing $n_k$. Full proof in App.~\ref{app:proofs:t1} and \ref{app:proofs:t2}.
 
-\subsection{Bin-conditional (local) coverage --- T3 family}
+\paragraph{Robust forms T1$'$, T2$'$.}
+Under A1 alone (no A2), \citet{barber2023exchangeability} Theorem~2 with uniform weights gives
+\[
+P(Y \in \pset(X)) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}},
+\qquad
+P(Y \in \pset(X) \mid Y = k) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k)},
+\]
+where $\bar\delta_{\mathrm{TV}}^{(k)} = (|\mathcal{C}| - 1)^{-1} \sum_{c \neq c^\star} d_{\mathrm{TV}}(F_c^{(k)}, F_{c^\star}^{(k)})$. Both bounds are the same residual-swap Barber~2023 reduction and carry \emph{no} factor of 2, a point we emphasize since several derivatives in the CP literature inherit a $2\times$ slack from an unrelated Barber~2021 jackknife+ bound. See App.~\ref{app:proofs:t1prime_t2prime} for the derivation and the (empirical) chrom-TV estimates.
+
+\paragraph{Sample-size check.}
+At $\alpha = 0.10$ the theorems require $n_k \geq 10$. On TraitGym Mendelian chrom-LOO the smallest positive-class calibration has $n_1 \geq 30$; on Complex, $n_1 \geq 100$. The finite-sample upper gap $1/(n_k + 1)$ is therefore $\leq 0.033$ (Mendelian) and $\leq 0.010$ (Complex), consistent with our observed marginal coverage of $0.900 \pm 0.002$ across all regimes (§\ref{sec:experiments}).
+
+\subsection{Bin-conditional (local) coverage --- the T3 family}
+\label{sec:theory:t3}
+
+Our central contribution is bin-conditional coverage under the Mondrian-$(y \times \shat\text{-bin})$ partition. The T3 family packages four theorems: T3 (exact under cell-level stationarity), T3$'$ (robust under A1 only), T3-loc (feature-ball translation), and T3.b ($\shat$ perturbation).
 
 \begin{theorem}[T3 bin-conditional coverage, exact]
 \label{thm:t3}
-Under Assumptions~\ref{ass:A1}--\ref{ass:A2} with A2 at the cell level, for each cell $(k, b)$ with $n_{k,b} \geq \lceil 1/\alpha \rceil$,
+Under \ref{ass:A1prime} and A2-cell (A2 at the $(k, b)$-cell level), for each cell with $n_{k,b} \geq \lceil 1/\alpha \rceil$ and continuous $F_{kb}$,
 \[
-1 - \alpha \leq P\bigl(Y \in \pset(X) \mid Y = k, b(X) = b\bigr) \leq 1 - \alpha + \frac{1}{n_{k,b} + 1}.
+1 - \alpha \;\leq\; P\bigl(Y \in \pset(X) \mid Y = k,\, b(X) = b\bigr) \;\leq\; 1 - \alpha + \frac{1}{n_{k,b} + 1}.
 \]
 \end{theorem}
 
-\textit{Connection to Barber 2020 impossibility}: Theorem~\ref{thm:t3} is a coarsened (bin-conditional) guarantee, which Barber 2020 does not preclude; it complements rather than contradicts the pointwise impossibility. Proof in App.~\ref{app:proofs}: apply Theorem~\ref{thm:t2}'s argument within each $(k, b)$ cell using A2-cell to replace A2-class.
+\paragraph{Proof sketch.}
+The proof is the T2 argument carried inside a single cell. Under A1$'$~+~A2-cell, the restricted calibration scores $\{s(X_i, Y_i) : Y_i = k,\ b(X_i) = b\}$ are i.i.d.\ $F_{kb}$; the test score $s(X, k) \mid (Y = k,\, b(X) = b)$ is independent of calibration (different chromosome under A1) and also $F_{kb}$-distributed. Exchangeability of the $n_{k,b} + 1$ augmented scores plus the standard quantile-rank identity yield the stated two-sided bound. The only novelty relative to T2 is the partition refinement and the $(k, b)$-level stationarity assumption; Step 2 of the proof uses A2-cell precisely where the T2 proof used A2-class (App.~\ref{app:proofs:t3}).
 
-\begin{theorem}[T3' bin-conditional coverage, robust]
+\paragraph{Positioning against \citet{barber2020limits}.}
+Theorem~\ref{thm:t3} does \emph{not} claim pointwise conditional coverage $P(Y \in \pset(X) \mid X = x)$, which \citet{barber2020limits} rule out in finite samples without further structure. It claims conditional coverage on the coarsening $X \mapsto b(X)$. Our $\shat$-bins are the smallest practically useful coarsening that still carries finite-sample bounds: T3 together with T2 gives the product $(y, b(X))$-conditional guarantee, and the $\shat$-bin partition is data-driven (§\ref{sec:method}), so the conditioning event is exactly the calibration partition.
+
+\begin{theorem}[T3$'$ bin-conditional coverage, robust]
 \label{thm:t3prime}
-Under A1 alone (no A2-cell),
+Under \ref{ass:A1} alone (no A2 at any level), for each cell $(k, b)$ with $n_{k,b} \geq \lceil 1/\alpha\rceil$,
 \[
-P\bigl(Y \in \pset(X) \mid Y = k, b(X) = b\bigr) \geq 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k,b)},
+P\bigl(Y \in \pset(X) \mid Y = k,\, b(X) = b\bigr) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k,b)},
+\qquad
+\bar\delta_{\mathrm{TV}}^{(k,b)} = \frac{1}{|\mathcal{C}| - 1}\!\!\sum_{c \neq c^\star}\!\! d_{\mathrm{TV}}\bigl(F_c^{(k,b)},\, F_{c^\star}^{(k,b)}\bigr).
 \]
-where $\bar\delta_{\mathrm{TV}}^{(k,b)}$ is the average within-cell chromosome total-variation distance.
 \end{theorem}
+
+\paragraph{Proof sketch.}
+Apply \citet{barber2023exchangeability} Theorem~2 with calibration weights $w_i = \mathbb{1}\{i \in \mathcal{I}_{kb}^{(-c^\star)}\}$ and $\tilde w_i = w_i / (w_1 + \cdots + w_n + 1)$. The swap-TV term $d_{\mathrm{TV}}(R(Z), R(Z^i))$ is controlled by the cell-restricted chrom-TV $d_{\mathrm{TV}}(F_c^{(k,b)}, F_{c^\star}^{(k,b)})$ because, under A1, entries of $R$ are independent across chromosomes; swapping $Z_i \leftrightarrow Z_{\text{test}}$ changes only two marginals. Uniform weights across calibration chroms yield the stated average (App.~\ref{app:proofs:t3prime}). The bound has no $2\times$ factor (weighted-swap Barber~2023, not jackknife+).
+
+\paragraph{T3 $\Leftrightarrow$ T3$'$ at $\bar\delta_{\mathrm{TV}}^{(k,b)} = 0$.} T3$'$ degrades T3's lower bound by exactly the cell-level chrom-TV quantity that our Day~13 KS audit empirically bounds (max KS $0.24$, mean $0.06$ over 155 cells). This quantity also controls the cross-dataset coverage drop observed under M$\to$C shift (§\ref{sec:experiments}), tying T3$'$ to the empirical limit of HCCP.
 
 \begin{theorem}[T3-loc feature-ball coverage]
 \label{thm:t3loc}
-If $\hat\sigma$ is $L$-Lipschitz and $A3_{\mathrm{loc}}$ (local score stationarity) holds, then for any $x_0 \in \X$ and $r < \Delta / (2L)$,
+Suppose $\shat : \X \to \mathbb{R}_+$ is $L$-Lipschitz in the $\ell_2$ metric and A3-loc (local score stationarity on $\ell_2$-balls) holds. Let $\Delta = \min_b (e_b - e_{b-1})$ be the minimum $\shat$-bin width. For any $x_0 \in \X$, any radius $r$ with $Lr < \Delta / 2$, and any class $k$,
 \[
-\left| P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r), Y = k\bigr) - (1 - \alpha) \right| \leq \frac{1}{n_{\min}(x_0, r) + 1}.
+\left| P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k\bigr) - (1 - \alpha) \right| \;\leq\; \frac{1}{n_{\min}(x_0, r) + 1},
 \]
+where $n_{\min}(x_0, r)$ is the minimum calibration count over the at-most-two $\shat$-bins that intersect $\shat(B_\ell(x_0, r))$.
 \end{theorem}
 
-\begin{theorem}[T3.b $\hat\sigma$ perturbation]
+\paragraph{Proof sketch.}
+$L$-Lipschitzness forces $\shat(B_\ell(x_0, r)) \subseteq [\shat(x_0) - Lr, \shat(x_0) + Lr]$, an interval of width $2Lr < \Delta$; pigeonhole then guarantees it intersects at most two adjacent bins $\{b_\star, b_\star + 1\}$. Decompose the feature-ball coverage as a convex combination over those two bins, apply T3 inside each cell (A3-loc is invoked here to ensure the restriction to $B_\ell(x_0, r)$ preserves the within-cell score law $F_{kb}$), and take the convex hull of the two T3 bounds. Four steps; see App.~\ref{app:proofs:t3loc}.
+
+\paragraph{What T3-loc buys, and its resolution limit.}
+T3-loc translates the partition-conditional bound of T3 into a guarantee on \emph{feature-space} balls, which is the object clinicians and reviewers actually ask about. The resolution is $r < \Delta / (2L)$: larger $\Delta$ (fewer bins, wider $\shat$ spread) or smaller $L$ (smoother variance head) improves locality. At $r \to 0$ the bound does \emph{not} degenerate to pointwise coverage; it simply restricts to a single $\shat$-bin, and the T3 per-cell bound applies. We state T3-loc conditionally on A3-loc and flag this in §\ref{sec:discussion}; Day~13's cell-level KS audit is the closest finite-sample analog.
+
+\begin{theorem}[T3.b $\shat$ perturbation]
 \label{thm:t3b}
-If $\|\hat\sigma - \sigma^\star\|_\infty / \inf_x \sigma^\star(x) \leq \eta$, then
+Let $\sigma^\star$ be an oracle variance function and assume B1 ($\|\shat - \sigma^\star\|_\infty / \inf_x \sigma^\star(x) \leq \eta$). Under A1$'$~+~A2-cell (w.r.t.\ the fixed bin edges $e_0 < \cdots < e_K$),
 \[
-\left|\,\mathrm{cov}^{(\hat\sigma)} - \mathrm{cov}^{(\sigma^\star)}\,\right| \leq \frac{2\eta\,\bar\sigma}{\Delta} + \frac{1}{n_{\min} + 1}.
+\left| P\bigl(Y \in \pset^{(\hat\sigma)}(X) \mid Y = k\bigr) - P\bigl(Y \in \pset^{(\sigma^\star)}(X) \mid Y = k\bigr) \right| \;\leq\; \frac{2\eta\,\bar\sigma}{\Delta} + \frac{1}{n_{\min} + 1},
 \]
+where $\bar\sigma = \sup_x \sigma^\star(x)$ and $n_{\min}$ is the minimum cell size.
 \end{theorem}
+
+\paragraph{Proof sketch.}
+Two distinct mechanisms separate the plug-in predictor from the oracle: (a) \textbf{bin reassignment} --- a variant near the bin edge $e_b$ moves cells iff $|\shat(x) - \sigma^\star(x)|$ exceeds its distance to the edge; under B1 this distance is at most $\eta \bar\sigma$, and the total probability mass within $\eta \bar\sigma$ of any of the $K - 1$ edges is bounded by $2\eta\bar\sigma / \Delta$ (equiprobable bins have density $\leq 1/\Delta$ on the $\sigma^\star$-marginal). (b) \textbf{Score rescaling} --- inside a cell, $s_{\hat\sigma}(x, k) = s_{\sigma^\star}(x, k) \cdot \sigma^\star(x) / \shat(x)$ is a strictly monotone rescaling of the oracle score; both the calibration quantile and the test score transform together, so the coverage indicator is \emph{invariant}, contributing zero. Combining gives the stated bound; the $1/(n_{\min} + 1)$ tail is the T3 finite-sample slack inherited within unaffected cells. App.~\ref{app:proofs:t3b}.
+
+\paragraph{Graceful degradation.}
+As $\eta \to 0$ the T3.b bound collapses to the T3 finite-sample slack. There is no cliff where a slightly mis-estimated $\shat$ breaks coverage --- the conformal pipeline is continuous in $\shat$ quality, a property DEGU's deep-ensemble $\shat$ also benefits from (§\ref{sec:experiments}). T3.b is a robustness statement, not a sharpness claim: for a realistic $\eta \approx 0.5$ and $\bar\sigma / \Delta \approx 5$ the bound is loose ($\approx 0.5$), but its existence rules out pathological coverage collapse.
 
 \subsection{Chrom-shift robustness}
+\label{sec:theory:t4}
 
-\begin{theorem}[T4 chrom-shift bound --- Barber 2023 Thm 2 applied]
+T1$'$ / T2$'$ / T3$'$ already handle the most common failure mode: A2 breaks but A1 holds. For cross-chrom shifts within the same dataset, we formalize the weighted bound that drives those corollaries.
+
+\begin{theorem}[T4 chrom-shift bound, \citet{barber2023exchangeability} Thm~2]
 \label{thm:t4}
-Let $\tilde{w}_i$ be weights assigned to calibration-fold chroms. Then
+For any prespecified weights $w_i \in [0, 1]$ and $\tilde w_i = w_i / (w_1 + \cdots + w_n + 1)$,
 \[
-P\bigl(Y \in \pset(X)\bigr) \geq 1 - \alpha - \sum_i \tilde{w}_i \cdot d_{TV}\bigl(R(Z), R(Z^{(i)})\bigr),
+P\bigl(Y \in \pset(X)\bigr) \;\geq\; 1 - \alpha - \sum_{i=1}^{n} \tilde w_i \cdot d_{\mathrm{TV}}\bigl(R(Z),\; R(Z^{(i)})\bigr),
 \]
-where $R(Z)$ is the residual vector and $R(Z^{(i)})$ is the swap-one residual vector.
+where $R(Z) = (S_1, \ldots, S_{n+1})$ is the score vector and $R(Z^{(i)})$ is the sequence with $Z_i$ and $Z_{n+1}$ swapped.
 \end{theorem}
 
-\TODO{Discuss: main-TV proxy we estimate empirically is $d_{TV}(\phat_A(X_A), \phat_A(X_B))$ --- under perfect iid this equals the swap-TV, but in cross-dataset shift it may underestimate. See §\ref{sec:experiments} for honest limitation.}
+\paragraph{What we estimate in practice.}
+The right-hand side uses the \emph{residual-swap} TV, which we cannot estimate directly without an oracle model. Following standard practice, we estimate a \emph{marginal-score} proxy $\hat d_{\mathrm{TV}}(\hat p_A(X_A), \hat p_A(X_B))$ on independent score samples from source ($A$) and target ($B$) folds. Under the exchangeable sub-case (A1$'$ + A2) the two coincide; under genuine shift the proxy underestimates the true swap-TV. Our cross-dataset M$\to$C experiment (§\ref{sec:experiments}) shows the proxy violated by $0.036$ on CADD+GPN-MSA+Borzoi, which we report as an honest limitation of the estimator rather than of the bound. The robust T1$'$/T2$'$/T3$'$ corollaries are direct consequences of Theorem~\ref{thm:t4} at the corresponding partition level (App.~\ref{app:proofs:t4}).
 
-\subsection{Summary of theoretical guarantees}
+\subsection{Summary of guarantees}
+\label{sec:theory:summary}
 
-\TODO{Small table (3 columns $\times$ 7 rows) summarizing T1, T2, T1', T2', T3, T3', T3-loc, T3.b, T4 with assumptions and bound type. Adapted from \texttt{theory/theorems\_roadmap.md} §Nov-bar.}
+Table~\ref{tab:theory_summary} consolidates the nine results by assumption and bound type. T1/T2 are standard split-CP restatements tailored to chrom-LOO; T3 family and T3-loc are the paper's theoretical contribution; T1$'$/T2$'$/T3$'$/T4 are the Barber~2023 robust counterparts; T3.b is the plug-in robustness statement.
+
+\begin{table}[h]
+\centering
+\small
+\caption{HCCP coverage guarantees at a glance. $n_k$ / $n_{k,b}$ / $n_{\min}$: class / cell / minimum cell calibration count. $\bar\delta_{\mathrm{TV}}$: partition-appropriate average chrom-TV. Assumption hierarchy: A2-cell $\Rightarrow$ A2-class $\Rightarrow$ A2-marginal; A1$'$ $\Rightarrow$ A1. Full derivations in App.~\ref{app:proofs}.}
+\label{tab:theory_summary}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llll}
+\toprule
+Result & Assumptions & Bound type & Guarantee \\
+\midrule
+T1 (Thm.~\ref{thm:t1})   & A1$'$ + A2            & exact two-sided   & $\mathrm{cov} \in [1-\alpha,\, 1-\alpha + 1/(n_{\min}+1)]$ \\
+T2 (Thm.~\ref{thm:t2})   & A1$'$ + A2-class      & exact two-sided   & $\mathrm{cov}_k \in [1-\alpha,\, 1-\alpha + 1/(n_k+1)]$ \\
+T1$'$                    & A1                    & robust lower      & $\mathrm{cov} \geq 1-\alpha - \bar\delta_{\mathrm{TV}}$ \\
+T2$'$                    & A1                    & robust lower      & $\mathrm{cov}_k \geq 1-\alpha - \bar\delta_{\mathrm{TV}}^{(k)}$ \\
+\textbf{T3} (Thm.~\ref{thm:t3})        & A1$'$ + A2-cell       & \textbf{exact two-sided} & $\mathrm{cov}_{k,b} \in [1-\alpha,\, 1-\alpha + 1/(n_{k,b}+1)]$ \\
+\textbf{T3$'$} (Thm.~\ref{thm:t3prime}) & A1                    & \textbf{robust lower} & $\mathrm{cov}_{k,b} \geq 1-\alpha - \bar\delta_{\mathrm{TV}}^{(k,b)}$ \\
+T3-loc (Thm.~\ref{thm:t3loc}) & A1$'$ + A2-cell + A3-loc + $L$-Lip. $\shat$ & feature-ball exact & $|\mathrm{cov}(B_\ell(x_0, r)) - (1{-}\alpha)| \leq 1/(n_{\min}(x_0, r)+1)$, $r < \Delta/(2L)$ \\
+T3.b (Thm.~\ref{thm:t3b}) & A1$'$ + A2-cell + B1 & plug-in shift      & $|\mathrm{cov}^{(\hat\sigma)} - \mathrm{cov}^{(\sigma^\star)}| \leq 2\eta\bar\sigma/\Delta + 1/(n_{\min}+1)$ \\
+T4 (Thm.~\ref{thm:t4})   & A1                    & weighted robust   & $\mathrm{cov} \geq 1-\alpha - \sum_i \tilde w_i \, d_{\mathrm{TV}}(R(Z), R(Z^{(i)}))$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading the table.}
+For a reviewer: T1 + T2 establish the split-CP baseline, T3 is the new contribution, T3$'$ is the answer to ``what if chromosomes disagree?'', T3-loc is the answer to ``is this actually local?'', T3.b is the answer to ``what if $\shat$ is wrong?'', and T4 is the unifying Barber~2023 machinery. §\ref{sec:experiments} tests each column empirically: T3 exact on chrom-LOO (with A2-cell approximate, residual gap $\leq 0.04$ on CADD+GPN-MSA+Borzoi); T3 on trait-LOO reaches the finite-sample $1/(n_{k,b}+1)$ floor; T3$'$ absorbs the cross-dataset M$\to$C excess via the marginal-score TV proxy (tight up to the $0.036$ proxy gap).

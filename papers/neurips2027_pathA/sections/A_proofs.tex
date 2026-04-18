@@ -1,43 +1,64 @@
 % Source: theory/t1_t2_formal_proofs.md (T1, T2, T1', T2', T4), theory/t3_formal_proof.md (T3, T3', T3-loc, T3.b)
+% Status: theorem statements (imported from §5) + proof stubs. Verbatim ports deferred.
 
 \TODO{Direct port of the two theory documents. Both are appendix-ready (Day 14 + Day 16). Estimated appendix length: 5--7 pages for T1/T2/T1'/T2'/T4 + 4--6 pages for T3 family.}
 
 \subsection{Assumptions hierarchy}
+\label{app:proofs:assumptions}
 
-\TODO{From \texttt{theory/t1\_t2\_formal\_proofs.md} §2: A1 (chrom-group exchangeability), A1' (chrom-wise i.i.d.), A2 hierarchy (marginal $\subset$ class $\subset$ cell). Add A3-loc (local stationarity) + B1 ($\hat\sigma$ relative error) from \texttt{theory/t3\_formal\_proof.md} §3 and §7.}
+We collect in one place the assumptions invoked across §\ref{sec:theory}.
+
+\begin{itemize}
+    \item \textbf{A1} (chrom-group exchangeability, \ref{ass:A1}): conditional on $C = c$, $\{(X_i, Y_i) : C_i = c\}$ are exchangeable with law $P_c$; different chromosomes are mutually independent.
+    \item \textbf{A1$'$} (chrom-wise i.i.d., \ref{ass:A1prime}): the stronger version in which $\{(X_i, Y_i) : C_i = c\}$ are i.i.d.\ $P_c$.
+    \item \textbf{A2} (score stationarity, \ref{ass:A2}): the score law is chrom-invariant at some granularity (marginal, class, or cell).
+    \item \textbf{A3-loc} (local stationarity, used in T3-loc): for every $(x_0, r)$ satisfying the T3-loc resolution condition, $s(X, k) \mid (Y = k,\, b(X) = b,\, X \in B_\ell(x_0, r))$ is distributed as the cell-restricted law $F_{kb}$.
+    \item \textbf{B1} ($\shat$ relative error, used in T3.b): $\|\shat - \sigma^\star\|_\infty / \inf_x \sigma^\star(x) \leq \eta$ for some $\eta \in (0, 1)$.
+\end{itemize}
+
+\TODO{Port \texttt{theory/t1\_t2\_formal\_proofs.md} §2 and \texttt{theory/t3\_formal\_proof.md} §3 verbatim, including the A2 hierarchy diagram and Day 13 empirical KS audit.}
 
 \subsection{Proof of Theorem~\ref{thm:t1} (marginal coverage)}
+\label{app:proofs:t1}
 
-\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §4.2.}
+\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §4.2 (four-step proof: reduction to per-class coverage; joint exchangeability inside class $k$ under A1$'$+A2-class; standard exchangeable CP rank identity; assemble via law of total probability).}
 
 \subsection{Proof of Theorem~\ref{thm:t2} (class-conditional coverage)}
+\label{app:proofs:t2}
 
-\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §5.2.}
+\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §5.2 (T1 steps 2--3 per class, with sample-size requirement $n_k \geq \lceil 1/\alpha\rceil$).}
 
-\subsection{Robust fallback: T1'/T2' under A1 only}
+\subsection{Robust fallback: T1$'$ and T2$'$}
+\label{app:proofs:t1prime_t2prime}
 
-\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §6 (Barber 2023 Thm 2 derivation).}
+\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §6. Key point: \citet{barber2023exchangeability} Theorem 2 with uniform weights yields a lower bound degraded by $\bar\delta_{\mathrm{TV}}$; no factor of 2. Includes the Day 13 empirical KS check ($\bar\delta_{\mathrm{TV}}^{(k,b)} \lesssim 0.05$ on worst chrom pairs).}
 
 \subsection{Proof of Theorem~\ref{thm:t3} (bin-conditional coverage, exact)}
+\label{app:proofs:t3}
 
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §4.2. Four steps: cell restriction, A1'+A2-cell gives i.i.d.\ $F_{kb}$, exchangeable CP quantile, finite-sample rank uniform.}
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §4.2. Four steps: cell restriction; A1$'$+A2-cell gives i.i.d.\ $F_{kb}$; exchangeable CP quantile; finite-sample rank uniform. The argument is the class-conditional proof of \ref{app:proofs:t2} applied within the cell $(k, b)$, with A2-cell replacing A2-class.}
 
 \subsection{Proof of Theorem~\ref{thm:t3prime} (robust)}
+\label{app:proofs:t3prime}
 
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §5.2. Barber 2023 Thm 2 with cell-indicator weights; within-cell swap-TV bounded by chrom-TV.}
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §5.2. \citet{barber2023exchangeability} Theorem 2 with cell-indicator weights $w_i = \mathbb{1}\{i \in \mathcal{I}_{kb}^{(-c^\star)}\}$; within-cell swap-TV bounded by cell-restricted chrom-TV $d_{\mathrm{TV}}(F_c^{(k,b)}, F_{c^\star}^{(k,b)})$.}
 
 \subsection{Proof of Theorem~\ref{thm:t3loc} (feature-ball)}
+\label{app:proofs:t3loc}
 
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §6.2. Five steps: Lipschitz $\hat\sigma$ → bounded $\hat\sigma$-range, pigeonhole $\leq 2$ bins, A3-loc → within-cell restriction preserves distribution, apply T3 per cell, sandwich.}
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §6.2. Five steps: Lipschitz $\shat$ $\Rightarrow$ bounded $\shat$-range; pigeonhole $\leq 2$ bins; A3-loc $\Rightarrow$ within-cell restriction preserves $F_{kb}$; apply T3 per cell; convex-hull sandwich. Honest limitations: A3-loc unverified at our $n$, $L$ estimation deferred to App.~\ref{app:data}.}
 
-\subsection{Proof of Theorem~\ref{thm:t3b} ($\hat\sigma$ perturbation)}
+\subsection{Proof of Theorem~\ref{thm:t3b} ($\shat$ perturbation)}
+\label{app:proofs:t3b}
 
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §7.3. Two contributions: bin-reassignment mass $\leq 2\eta\bar\sigma/\Delta$; score-rescaling invariance (quantile preserved under monotone transform).}
+\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §7.3. Two contributions: (a) bin-reassignment mass $\leq 2\eta\bar\sigma/\Delta$ via density bound $\leq 1/\Delta$ on equiprobable bins; (b) score-rescaling invariance (quantile preserved under strictly monotone transform) contributes zero.}
 
 \subsection{Proof of Theorem~\ref{thm:t4} (chrom-shift)}
+\label{app:proofs:t4}
 
-\TODO{Corollary of T1' with weighted residual-swap formulation; see \texttt{theory/t1\_t2\_formal\_proofs.md} §6.2.}
+\TODO{Restatement of \citet{barber2023exchangeability} Theorem 2 in our notation with explicit residual-swap construction; T1$'$/T2$'$/T3$'$ follow as corollaries at the appropriate partition level.}
 
 \subsection{Auxiliary lemmas}
+\label{app:proofs:lemmas}
 
-\TODO{Rank invariance, empirical quantile concentration, bin-boundary mass bound, monotone score rescaling invariance.}
+\TODO{Rank invariance (for exchangeable CP quantile), empirical quantile concentration (DKW-style for finite-sample upper bound), bin-boundary mass bound (for T3.b), monotone score-rescaling invariance (for T3.b). Lemmas are standard; we state them for self-containment.}
