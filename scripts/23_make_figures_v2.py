@@ -109,12 +109,14 @@ def fig2_k_sweep():
         ax.plot(Ks, worst_gap, "s", color=COLORS["degu"], ms=4, alpha=0.5,
                 label="Worst-cell gap", zorder=4)
 
-        # K* and K_CV annotations
+        # K* and K_CV annotations — always place text to the RIGHT with enough margin
         ax.axvline(d["K_cv"], color=color_accent, ls="--", lw=1, alpha=0.8)
+        text_x = max(d["K_cv"] + 2, 5)  # ensure text doesn't overlap y-axis
         ax.annotate(f'$\\hat{{K}}_{{\\mathrm{{CV}}}}={d["K_cv"]}$',
-                    xy=(d["K_cv"], 0), xytext=(d["K_cv"] + 1.5, max(mean_gap) * 0.7),
+                    xy=(d["K_cv"], max(mean_gap) * 0.5),
+                    xytext=(text_x, max(mean_gap) * 0.85),
                     fontsize=7, color=color_accent,
-                    arrowprops=dict(arrowstyle="-", color=color_accent, lw=0.8))
+                    arrowprops=dict(arrowstyle="->", color=color_accent, lw=0.8))
 
         ax.set_xlabel("Bin count $K$")
         ax.set_title(title)
@@ -132,76 +134,77 @@ def fig2_k_sweep():
 
 
 # ================================================================
-# Fig 3: α-sweep calibration curve (CP standard)
+# Fig 3: Why Mondrian? — 3-method σ̂-bin coverage comparison
 # ================================================================
-def fig3_alpha_calibration():
-    fig, axes = plt.subplots(1, 2, figsize=(NEURIPS_DCOL, 2.4))
+def fig3_method_comparison():
+    """The 'money figure': shows homosc/hetero/mondrian per-σ̂-bin coverage.
+    Mondrian column hugs the target line; others don't."""
+    fig, axes = plt.subplots(1, 2, figsize=(NEURIPS_DCOL, 2.5), sharey=True)
 
-    for ax, (dataset_label, hccp_path, degu_path) in zip(axes, [
-        ("Mendelian",
-         "outputs/conformal_hetero/CADD+GPN-MSA+Borzoi_mendelian_abs_mondrian/conformal_hetero_results.json",
-         "outputs/conformal_hetero/DEGU_lite_CADD+GPN-MSA+Borzoi_mendelian_mondrian/conformal_hetero_results.json"),
-        ("Complex",
-         "outputs/conformal_hetero/CADD+GPN-MSA+Borzoi_complex_abs_mondrian/conformal_hetero_results.json",
-         "outputs/conformal_hetero/DEGU_lite_CADD+GPN-MSA+Borzoi_complex_mondrian/conformal_hetero_results.json"),
+    method_info = [
+        ("homosc", "Split CP", COLORS["homosc"], "//"),
+        ("hetero", "Heterosc.", COLORS["split"], ""),
+        ("mondrian", "Mondrian (HCCP)", COLORS["hccp"], ""),
+    ]
+
+    for ax, (dataset, title) in zip(axes, [
+        ("mendelian", "Mendelian"),
+        ("complex", "Complex"),
     ]):
-        # Diagonal (perfect calibration)
-        ax.plot([0, 1], [0, 1], "k-", lw=0.8, alpha=0.3, label="Ideal")
+        path = Path(f"outputs/local_coverage/CADD+GPN-MSA+Borzoi_{dataset}_abs_mondrian/local_coverage_results.json")
+        if not path.exists():
+            continue
+        d = load_json(path)
+        methods = d["per_method"]
 
-        for path_str, label, color, marker in [
-            (hccp_path, "HCCP (ours)", COLORS["hccp"], "o"),
-            (degu_path, "DEGU-lite", COLORS["degu"], "s"),
-        ]:
-            p = Path(path_str)
-            if not p.exists():
+        n_methods = len(method_info)
+        bar_width = 0.25
+
+        for j, (method_key, method_label, color, hatch) in enumerate(method_info):
+            if method_key not in methods:
                 continue
-            d = load_json(p)
+            bins = methods[method_key].get("per_sigma_bin", [])
+            if not bins:
+                continue
 
-            # Extract α-sweep from hetero_class_cond or mondrian
-            for method_key in ["mondrian_y_sigma", "hetero_class_cond"]:
-                if method_key in d and "alpha_sweep" in d[method_key]:
-                    sweep = d[method_key]["alpha_sweep"]
-                    break
-            else:
-                # Fallback: use the multiple-α results if stored at top level
-                # Try to reconstruct from the α-sweep in the results
-                sweep = None
-                for key in d:
-                    if isinstance(d[key], dict) and "alpha_sweep" in d[key]:
-                        sweep = d[key]["alpha_sweep"]
-                        break
+            x = np.arange(len(bins))
+            covs = [b["coverage"] for b in bins]
+            offset = (j - 1) * bar_width
 
-            if sweep:
-                alphas = [s["alpha"] for s in sweep]
-                covs = [s["coverage"] for s in sweep]
-                ax.plot(1 - np.array(alphas), covs, f"{marker}-", color=color,
-                        ms=3.5, lw=1.2, markeredgecolor="white",
-                        markeredgewidth=0.4, label=label)
-            else:
-                # Use the single-alpha data points we have
-                # Collect from homosc_class_cond α sweep
-                for method_key in ["homosc_class_cond", "hetero_class_cond"]:
-                    if method_key not in d:
-                        continue
-                    m = d[method_key]
-                    if "alpha" in m:
-                        ax.plot(1 - m["alpha"], m["coverage"], marker,
-                                color=color, ms=6, markeredgecolor="white",
-                                markeredgewidth=0.5, label=label)
+            ax.bar(x + offset, covs, width=bar_width, color=color, alpha=0.8,
+                   edgecolor="white", lw=0.3, hatch=hatch, label=method_label)
 
-        ax.set_xlabel("Nominal coverage $1{-}\\alpha$")
-        ax.set_title(dataset_label)
-        ax.set_xlim(0.45, 1.02)
-        ax.set_ylim(0.45, 1.02)
-        ax.set_aspect("equal")
-        ax.legend(loc="lower right", framealpha=0.95, edgecolor="none")
+        # Target line and band
+        ax.axhline(0.9, color="black", ls="--", lw=0.8, alpha=0.5)
+        ax.axhspan(0.87, 0.93, color=COLORS["hccp"], alpha=0.04, zorder=0)
 
-    axes[0].set_ylabel("Empirical coverage")
+        # Worst-gap annotations
+        for method_key, method_label, color, _ in method_info:
+            if method_key not in methods:
+                continue
+            bins = methods[method_key].get("per_sigma_bin", [])
+            covs = [b["coverage"] for b in bins]
+            wg = max(abs(c - 0.9) for c in covs) if covs else 0
+            # Only annotate mondrian in box
+            if method_key == "mondrian":
+                ax.text(0.97, 0.03, f"Mondrian gap: {wg:.3f}",
+                        transform=ax.transAxes, fontsize=6.5, color=color,
+                        ha="right", va="bottom", weight="bold",
+                        bbox=dict(boxstyle="round,pad=0.3", facecolor="white",
+                                  edgecolor=color, alpha=0.9, lw=0.8))
+
+        ax.set_xlabel("$\\hat\\sigma$-bin (low → high uncertainty)")
+        ax.set_title(title)
+        ax.set_ylim(0.45, 1.05)
+
+    axes[0].set_ylabel("Coverage")
+    axes[0].legend(loc="lower left", framealpha=0.95, edgecolor="none",
+                   ncol=1, fontsize=7)
     fig.tight_layout(w_pad=2)
-    fig.savefig(OUT / "fig3_alpha_calibration.pdf")
-    fig.savefig(OUT / "fig3_alpha_calibration.png")
+    fig.savefig(OUT / "fig3_method_comparison.pdf")
+    fig.savefig(OUT / "fig3_method_comparison.png")
     plt.close(fig)
-    print("  fig3_alpha_calibration ✓")
+    print("  fig3_method_comparison ✓")
 
 
 # ================================================================
@@ -433,8 +436,12 @@ def fig6_sigma_calibration():
 
         ax.set_xlabel("Predicted $\\hat\\sigma(x)$")
         ax.set_title(dataset_label)
-        ax.set_xlim(-0.005, None)
-        ax.set_ylim(-0.005, None)
+        # Zoom to data range instead of fixed [0,1]
+        x_max = np.percentile(sigma, 99) * 1.15
+        y_max = np.percentile(residual, 99) * 1.15
+        lim = max(x_max, y_max)
+        ax.set_xlim(-0.005, lim)
+        ax.set_ylim(-0.005, lim)
 
     axes[0].set_ylabel("Actual $|y - \\hat{p}(x)|$")
     axes[0].legend(loc="lower right", framealpha=0.95, edgecolor="none")
@@ -449,34 +456,37 @@ def fig6_sigma_calibration():
 # Fig 7: Three-axis OOD summary bar (compact)
 # ================================================================
 def fig7_three_axis_summary():
-    fig, ax = plt.subplots(figsize=(NEURIPS_COL, 2.2))
+    fig, ax = plt.subplots(figsize=(NEURIPS_COL + 0.3, 2.4))
 
-    # Data from experiments
-    data = {
-        "Mendelian": {"Chrom-LOO": 0.077, "Trait-LOO": 0.004, "Cross-dataset\n(C→M)": 0.035},
-        "Complex": {"Chrom-LOO": 0.023, "Trait-LOO": 0.002, "Cross-dataset\n(M→C)": 0.331},
-    }
+    # Data from experiments — use log-scale-friendly layout
+    labels = ["Chrom\nLOO", "Trait\nLOO", "Cross\n(C→M)"]
+    mendelian = [0.077, 0.004, 0.035]
+    complex_v = [0.023, 0.002, 0.331]
 
-    axes_labels = list(data["Mendelian"].keys())
-    x = np.arange(len(axes_labels))
-    w = 0.35
+    x = np.arange(len(labels))
+    w = 0.32
 
-    for i, (ds, color) in enumerate([("Mendelian", COLORS["hccp"]),
-                                      ("Complex", COLORS["theory"])]):
-        vals = list(data[ds].values())
-        bars = ax.bar(x + (i - 0.5) * w, vals, width=w, color=color,
-                      alpha=0.85, edgecolor="white", lw=0.5, label=ds)
+    bars_m = ax.bar(x - w/2, mendelian, width=w, color=COLORS["hccp"],
+                    alpha=0.85, edgecolor="white", lw=0.5, label="Mendelian")
+    bars_c = ax.bar(x + w/2, complex_v, width=w, color=COLORS["theory"],
+                    alpha=0.85, edgecolor="white", lw=0.5, label="Complex")
+
+    for bars, vals in [(bars_m, mendelian), (bars_c, complex_v)]:
         for bar, v in zip(bars, vals):
-            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.005,
-                    f"{v:.3f}", ha="center", va="bottom", fontsize=6)
+            y_pos = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width() / 2,
+                    y_pos + 0.003, f"{v:.3f}",
+                    ha="center", va="bottom", fontsize=6.5, weight="bold")
 
     ax.axhline(0.04, color="black", ls="--", lw=0.8, alpha=0.4)
-    ax.text(2.6, 0.045, "target $\\leq 0.04$", fontsize=6.5, alpha=0.5)
+    ax.text(0.02, 0.043, "target ≤ 0.04", fontsize=6.5, alpha=0.5,
+            transform=ax.get_yaxis_transform())
     ax.set_xticks(x)
-    ax.set_xticklabels(axes_labels, fontsize=7.5)
-    ax.set_ylabel("$\\hat\\sigma$-bin coverage gap")
-    ax.set_ylim(0, 0.38)
-    ax.legend(loc="upper left", framealpha=0.95, edgecolor="none")
+    ax.set_xticklabels(labels, fontsize=7.5)
+    ax.set_ylabel("$\\hat\\sigma$-bin gap")
+    ax.set_yscale("log")
+    ax.set_ylim(0.001, 0.5)
+    ax.legend(loc="upper right", framealpha=0.95, edgecolor="none", fontsize=7)
     fig.tight_layout()
     fig.savefig(OUT / "fig7_three_axis.pdf")
     fig.savefig(OUT / "fig7_three_axis.png")
@@ -624,7 +634,7 @@ def fig9_per_chrom():
 if __name__ == "__main__":
     print("Generating v2 figures...")
     fig2_k_sweep()
-    fig3_alpha_calibration()
+    fig3_method_comparison()
     fig4_local_coverage_heatmap()
     fig5_degu_deviation()
     fig6_sigma_calibration()
