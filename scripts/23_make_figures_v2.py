@@ -66,8 +66,8 @@ def fig2_k_sweep():
     fig, axes = plt.subplots(1, 2, figsize=(NEURIPS_DCOL, 2.2))
 
     for ax, (dataset, title, color_accent) in zip(axes, [
-        ("CADD+GPN-MSA+Borzoi_mendelian", "Mendelian ($n{=}3{,}380$)", "#2078B4"),
-        ("CADD+GPN-MSA+Borzoi_complex", "Complex ($n{=}11{,}400$)", "#54A24B"),
+        ("CADD+GPN-MSA+Borzoi_mendelian", "Mendelian ($n{=}3{,}380$)", COLORS["hccp"]),
+        ("CADD+GPN-MSA+Borzoi_complex", "Complex ($n{=}11{,}400$)", COLORS["hccp"]),
     ]):
         path = Path(f"outputs/adaptive_K/{dataset}/adaptive_K_results.json")
         if not path.exists():
@@ -290,10 +290,11 @@ def fig4_local_coverage_heatmap():
                 ax.text(j, i, f"{val:+.02f}", ha="center", va="center",
                         fontsize=5.5, color=color)
 
-    # Shared colorbar
-    cbar = fig.colorbar(im, ax=axes, shrink=0.8, pad=0.02)
-    cbar.set_label("Coverage $-$ target", fontsize=8)
-    fig.tight_layout(w_pad=1)
+    # Shared colorbar — put on the right with enough space
+    fig.subplots_adjust(right=0.88, wspace=0.35)
+    cbar_ax = fig.add_axes([0.90, 0.15, 0.015, 0.7])
+    cbar = fig.colorbar(im, cax=cbar_ax)
+    cbar.set_label("Coverage $-$ target", fontsize=7.5)
     fig.savefig(OUT / "fig4_local_heatmap.pdf")
     fig.savefig(OUT / "fig4_local_heatmap.png")
     plt.close(fig)
@@ -340,9 +341,31 @@ def fig5_degu_deviation():
         ax.axhspan(-0.03, 0.03, color="#cccccc", alpha=0.15, zorder=0)
         ax.set_xlabel("$\\hat\\sigma$-bin")
         ax.set_title(title)
-        ax.set_ylim(-0.08, 0.08)
+        ax.set_ylim(-0.09, 0.09)
         ax.yaxis.set_major_formatter(FuncFormatter(
             lambda y, _: f"{y:+.02f}" if y != 0 else "0"))
+
+        # Annotate worst-gap for each method
+        for path_str, label, color in [
+            (hccp_path, "HCCP", COLORS["hccp"]),
+            (degu_path, "DEGU", COLORS["degu"]),
+        ]:
+            p = Path(path_str)
+            if not p.exists():
+                continue
+            d = load_json(p)
+            m = d.get("mondrian_y_sigma", d.get("hetero_class_cond", {}))
+            bins = m.get("coverage_by_sigma_bin", [])
+            if bins:
+                covs = [b["coverage"] for b in bins if b.get("n", 0) >= 5]
+                wg = max(abs(c - 0.9) for c in covs) if covs else 0
+                x_pos = 0.02 if "HCCP" in label else 0.98
+                ha = "left" if "HCCP" in label else "right"
+                ax.text(x_pos, 0.95, f"{label} gap: {wg:.3f}",
+                        transform=ax.transAxes, fontsize=6, color=color,
+                        ha=ha, va="top",
+                        bbox=dict(boxstyle="round,pad=0.2", facecolor="white",
+                                  edgecolor=color, alpha=0.8, lw=0.5))
 
     axes[0].set_ylabel("Coverage $-$ target (0.90)")
     axes[0].legend(loc="lower left", framealpha=0.95, edgecolor="none")
@@ -469,15 +492,13 @@ def fig8_pareto():
     Each point = one method × one dataset. Top CP papers always show this."""
     fig, ax = plt.subplots(figsize=(NEURIPS_COL + 0.5, 2.6))
 
+    all_points = []
     configs = [
         # (label, path, marker, dataset_suffix)
         ("HCCP\n(Mendelian)", "CADD+GPN-MSA+Borzoi_mendelian_abs_mondrian", "o", "M"),
         ("DEGU\n(Mendelian)", "DEGU_lite_CADD+GPN-MSA+Borzoi_mendelian_mondrian", "s", "M"),
         ("HCCP\n(Complex)", "CADD+GPN-MSA+Borzoi_complex_abs_mondrian", "o", "C"),
         ("DEGU\n(Complex)", "DEGU_lite_CADD+GPN-MSA+Borzoi_complex_mondrian", "s", "C"),
-        # Homoscedastic baselines
-        ("Homosc\n(Mendelian)", "CADD+GPN-MSA+Borzoi_mendelian_abs", "^", "M"),
-        ("Homosc\n(Complex)", "CADD+GPN-MSA+Borzoi_complex_abs_mondrian", "^", "C"),
     ]
 
     for label, subdir, marker, ds in configs:
@@ -506,30 +527,37 @@ def fig8_pareto():
         color = COLORS["hccp"] if is_hccp else (COLORS["degu"] if "DEGU" in label else COLORS["homosc"])
         facecolor = color if is_mendelian else "white"
 
-        ax.scatter(singleton, worst_gap, s=60, marker=marker,
+        ax.scatter(singleton, worst_gap, s=70, marker=marker,
                    facecolors=facecolor, edgecolors=color, linewidths=1.5,
                    zorder=5)
-        # Label offset
-        offset = (0.02, 0.003) if is_hccp else (-0.02, 0.003)
-        ha = "left" if is_hccp else "right"
-        ax.annotate(label.replace("\n", " "), xy=(singleton, worst_gap),
-                    xytext=(singleton + offset[0], worst_gap + offset[1]),
-                    fontsize=5.5, ha=ha, va="bottom", color=color)
+        # Store for labeling
+        all_points.append((singleton, worst_gap, label.replace("\n", " "),
+                           color, is_hccp))
+
+    # Smart label placement — offset based on position
+    label_offsets = {
+        "HCCP (Mendelian)": (0.03, 0.005),
+        "DEGU (Mendelian)": (-0.03, 0.005),
+        "HCCP (Complex)": (0.04, 0.003),
+        "DEGU (Complex)": (0.04, 0.003),
+    }
+    for sx, sy, label, color, is_hccp in all_points:
+        off = label_offsets.get(label, (0.03, 0.003))
+        ha = "left"
+        ax.annotate(label, xy=(sx, sy),
+                    xytext=(sx + off[0], sy + off[1]),
+                    fontsize=6.5, ha=ha, va="bottom", color=color, weight="bold",
+                    arrowprops=dict(arrowstyle="-", color=color, lw=0.6, alpha=0.5))
 
     # Ideal region
     ax.axhspan(0, 0.03, color="#2ca02c", alpha=0.06, zorder=0)
-    ax.text(0.25, 0.015, "ideal zone", fontsize=6.5, color="#2ca02c", alpha=0.5)
+    ax.text(0.62, 0.015, "ideal zone", fontsize=6.5, color="#2ca02c",
+            alpha=0.6, style="italic")
 
     ax.set_xlabel("Singleton fraction (efficiency →)")
     ax.set_ylabel("Worst $\\hat\\sigma$-bin gap (← coverage)")
     ax.set_xlim(0.1, 0.95)
-    ax.set_ylim(-0.005, 0.12)
-
-    # Arrow annotations for axes
-    ax.annotate("", xy=(0.9, -0.003), xytext=(0.15, -0.003),
-                arrowprops=dict(arrowstyle="->", color="#999999", lw=0.8))
-    ax.annotate("", xy=(0.12, 0.001), xytext=(0.12, 0.11),
-                arrowprops=dict(arrowstyle="->", color="#999999", lw=0.8))
+    ax.set_ylim(-0.005, 0.08)
 
     fig.tight_layout()
     fig.savefig(OUT / "fig8_pareto.pdf")
@@ -570,10 +598,10 @@ def fig9_per_chrom():
         covs = [pc[c] for c in chroms]
         x = range(len(chroms))
 
-        # Color by deviation
-        colors = [COLORS["hccp"] if abs(c - 0.9) < 0.03 else
-                  COLORS["split"] if abs(c - 0.9) < 0.06 else
-                  COLORS["degu"] for c in covs]
+        # Color by deviation — continuous RdBu gradient
+        cmap_bar = plt.cm.RdYlBu
+        norm_bar = mcolors.TwoSlopeNorm(vmin=-0.10, vcenter=0, vmax=0.10)
+        colors = [cmap_bar(norm_bar(c - 0.9)) for c in covs]
 
         ax.bar(x, covs, color=colors, edgecolor="white", lw=0.3, width=0.7)
         ax.axhline(0.9, color="black", ls="--", lw=0.8, alpha=0.4)
