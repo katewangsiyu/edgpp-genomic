@@ -15,7 +15,7 @@
 | Base aggregator | HistGradientBoostingClassifier (depth=2, iter=100, balanced) | Day 10 GBM AUPRC 0.900 Mendelian / 0.350 Complex，显著超 TraitGym LogReg 0.7515 |
 | σ̂(x) head | HistGradientBoostingRegressor on chrom-LOO \|residual\| | Day 11 验证 σ̂-bin gap 改善（Mondrian 下） |
 | Score | $s(x,y) = |y - \hat p(x)| / \hat\sigma(x)$ | feature-dependent CQR binary 类比 |
-| Stratification | Mondrian $(y \times \hat\sigma\text{-bin})$, K=5 | Day 11 Complex σ̂-bin gap 0.020，Day 14 trait-LOO 达 0.002–0.004 floor |
+| Stratification | Mondrian $(y \times \hat\sigma\text{-bin})$, **adaptive K** (T5) | Day 11 Complex σ̂-bin gap 0.020; Day 20 K-sweep: K_CV=3 (M) / K_CV=2 (C) beats K=5 by 6-7x |
 | Benchmark | TraitGym Mendelian + Complex matched_9 | 官方 leaderboard；split: chr 17–22,X = val |
 | Primary baseline | DEGU (Zhou & Koo, npj AI 2026) | 唯一 heteroscedastic distillation VEP 方法；abstract 提 conformal |
 | External OOD | Trait-LOO + cross-dataset（非 ClinVar）| ClinVar 非编码 P/LP 样本少且 skewed splice（`reports/clinvar_holdout_investigation.md`） |
@@ -28,9 +28,9 @@
 |---|---|---:|---|---|
 | 1 | Introduction | 1.0 | Variant effect prediction 缺 uncertainty；现有 conformal 缺 feature-dependent local guarantee；我们首个 heteroscedastic + conformal joint framework on TraitGym | Fig 1 (concept pane); §9 success criteria |
 | 2 | Related work | 0.5 | CP foundations (Vovk/Romano/Barber); 异方差 UQ (Nix-Weigend, DEGU); VEP benchmarks (TraitGym, DEGU) | `papers/literature_v0.md` |
-| 3 | Problem formulation | 1.0 | A1 chrom-group exchangeability；A2 score stationarity；target: marginal + class-cond + local coverage | `theory/formulation_v0.md` §1-2 |
-| 4 | Method: HCCP | 1.5 | GBM aggregator + σ̂ regressor + Mondrian(y×σ̂-bin) score; algorithm box | `theory/formulation_v0.md` §2；algorithm 1 |
-| 5 | Theory | 2.0 | T1 marginal + T2 class-cond（证明）+ T3 local coverage（sketch + bin-conditional bound 1/(n_kb+1)）+ T4 chrom-shift（Barber 2023 Thm 2 套用） | `theory/t1_t2_formal_proofs.md`, `theory/t3_proof_sketch.md` |
+| 3 | Problem formulation | 1.0 | A1 chrom-group exchangeability；A2 score stationarity；**A-SL score-Lipschitz**；target: marginal + class-cond + local coverage | `theory/formulation_v0.md` §1-2 |
+| 4 | Method: HCCP | 1.5 | GBM aggregator + σ̂ regressor + Mondrian(y×σ̂-bin) score; **Algorithm 1 + adaptive K (Alg 2)**; design rationale | `theory/formulation_v0.md` §2；algorithm 1-2 |
+| 5 | Theory | 2.0 | T1 marginal + T2 class-cond + **T3 local bin-cond** + **T5 adaptive K bias-variance (K*=O(√n), rate O(n^{-1/2}))** + T4 chrom-shift | `theory/t1_t2_formal_proofs.md`, `theory/t3_formal_proof.md`, **`theory/t5_adaptive_K.md`** |
 | 6 | Experiments | 2.5 | AUPRC + coverage on Mendelian + Complex; σ̂-bin gap three-axis (chrom-LOO / trait-LOO / cross-dataset); ablations | Day 10–14 outputs; Tab 1-4, Fig 2-5 |
 | 7 | Discussion | 0.5 | Honest limitations (marginal-TV proxy, DEGU reimpl caveat); broader impact | — |
 | 8 | Conclusion | 0.25 | — | — |
@@ -49,10 +49,11 @@
 - Key table: `reports/day14_external_validation.md` §7
 
 ### C2 Theoretical novelty
-**T3 local coverage bound via σ̂-bin Mondrian stratification**: bin-conditional finite-sample rate $1/(n_{k,b}+1)$, distinct from impossibility of pointwise conditional coverage.
+**T3 local coverage + T5 adaptive partition**: bin-conditional finite-sample rate $1/(n_{k,b}+1)$; **optimal bin count K* = O(√n) with dimension-free O(n^{-1/2}) local coverage rate** (T5.1); matching lower bound (T5.2).
 
-- Evidence: `theory/t3_proof_sketch.md`; empirical K-sweep (Day 13)
-- Positioning: complements (not replaces) Barber 2020 impossibility — our bound is for coarsened σ̂-bin partitions, compatible with impossibility of exact point-conditional.
+- Evidence: `theory/t3_formal_proof.md`; `theory/t5_adaptive_K.md`; K-sweep Day 20 validation
+- Positioning: T3 = identification of σ̂-bin as Mondrian taxon (Vovk 2003 application); **T5 = new contribution** — first derivation of optimal Mondrian partition granularity. Dimension-free rate O(n^{-1/2}) vs RLCP's O(n^{-2/(d+2)}).
+- Key differentiator from Dewolf (IMA 2025): they analyze conditional validity analytically for regression; we derive optimal K for classification with a learned σ̂ and prove matching bounds.
 
 ### C3 DEGU comparison
 **DEGU heteroscedastic NLL head does not automatically confer local coverage**: Day 13 DEGU-lite ablation shows matched Mondrian(y×σ̂-bin) gap only when paired with class-cond + σ̂-bin stratification.
@@ -88,7 +89,8 @@
 | 1 | Main: (AUPRC, cov, cov\|pos, σ̂-bin gap, set size dist) × (Mendelian, Complex) × (GBM, GBM+HCCP, DEGU-lite+CP, LogReg+CP) | data ready |
 | 2 | Three-axis OOD summary: chrom-LOO / trait-LOO / cross-dataset × (feature set × dataset) | data ready (§7 of day14 report) |
 | 3 | σ̂ source ablation: GBM / NN / dropout / ensemble | partial (DEGU-lite done) |
-| 4 | T3 K-sweep: K ∈ {3,5,10,20} × gap / bin-min-size | data ready (Day 13) |
+| 4 | **T5 K-sweep: K ∈ {2,3,5,8,10,15,20,30} × gap / n_min + theoretical curve overlay** | **done (Day 20)** |
+| 5 | DEGU-lite σ̂ vs HCCP σ̂ head-to-head: same features, same Mondrian, different σ̂ source | **in progress (Day 20)** |
 
 ---
 

@@ -62,10 +62,13 @@
 - `10_selective_head.py`：7feat+GBM selective head，内层 CV 选 λ
 - 多种子（seeds={42,7,2024}）：Mendelian 稳定正向（cov@25% Δ=+0.043±0.006），complex 弱
 
-**待定**:
-- 论文路径选择（A: coverage-AUPRC benchmark / B: selective head / C: falsification workshop / D: conformal pivot）
-- CADD+Borzoi regime 下 selective head 测试（预期 headroom 更小）
-- Phase 0 报告 `reports/t4_phase0.md`
+**Day 20 — T5 Adaptive K + DEGU 对比（进行中）**:
+- T5 理论：Mondrian bin count bias-variance tradeoff, K* = O(√n), rate O(n^{-1/2}) dimension-free
+- K-sweep 验证：K_CV=3 (Mendelian) / K_CV=2 (Complex), 优于固定 K=5 达 6-7 倍
+- DEGU-lite (CADD+GPN-MSA+Borzoi) head-to-head 运行中
+- 文献调研完成：Dewolf 2025, Hore & Barber RLCP 2025, AlphaGenome API 可用
+
+**目标**: NeurIPS 2027 main. T5 是核心方法论升级（不再是"直接套用 Vovk 2003"）
 
 ## 仓库操作
 
@@ -86,6 +89,8 @@ scripts/            编号前缀 = 流程阶段
   09_aggregator_chrom_loo.py  TraitGym LogReg 监督聚合器复现
   10_selective_head.py  P1 核心：7feat+GBM selective reliability head
   run_ablation.py     3-way 完整驱动（Phase 0，已 sunset）
+  16_degu_lite.py       DEGU-style GBM 种子集成（ensemble variance as σ̂）
+  20_adaptive_K_sweep.py  T5 验证：K-sweep + L_F 估计 + 理论曲线对比
 src/edgpp_genomic/
   data/traitgym.py    数据适配器（teacher 预计算，支持 side_features_mode）
   models/             CompactStudent + reliability MLP（Phase 0 产物）
