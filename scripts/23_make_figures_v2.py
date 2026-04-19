@@ -462,6 +462,137 @@ def fig7_three_axis_summary():
 
 
 # ================================================================
+# Fig 8: Coverage vs Set-size Pareto (NeurIPS CP standard)
+# ================================================================
+def fig8_pareto():
+    """X = singleton fraction (efficiency), Y = σ̂-bin gap (local coverage).
+    Each point = one method × one dataset. Top CP papers always show this."""
+    fig, ax = plt.subplots(figsize=(NEURIPS_COL + 0.5, 2.6))
+
+    configs = [
+        # (label, path, marker, dataset_suffix)
+        ("HCCP\n(Mendelian)", "CADD+GPN-MSA+Borzoi_mendelian_abs_mondrian", "o", "M"),
+        ("DEGU\n(Mendelian)", "DEGU_lite_CADD+GPN-MSA+Borzoi_mendelian_mondrian", "s", "M"),
+        ("HCCP\n(Complex)", "CADD+GPN-MSA+Borzoi_complex_abs_mondrian", "o", "C"),
+        ("DEGU\n(Complex)", "DEGU_lite_CADD+GPN-MSA+Borzoi_complex_mondrian", "s", "C"),
+        # Homoscedastic baselines
+        ("Homosc\n(Mendelian)", "CADD+GPN-MSA+Borzoi_mendelian_abs", "^", "M"),
+        ("Homosc\n(Complex)", "CADD+GPN-MSA+Borzoi_complex_abs_mondrian", "^", "C"),
+    ]
+
+    for label, subdir, marker, ds in configs:
+        p = Path(f"outputs/conformal_hetero/{subdir}/conformal_hetero_results.json")
+        if not p.exists():
+            continue
+        d = load_json(p)
+
+        # Try mondrian first, then hetero
+        for method_key in ["mondrian_y_sigma", "hetero_class_cond", "homosc_class_cond"]:
+            if method_key in d:
+                m = d[method_key]
+                break
+        else:
+            continue
+
+        bins = m.get("coverage_by_sigma_bin", [])
+        if not bins:
+            continue
+        coverages = [b["coverage"] for b in bins if b.get("n", 0) >= 5]
+        worst_gap = max(abs(c - 0.9) for c in coverages) if coverages else np.nan
+        singleton = m.get("frac_singleton", np.nan)
+
+        is_hccp = "HCCP" in label
+        is_mendelian = ds == "M"
+        color = COLORS["hccp"] if is_hccp else (COLORS["degu"] if "DEGU" in label else COLORS["homosc"])
+        facecolor = color if is_mendelian else "white"
+
+        ax.scatter(singleton, worst_gap, s=60, marker=marker,
+                   facecolors=facecolor, edgecolors=color, linewidths=1.5,
+                   zorder=5)
+        # Label offset
+        offset = (0.02, 0.003) if is_hccp else (-0.02, 0.003)
+        ha = "left" if is_hccp else "right"
+        ax.annotate(label.replace("\n", " "), xy=(singleton, worst_gap),
+                    xytext=(singleton + offset[0], worst_gap + offset[1]),
+                    fontsize=5.5, ha=ha, va="bottom", color=color)
+
+    # Ideal region
+    ax.axhspan(0, 0.03, color="#2ca02c", alpha=0.06, zorder=0)
+    ax.text(0.25, 0.015, "ideal zone", fontsize=6.5, color="#2ca02c", alpha=0.5)
+
+    ax.set_xlabel("Singleton fraction (efficiency →)")
+    ax.set_ylabel("Worst $\\hat\\sigma$-bin gap (← coverage)")
+    ax.set_xlim(0.1, 0.95)
+    ax.set_ylim(-0.005, 0.12)
+
+    # Arrow annotations for axes
+    ax.annotate("", xy=(0.9, -0.003), xytext=(0.15, -0.003),
+                arrowprops=dict(arrowstyle="->", color="#999999", lw=0.8))
+    ax.annotate("", xy=(0.12, 0.001), xytext=(0.12, 0.11),
+                arrowprops=dict(arrowstyle="->", color="#999999", lw=0.8))
+
+    fig.tight_layout()
+    fig.savefig(OUT / "fig8_pareto.pdf")
+    fig.savefig(OUT / "fig8_pareto.png")
+    plt.close(fig)
+    print("  fig8_pareto ✓")
+
+
+# ================================================================
+# Fig 9: Per-chromosome coverage (Barber 2023 style)
+# ================================================================
+def fig9_per_chrom():
+    fig, axes = plt.subplots(1, 2, figsize=(NEURIPS_DCOL, 2.2))
+
+    for ax, (title, path_str) in zip(axes, [
+        ("Mendelian",
+         "outputs/conformal_hetero/CADD+GPN-MSA+Borzoi_mendelian_abs_mondrian/conformal_hetero_results.json"),
+        ("Complex",
+         "outputs/conformal_hetero/CADD+GPN-MSA+Borzoi_complex_abs_mondrian/conformal_hetero_results.json"),
+    ]):
+        p = Path(path_str)
+        if not p.exists():
+            continue
+        d = load_json(p)
+        m = d.get("mondrian_y_sigma", d.get("hetero_class_cond", {}))
+        pc = m.get("per_chrom_coverage", {})
+        if not pc:
+            continue
+
+        # Sort chromosomes naturally
+        def chrom_sort_key(c):
+            try:
+                return (0, int(c))
+            except ValueError:
+                return (1, ord(c[0]))
+
+        chroms = sorted(pc.keys(), key=chrom_sort_key)
+        covs = [pc[c] for c in chroms]
+        x = range(len(chroms))
+
+        # Color by deviation
+        colors = [COLORS["hccp"] if abs(c - 0.9) < 0.03 else
+                  COLORS["split"] if abs(c - 0.9) < 0.06 else
+                  COLORS["degu"] for c in covs]
+
+        ax.bar(x, covs, color=colors, edgecolor="white", lw=0.3, width=0.7)
+        ax.axhline(0.9, color="black", ls="--", lw=0.8, alpha=0.4)
+        ax.axhspan(0.87, 0.93, color=COLORS["hccp"], alpha=0.05, zorder=0)
+        ax.set_xticks(x)
+        ax.set_xticklabels([f"chr{c}" for c in chroms], rotation=45,
+                           ha="right", fontsize=5.5)
+        ax.set_title(title)
+        ax.set_ylim(0.75, 1.0)
+
+    axes[0].set_ylabel("Mondrian coverage")
+    fig.tight_layout(w_pad=1.5)
+    fig.savefig(OUT / "fig9_per_chrom.pdf")
+    fig.savefig(OUT / "fig9_per_chrom.png")
+    plt.close(fig)
+    print("  fig9_per_chrom ✓")
+
+
+# ================================================================
 if __name__ == "__main__":
     print("Generating v2 figures...")
     fig2_k_sweep()
@@ -470,4 +601,6 @@ if __name__ == "__main__":
     fig5_degu_deviation()
     fig6_sigma_calibration()
     fig7_three_axis_summary()
+    fig8_pareto()
+    fig9_per_chrom()
     print("All done.")
