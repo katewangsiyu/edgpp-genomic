@@ -1,15 +1,16 @@
-% Claim structure: 3 buckets (CP theory / heteroscedastic UQ / VEP + conformal).
-% Literature anchors: papers/literature_v0.md
+% Related work — ~0.5 page main text
+% Three buckets: (1) CP theory, (2) heteroscedastic UQ, (3) VEP + conformal
 
-\TODO{Full related work; target 0.5 page main + ~1 page appendix extension.}
+\paragraph{Conformal prediction and conditional coverage.}
+Split conformal prediction \citep{vovk2005algorithmic} provides distribution-free marginal coverage, and Mondrian conformal \citep{vovk2003mondrian} extends this to group-conditional coverage via partitioned calibration. \citet{barber2020limits} showed that pointwise conditional coverage $P(Y \in \pset(X) \mid X = x)$ is impossible in finite samples without structural assumptions, motivating coarsened conditioning. CQR \citep{romano2019cqr} uses quantile regression to adapt interval width to local heteroscedasticity in regression; our score Eq.~\eqref{eq:score} is the binary-classification analog. \citet{barber2023exchangeability} generalized CP beyond exchangeability via weighted residual swaps; we use their Theorem~2 for robust forms T1$'$--T3$'$ and T4.
 
-\paragraph{Conformal prediction.}
-Split conformal \citep{vovk2005algorithmic}, CQR \citep{romano2019cqr}, weighted CP under covariate shift \citep{tibshirani2019weighted}, jackknife+ \citep{barber2021jackknife}, and CP beyond exchangeability \citep{barber2023exchangeability} form the theoretical backbone. Mondrian conformal \citep{vovk2003mondrian} provides class-conditional coverage via partitioned calibration. Barber's pointwise conditional coverage impossibility \citep{barber2020limits} motivates our coarsened $\shat$-bin guarantee.
+Two recent lines of work target conditional coverage more directly.
+\textbf{RLCP} \citep{hore2025rlcp} uses random localization with kernel weights to achieve local coverage at rate $O(n^{-2/(d+2)})$; this degrades in high dimensions ($d > 100$), making it impractical for our genomic feature space ($d \approx 7{,}700$).
+\citet{dewolf2025conditional} analyze the conditional validity of heteroscedastic Mondrian conformal for regression, establishing when normalized and Mondrian CP adapt correctly to the noise level; our T3--T5 complement their analysis by deriving the optimal Mondrian granularity (bin count $K$) for classification with a \emph{learned} variance head, with a dimension-free $O(n^{-1/2})$ rate.
+Self-Calibrating CP \citep{vanderlaan2024sccp} provides prediction-conditional validity via Venn--Abers calibration, conditioning on the predicted value rather than uncertainty; this is a complementary axis to our $\shat$-bin conditioning.
 
-\paragraph{Heteroscedastic uncertainty.}
-Nix \& Weigend \citep{nix1994nll} introduced Gaussian NLL for learned variance. DEGU \citep{zhou2026degu} applies this to MPRA regression via deep ensemble distillation, mentioning conformal in abstract but without formal guarantees or non-regression tasks. Bootstrapping, MC dropout, and deep ensembles \citep{lakshminarayanan2017simple} offer alternative $\shat$ sources we compare in ablations (§\ref{sec:experiments}).
+\paragraph{Heteroscedastic uncertainty quantification.}
+Gaussian NLL training for learned variance originates with \citet{nix1994nll}. Deep ensembles \citep{lakshminarayanan2017simple} capture epistemic uncertainty via inter-model disagreement. DEGU \citep{zhou2026degu} combines both: an ensemble of CNN students distilled from a genomic teacher, with Gaussian uncertainty. DEGU's abstract mentions conformal prediction, but the implementation is marginal split CP only --- no class-conditional or Mondrian stratification, no formal local coverage guarantee, and no classification task. Our DEGU-lite ablation (§\ref{sec:experiments}) shows that ensemble $\shat$ provides comparable local coverage on Mendelian (monogenic, strong signal) but $4.3\times$ worse coverage on Complex (polygenic), where the aleatoric component dominates.
 
-\paragraph{Variant effect prediction benchmarks.}
-CADD \citep{kircher2014cadd}, Borzoi \citep{linder2025borzoi}, GPN-MSA \citep{benegas2023gpnmsa}, and the TraitGym benchmark \citep{benegas2025traitgym} define the current SOTA pipeline. TraitGym's published supervised LogReg aggregator reaches 0.752 Mendelian AUPRC; we revisit this with GBM (§\ref{sec:experiments}).
-
-\TODO{Possible subsection: "selective prediction" vs "conformal" distinction, cite Geifman \& El-Yaniv 2017, Angelopoulos \& Bates 2022.}
+\paragraph{Variant effect prediction and benchmarks.}
+TraitGym \citep{benegas2025traitgym} standardizes VEP evaluation on Mendelian and complex trait variants, with a chrom-LOO protocol. Input features include CADD \citep{kircher2014cadd}, Borzoi \citep{linder2025borzoi}, and GPN-MSA \citep{benegas2023gpnmsa}. AlphaGenome \citep{avsec2026alphagenome} is the most recent foundation model for genomics, though it has not been evaluated on TraitGym to date. Conformal prediction has been explored in genomic medicine for drug response \citep{papangelou2025cpgenomics} and polygenic risk scores \citep{wang2025cqrprs}, but not for binary variant pathogenicity classification. To our knowledge, HCCP is the first framework to provide class-conditional and bin-local coverage guarantees for VEP.

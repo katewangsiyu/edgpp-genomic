@@ -38,9 +38,9 @@ Pure class-conditional calibration (Mondrian on $y$ alone) \citep{vovk2003mondri
 
 Stratifying by $\shat$-bin alone, without $y$, re-introduces the minority-class pathology because the $\shat$-distribution is dominated by negatives. The product partition $(y \times \shat\text{-bin})$ is the smallest that simultaneously corrects both modes, at the cost of requiring $n_{k,b} \geq \lceil 1/\alpha \rceil$ per cell; this is comfortably satisfied on TraitGym at $K = 5$ (App.~\ref{app:data} sample-size audit).
 
-\subsection{Bin-edge design}
+\subsection{Bin-edge design and adaptive $K$ selection}
 
-We use equiprobable $\shat$-bins from calibration-fold quantiles, so that $n_{k,b}$ is roughly balanced across $b$ for each fixed $k$. $K = 5$ is our default: larger $K$ shrinks $n_{k,b}$ (widening the T3 finite-sample $1/(n_{k,b}+1)$ gap), while smaller $K$ coarsens the locality guarantee. Day 13 ablations (App.~\ref{app:tables}) sweep $K \in \{3, 5, 10, 20\}$ and show the $K = 5$ choice near-optimal on Complex; Mendelian is less sensitive.
+We use equiprobable $\shat$-bins from calibration-fold quantiles, so that $n_{k,b}$ is roughly balanced across $b$ for each fixed $k$. Theorem~\ref{thm:t5oracle} (§\ref{sec:theory:t5}) formalizes the bias--variance tradeoff: larger $K$ reduces the stationarity bias $L_F R / K$ but inflates the finite-sample variance $K / (\pi_{\min} n)$, with oracle $K^\star = O(\sqrt{n})$. In practice we select $\hat K$ via leave-one-out cross-validation on the calibration fold (§\ref{sec:theory:t5}); on TraitGym, $\hat K_{\mathrm{CV}} = 3$ (Mendelian, $n{=}3380$) and $\hat K_{\mathrm{CV}} = 2$ (Complex, $n{=}11400$), both below the prior $K = 5$ default, with worst-cell gap improvements of $6{-}7\times$ (§\ref{sec:experiments}).
 
 \subsection{Score comparison}
 

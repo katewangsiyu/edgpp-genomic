@@ -25,6 +25,17 @@ The score law is chrom-invariant at some granularity: A2-marginal, A2-class (con
 
 \ref{ass:A1} is load-bearing (empirical chrom-LOO protocol). \ref{ass:A1prime} and \ref{ass:A2} enable finite-sample \emph{exact} coverage; under \ref{ass:A1} alone we obtain \emph{robust} coverage with a chromosome total-variation gap (§\ref{sec:theory}). Empirically, \ref{ass:A2} holds approximately: our within-cell KS audit (155 tests, App.~\ref{app:data}) shows $12.3\%$ rejection at $p<0.05$, mildly elevated from the $5\%$ null.
 
+\begin{assumption}[A-SL Score-Lipschitz regularity]
+\label{ass:ASL}
+The conditional score CDF varies smoothly with the $\shat$ value: for each class $k \in \{0,1\}$,
+\[
+\sup_{s \in \mathbb{R}} \bigl| F_{k,\sigma_1}(s) - F_{k,\sigma_2}(s) \bigr| \;\leq\; L_F \cdot |\sigma_1 - \sigma_2|, \qquad \forall\, \sigma_1, \sigma_2 \in [\shat_{\min}, \shat_{\max}],
+\]
+where $F_{k,\sigma}(s) := P(S \leq s \mid Y = k,\, \shat(X) = \sigma)$ and $L_F$ is the score-Lipschitz constant.
+\end{assumption}
+
+\ref{ass:ASL} controls how the score distribution shifts across $\shat$-bins. Since $s(x,k) = |k - \phat(x)| / (\shat(x) + \epsilon)$, a change $\delta$ in $\shat$ rescales the score by $O(\delta / \shat^2)$, so \ref{ass:ASL} holds when $\phat$ and $\shat$ are bounded. This assumption is used only by T5 (§\ref{sec:theory:t5}) to derive the optimal bin count $K^\star$; T3 is valid for any fixed $K$ without \ref{ass:ASL}.
+
 \subsection{Base aggregator and heteroscedastic head}
 \label{sec:formulation:heads}
 

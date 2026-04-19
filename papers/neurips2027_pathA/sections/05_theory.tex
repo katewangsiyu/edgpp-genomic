@@ -104,6 +104,41 @@ Two distinct mechanisms separate the plug-in predictor from the oracle: (a) \tex
 \paragraph{Graceful degradation.}
 As $\eta \to 0$ the T3.b bound collapses to the T3 finite-sample slack. There is no cliff where a slightly mis-estimated $\shat$ breaks coverage --- the conformal pipeline is continuous in $\shat$ quality, a property DEGU's deep-ensemble $\shat$ also benefits from (§\ref{sec:experiments}). T3.b is a robustness statement, not a sharpness claim: for a realistic $\eta \approx 0.5$ and $\bar\sigma / \Delta \approx 5$ the bound is loose ($\approx 0.5$), but its existence rules out pathological coverage collapse.
 
+\subsection{Adaptive bin count --- the T5 bias--variance tradeoff}
+\label{sec:theory:t5}
+
+Theorems~\ref{thm:t3}--\ref{thm:t3b} hold for any fixed $K$. We now derive the \emph{optimal} $K$ by formalizing the bias--variance tradeoff that governs bin-conditional coverage.
+
+\paragraph{Two sources of coverage gap.}
+Under \ref{ass:ASL}, the worst-cell coverage gap decomposes as
+\begin{equation}
+\label{eq:gap_decomp}
+G(K) \;:=\; \max_{k,b} \bigl|\mathrm{cov}_{k,b} - (1 - \alpha)\bigr| \;\leq\; \underbrace{\frac{L_F \cdot R}{K}}_{\text{stationarity bias}} \;+\; \underbrace{\frac{K}{\pi_{\min} \cdot n}}_{\text{finite-sample variance}},
+\end{equation}
+where $R = \shat_{\max} - \shat_{\min}$ is the $\shat$ range and $\pi_{\min} = \min(\pi, 1 - \pi)$ the minority-class prevalence. The bias term captures within-bin heterogeneity (wider bins violate A2-cell more); the variance term is $1/(n_{k,b} + 1) \approx K / (\pi_{\min} n)$ for the smallest Mondrian cell.
+
+\begin{theorem}[T5.1 Oracle bin count]
+\label{thm:t5oracle}
+Under \ref{ass:A1prime} and \ref{ass:ASL} with equiprobable $\shat$-bins,
+\[
+K^\star \;=\; \bigl\lfloor \sqrt{L_F \cdot R \cdot \pi_{\min} \cdot n}\,\bigr\rfloor, \qquad G(K^\star) \;\leq\; \frac{2\sqrt{L_F \cdot R}}{\sqrt{\pi_{\min} \cdot n}}.
+\]
+\end{theorem}
+
+\begin{theorem}[T5.2 Matching lower bound]
+\label{thm:t5lower}
+For any Mondrian conformal predictor using equiprobable $\shat$-bins, there exists a distribution satisfying \ref{ass:A1prime} and \ref{ass:ASL} such that $\min_K G(K) = \Omega\!\bigl(\sqrt{L_F R / (\pi_{\min} n)}\bigr)$, so the $O(n^{-1/2})$ rate is tight.
+\end{theorem}
+
+\paragraph{Proof sketch (T5.1).}
+Setting $g'(K) = -L_F R / K^2 + 1/(\pi_{\min} n) = 0$ gives $K^\star$. Substitution yields $g(K^\star) = 2\sqrt{L_F R / (\pi_{\min} n)}$. The floor introduces $O(1/(\pi_{\min} n))$ slack, dominated by $O(n^{-1/2})$. For T5.2, construct a linear-shift distribution $F_{k,\sigma}(s) = \Phi(s - L_F \sigma)$; both the bias and variance lower bounds are tight. App.~\ref{app:proofs:t5}.
+
+\paragraph{Dimension-free rate.}
+The $O(n^{-1/2})$ rate is \emph{dimension-free} because T5 conditions on the 1-D summary $\shat(x)$, not on the full feature vector $x \in \mathbb{R}^d$. By contrast, RLCP \citep{hore2025rlcp} achieves local coverage at rate $O(n^{-2/(d+2)})$, which is impractical at $d = 7{,}731$ (our feature dimension). The price is \ref{ass:ASL}: the quality of the 1-D summary matters, and T5 quantifies the exact constant $L_F \cdot R$.
+
+\paragraph{Practical $\hat K$ selection.}
+We select $\hat K$ via cross-validation: for each candidate $K \in \{2, 3, 5, 8, 10, 15, 20\}$, we compute the leave-one-out worst-cell coverage gap on the calibration fold and pick $\hat K_{\mathrm{CV}} = \operatorname{argmin}_K \hat G(K)$. On TraitGym, $\hat K_{\mathrm{CV}} = 3$ (Mendelian) and $\hat K_{\mathrm{CV}} = 2$ (Complex), both below the $K = 5$ default, with $6{-}7\times$ worst-cell gap improvement (§\ref{sec:experiments}). The low optimal $K$ reflects class imbalance ($\pi_{\min} \approx 0.10$): with few positive variants, the variance term $K / (\pi_{\min} n)$ dominates.
+
 \subsection{Chrom-shift robustness}
 \label{sec:theory:t4}
 
@@ -124,7 +159,7 @@ The right-hand side uses the \emph{residual-swap} TV, which we cannot estimate d
 \subsection{Summary of guarantees}
 \label{sec:theory:summary}
 
-Table~\ref{tab:theory_summary} consolidates the nine results by assumption and bound type. T1/T2 are standard split-CP restatements tailored to chrom-LOO; T3 family and T3-loc are the paper's theoretical contribution; T1$'$/T2$'$/T3$'$/T4 are the Barber~2023 robust counterparts; T3.b is the plug-in robustness statement.
+Table~\ref{tab:theory_summary} consolidates the eleven results. T1/T2 are standard split-CP restatements; the T3 family is the paper's local coverage contribution; T5 derives the optimal partition granularity and proves the rate is tight; T1$'$/T2$'$/T3$'$/T4 are Barber~2023 robust counterparts; T3.b is the plug-in robustness statement.
 
 \begin{table}[h]
 \centering
@@ -144,10 +179,12 @@ T2$'$                    & A1                    & robust lower      & $\mathrm{
 \textbf{T3$'$} (Thm.~\ref{thm:t3prime}) & A1                    & \textbf{robust lower} & $\mathrm{cov}_{k,b} \geq 1-\alpha - \bar\delta_{\mathrm{TV}}^{(k,b)}$ \\
 T3-loc (Thm.~\ref{thm:t3loc}) & A1$'$ + A2-cell + A3-loc + $L$-Lip. $\shat$ & feature-ball exact & $|\mathrm{cov}(B_\ell(x_0, r)) - (1{-}\alpha)| \leq 1/(n_{\min}(x_0, r)+1)$, $r < \Delta/(2L)$ \\
 T3.b (Thm.~\ref{thm:t3b}) & A1$'$ + A2-cell + B1 & plug-in shift      & $|\mathrm{cov}^{(\hat\sigma)} - \mathrm{cov}^{(\sigma^\star)}| \leq 2\eta\bar\sigma/\Delta + 1/(n_{\min}+1)$ \\
+\textbf{T5.1} (Thm.~\ref{thm:t5oracle}) & A1$'$ + \ref{ass:ASL} & \textbf{oracle rate} & $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$, $K^\star = O(\sqrt{n})$ \\
+\textbf{T5.2} (Thm.~\ref{thm:t5lower}) & (minimax)            & \textbf{lower bound} & $\min_K G(K) = \Omega(\sqrt{L_F R / (\pi_{\min} n)})$ \\
 T4 (Thm.~\ref{thm:t4})   & A1                    & weighted robust   & $\mathrm{cov} \geq 1-\alpha - \sum_i \tilde w_i \, d_{\mathrm{TV}}(R(Z), R(Z^{(i)}))$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Reading the table.}
-For a reviewer: T1 + T2 establish the split-CP baseline, T3 is the new contribution, T3$'$ is the answer to ``what if chromosomes disagree?'', T3-loc is the answer to ``is this actually local?'', T3.b is the answer to ``what if $\shat$ is wrong?'', and T4 is the unifying Barber~2023 machinery. §\ref{sec:experiments} tests each column empirically: T3 exact on chrom-LOO (with A2-cell approximate, residual gap $\leq 0.04$ on CADD+GPN-MSA+Borzoi); T3 on trait-LOO reaches the finite-sample $1/(n_{k,b}+1)$ floor; T3$'$ absorbs the cross-dataset M$\to$C excess via the marginal-score TV proxy (tight up to the $0.036$ proxy gap).
+For a reviewer: T1 + T2 establish the split-CP baseline, T3 is the local coverage contribution, T5 answers ``why this $K$?'' with a provable rate, T3$'$ answers ``what if chromosomes disagree?'', T3-loc answers ``is this actually local?'', T3.b answers ``what if $\shat$ is wrong?'', and T4 is the unifying Barber~2023 machinery. §\ref{sec:experiments} validates each: T3 on chrom-LOO (residual gap $\leq 0.04$); T5 via K-sweep ($\hat K_{\mathrm{CV}}$ yields $6{-}7\times$ gap reduction vs.\ $K=5$); T3 on trait-LOO (reaches the $1/(n_{k,b}+1)$ floor); T3$'$ absorbs the M$\to$C excess via the marginal-score TV proxy.

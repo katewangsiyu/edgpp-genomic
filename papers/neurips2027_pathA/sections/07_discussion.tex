@@ -1,1 +1,18 @@
-\TODO{0.5 page. Cover: (i) clinical deployment implications --- prediction sets as ``second opinion'' rather than replacement; (ii) relationship to selective prediction / abstention; (iii) A1 chrom-group exchangeability as the load-bearing assumption; (iv) M$\to$C asymmetry as biological diversity argument; (v) pointer to Barber 2020 impossibility discussion.}
+% Discussion — ~0.5 page
+
+\paragraph{Clinical implications.}
+HCCP prediction sets are \emph{not} a replacement for expert review; they are a calibrated ``second opinion'' that delineates which variants a VEP model can confidently classify. A singleton set $\pset(x) = \{k\}$ is a confident call; a set containing both labels or neither is an explicit abstention signal. On TraitGym Mendelian, HCCP produces singletons for $\approx$80\% of variants at $\alpha = 0.10$; the remaining 20\% are flagged for expert review, with coverage maintained by construction. This framing complements selective prediction \citep{elyaniv2010selective}: whereas selective prediction maximizes accuracy at a chosen coverage, conformal prediction guarantees coverage at any chosen error rate.
+
+\paragraph{Assumptions.}
+\ref{ass:A1} (chrom-group exchangeability) is load-bearing. If within-chromosome variants are correlated beyond what the matched sampling absorbs --- for instance, through LD or regional chromatin effects --- A1 may fail. Empirically, the chrom-LOO protocol of TraitGym \citep{benegas2025traitgym} mitigates this by treating each chromosome as an independent fold; our within-cell KS audit (12.3\% rejection) suggests mild but manageable violation. T3$'$ absorbs the residual gap via the TV term. \ref{ass:ASL} (score-Lipschitz) is required only for the T5 adaptive $K$ derivation; T3 is valid without it. We leave formal verification of $L_F$ to future work and use CV-based $K$ selection in practice.
+
+\paragraph{Mendelian--Complex asymmetry.}
+The cross-dataset experiments reveal a striking directional asymmetry: C$\to$M transfer preserves coverage ($0.901$), while M$\to$C collapses ($0.738$). This is consistent with the biological intuition that complex-trait variants occupy a broader feature space (polygenic, small effects) that subsumes the monogenic signal, but not vice versa. The Barber T4 proxy bound correctly predicts the collapse direction (§\ref{sec:experiments}). From a deployment perspective, a model calibrated on complex traits may generalize to rare-disease variants, but not the reverse.
+
+\paragraph{Epistemic vs.\ aleatoric uncertainty.}
+Our DEGU-lite comparison (§\ref{sec:experiments}) shows that ensemble disagreement ($\shat_{\mathrm{DEGU}}$) and supervised residual regression ($\shat_{\mathrm{HCCP}}$) capture different aspects of uncertainty. On Mendelian (strong signal, well-separated classes), ensemble $\shat$ achieves comparable local coverage. On Complex (weak signal, dominant aleatoric noise), supervised $\shat$ provides $4.3\times$ better worst-cell coverage. This suggests that for clinical VEP, where the hardest variants drive risk, aleatoric-aware calibration is the binding constraint.
+
+\paragraph{Limitations.}
+(i) Our cross-dataset TV proxy underestimates the true swap-TV by $\approx$0.036 (honest gap flagged in §\ref{sec:experiments}); closing this requires access to an oracle model.
+(ii) The T5 rate $O(n^{-1/2})$ assumes equiprobable bins; non-uniform partitions could improve constants but not the rate.
+(iii) TraitGym's matched sampling design controls for consequence type, MAF, and TSS distance, which suppresses distributional heterogeneity that would be present in a clinical cohort.
