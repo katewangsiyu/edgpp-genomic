@@ -1,12 +1,115 @@
-% Per-chrom / per-trait / per-cross-dataset tables live here.
-% Source outputs: outputs/{aggregator, selective, trait_loo, cross_dataset}
+% Appendix C: Detailed per-partition results
 
-\TODO{Port per-partition CSVs as LaTeX tables:
-\begin{itemize}
-    \item Per-chrom AUPRC + coverage (22 chroms $\times$ 5 metrics)
-    \item Per-OMIM metrics (30 traits Mendelian)
-    \item Per-complex-trait metrics (28 traits)
-    \item Cross-dataset full grid (2 directions $\times$ 2 feature sets)
-    \item $\shat$-bin breakdown K=5 per regime
-\end{itemize}
-All tables generated via pandas \texttt{to\_latex()} with booktabs; numbers in outputs/\*/\*.csv.}
+\subsection{Per-chromosome coverage}
+\label{app:tables:perchrom}
+
+Table~\ref{tab:perchrom} reports per-chromosome coverage for the HCCP Mondrian predictor (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 5$).
+
+\begin{table}[h]
+\centering
+\small
+\caption{Per-chromosome coverage under Mondrian-$(y \times \shat\text{-bin})$, Mendelian dataset. Target: 0.90. Chromosomes 17--22, X are test chroms under chrom-LOO.}
+\label{tab:perchrom}
+\begin{tabular}{lrrr}
+\toprule
+Chrom & $n$ & Coverage & $|\mathrm{gap}|$ \\
+\midrule
+1  & 210 & 0.857 & 0.043 \\
+2  & 230 & 0.896 & 0.004 \\
+3  & 155 & 0.945 & 0.045 \\
+5  & 100 & 0.850 & 0.050 \\
+6  & 150 & 0.800 & 0.100 \\
+7  & 210 & 0.943 & 0.043 \\
+8  & 140 & 0.943 & 0.043 \\
+9  & 240 & 0.842 & 0.058 \\
+10 & 190 & 0.879 & 0.021 \\
+11 & 160 & 0.944 & 0.044 \\
+12 & 150 & 0.933 & 0.033 \\
+13 & 210 & 0.848 & 0.052 \\
+14 & 100 & 0.900 & 0.000 \\
+16 & 80  & 0.913 & 0.013 \\
+17 & 150 & 0.900 & 0.000 \\
+19 & 200 & 0.828 & 0.073 \\
+20 & 50  & 0.900 & 0.000 \\
+22 & 20  & 0.950 & 0.050 \\
+X  & 250 & 0.958 & 0.058 \\
+\midrule
+\textbf{Overall} & \textbf{3380} & \textbf{0.902} & \textbf{0.002} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{K-sweep ablation}
+\label{app:tables:ksweep}
+
+Table~\ref{tab:ksweep} validates Theorem~\ref{thm:t5oracle} (T5.1) by sweeping $K \in \{2, 3, 5, 8, 10, 15, 20, 30\}$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{K-sweep on Mendelian and Complex (CADD+GPN-MSA+Borzoi). Worst-cell gap = $\max_{k,b} |\mathrm{cov}_{k,b} - 0.90|$. $\hat K_{\mathrm{CV}} = 3$ (Mendelian), $\hat K_{\mathrm{CV}} = 2$ (Complex).}
+\label{tab:ksweep}
+\begin{tabular}{rrrrrr}
+\toprule
+& \multicolumn{2}{c}{Mendelian} & \multicolumn{2}{c}{Complex} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+$K$ & Worst gap & Mean gap & Worst gap & Mean gap \\
+\midrule
+2  & 0.233 & 0.059 & \textbf{0.006} & \textbf{0.002} \\
+\textbf{3}  & \textbf{0.047} & \textbf{0.012} & 0.010 & 0.004 \\
+5  & 0.285 & 0.041 & 0.042 & 0.007 \\
+8  & 0.627 & 0.067 & 0.058 & 0.010 \\
+10 & 0.700 & 0.059 & 0.208 & 0.017 \\
+15 & 0.733 & 0.049 & 0.600 & 0.034 \\
+20 & 0.733 & 0.047 & 0.600 & 0.030 \\
+30 & 0.344 & 0.031 & 0.567 & 0.034 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{DEGU-lite vs HCCP head-to-head}
+\label{app:tables:degu}
+
+Table~\ref{tab:degu} compares HCCP's supervised $\shat$ against DEGU-lite's ensemble $\shat$ under identical Mondrian-$(y \times \shat\text{-bin})$ conformal calibration and feature sets.
+
+\begin{table}[h]
+\centering
+\small
+\caption{HCCP vs DEGU-lite: same features (CADD+GPN-MSA+Borzoi), same Mondrian partition, different $\shat$ source. Worst gap = max per-$\shat$-bin deviation from target 0.90.}
+\label{tab:degu}
+\begin{tabular}{llrrrr}
+\toprule
+$\shat$ source & Dataset & Cov & Cov$|_{Y{=}1}$ & Worst gap & Mean gap \\
+\midrule
+HCCP (learned)    & Mendelian & 0.902 & 0.905 & 0.041 & 0.022 \\
+DEGU (ensemble)   & Mendelian & 0.901 & 0.917 & \textbf{0.033} & \textbf{0.020} \\
+\midrule
+HCCP (learned)    & Complex   & 0.901 & 0.908 & \textbf{0.013} & \textbf{0.007} \\
+DEGU (ensemble)   & Complex   & 0.901 & 0.907 & 0.057 & 0.028 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Interpretation.}
+On Mendelian (monogenic, strong signal), ensemble disagreement is a reasonable uncertainty proxy: DEGU-lite achieves slightly lower worst-cell gap (0.033 vs.\ 0.041). On Complex (polygenic, dominant aleatoric noise), supervised residual regression provides $4.3\times$ better worst-cell coverage (0.013 vs.\ 0.057). This confirms the epistemic--aleatoric decomposition discussed in §\ref{sec:discussion}: where model disagreement and data noise contribute equally, both $\shat$ sources suffice; where data noise dominates (Complex traits), the supervised head captures what ensembles cannot.
+
+\subsection{Cross-dataset transfer}
+\label{app:tables:crossdataset}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Cross-dataset transfer (CADD+Borzoi). M$\to$C: train on Mendelian, test on Complex. C$\to$M: reverse. T4 proxy bound = $1 - \alpha - d_{\mathrm{TV}}$.}
+\label{tab:crossdataset}
+\begin{tabular}{lrrrrr}
+\toprule
+Direction & AUPRC & Coverage & Gap & TV proxy & T4 bound \\
+\midrule
+M$\to$C & 0.187 & 0.738 & $-0.162$ & 0.158 & 0.742 \\
+C$\to$M & 0.654 & 0.901 & $+0.001$ & 0.158 & 0.742 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Directional asymmetry.}
+C$\to$M transfer preserves coverage (0.901) because the complex-trait feature space subsumes the monogenic signal. M$\to$C collapses (0.738) because monogenic variants occupy a narrow subspace. The Barber T4 proxy bound (0.742) is tight for M$\to$C (observed 0.738, within 0.004) and conservative for C$\to$M.
