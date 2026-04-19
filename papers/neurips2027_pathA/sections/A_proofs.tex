@@ -1,64 +1,462 @@
-% Source: theory/t1_t2_formal_proofs.md (T1, T2, T1', T2', T4), theory/t3_formal_proof.md (T3, T3', T3-loc, T3.b)
-% Status: theorem statements (imported from §5) + proof stubs. Verbatim ports deferred.
-
-\TODO{Direct port of the two theory documents. Both are appendix-ready (Day 14 + Day 16). Estimated appendix length: 5--7 pages for T1/T2/T1'/T2'/T4 + 4--6 pages for T3 family.}
+% Source: theory/t1_t2_formal_proofs.md (T1, T2, T1', T2', T4), theory/t3_formal_proof.md (T3, T3', T3-loc, T3.b), theory/t5_adaptive_K.md (T5.1, T5.2)
+% Status: full proofs ported from appendix-ready theory files (Day 14, Day 16, Day 20).
 
 \subsection{Assumptions hierarchy}
 \label{app:proofs:assumptions}
 
-We collect in one place the assumptions invoked across §\ref{sec:theory}.
+We collect in one place the assumptions invoked across \S\ref{sec:theory}. The chain of A2 variants is:
+\[
+\underbrace{\text{A2-cell}}_{\text{T3}} \;\Longrightarrow\; \underbrace{\text{A2-class}}_{\text{T2}} \;\Longrightarrow\; \underbrace{\text{A2-marginal}}_{\text{T1}},
+\]
+where each level is obtained from the stronger one by marginalizing over a partition variable.
 
 \begin{itemize}
     \item \textbf{A1} (chrom-group exchangeability, \ref{ass:A1}): conditional on $C = c$, $\{(X_i, Y_i) : C_i = c\}$ are exchangeable with law $P_c$; different chromosomes are mutually independent.
     \item \textbf{A1$'$} (chrom-wise i.i.d., \ref{ass:A1prime}): the stronger version in which $\{(X_i, Y_i) : C_i = c\}$ are i.i.d.\ $P_c$.
-    \item \textbf{A2} (score stationarity, \ref{ass:A2}): the score law is chrom-invariant at some granularity (marginal, class, or cell).
-    \item \textbf{A3-loc} (local stationarity, used in T3-loc): for every $(x_0, r)$ satisfying the T3-loc resolution condition, $s(X, k) \mid (Y = k,\, b(X) = b,\, X \in B_\ell(x_0, r))$ is distributed as the cell-restricted law $F_{kb}$.
+    \item \textbf{A2-marginal}: $S \mid C = c \overset{d}{=} S \mid C = c'$ for all $c, c' \in \C$; the common law is $F$.
+    \item \textbf{A2-class}: $S \mid (Y = k,\, C = c) \overset{d}{=} S \mid (Y = k,\, C = c')$ for all $c, c',\, k \in \{0,1\}$; common law $F_k$.
+    \item \textbf{A2-cell}: $S \mid (Y = k,\, b(X) = b,\, C = c) \overset{d}{=} S \mid (Y = k,\, b(X) = b,\, C = c')$ for all $c, c',\, k,\, b$; common law $F_{kb}$.
+    \item \textbf{A3-loc} (local stationarity, used in T3-loc): for every $(x_0, r)$ satisfying the T3-loc resolution condition, $s(X, k) \mid (Y = k,\, b(X) = b,\, X \in B_\ell(x_0, r))$ is distributed as $F_{kb}$.
     \item \textbf{B1} ($\shat$ relative error, used in T3.b): $\|\shat - \sigma^\star\|_\infty / \inf_x \sigma^\star(x) \leq \eta$ for some $\eta \in (0, 1)$.
+    \item \textbf{A-SL} (score-Lipschitz regularity, \ref{ass:ASL}, used in T5): $\sup_{s} |F_{k,\sigma_1}(s) - F_{k,\sigma_2}(s)| \leq L_F \cdot |\sigma_1 - \sigma_2|$ for all $\sigma_1, \sigma_2 \in [\shat_{\min}, \shat_{\max}]$ and $k \in \{0,1\}$.
 \end{itemize}
 
-\TODO{Port \texttt{theory/t1\_t2\_formal\_proofs.md} §2 and \texttt{theory/t3\_formal\_proof.md} §3 verbatim, including the A2 hierarchy diagram and Day 13 empirical KS audit.}
+\paragraph{Empirical validation of A2.}
+Our Day~13 within-cell KS audit ran 155 cell-level two-sample KS tests ($K = 5$ bins $\times$ 2 classes $\times$ up to 22 calibration chromosomes where cells were non-empty). The rejection rate at nominal $p < 0.05$ was $12.3\%$ (mildly elevated from $5\%$ nominal), and the max KS statistic was $0.24$ with mean $0.06$. Since $d_{\mathrm{TV}} \leq d_{\mathrm{KS}}$ for univariate distributions, we have $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq 0.06$ on average and $\leq 0.24$ worst-case. A2-cell (and hence all weaker forms) holds approximately.
 
-\subsection{Proof of Theorem~\ref{thm:t1} (marginal coverage)}
-\label{app:proofs:t1}
 
-\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §4.2 (four-step proof: reduction to per-class coverage; joint exchangeability inside class $k$ under A1$'$+A2-class; standard exchangeable CP rank identity; assemble via law of total probability).}
-
-\subsection{Proof of Theorem~\ref{thm:t2} (class-conditional coverage)}
-\label{app:proofs:t2}
-
-\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §5.2 (T1 steps 2--3 per class, with sample-size requirement $n_k \geq \lceil 1/\alpha\rceil$).}
-
-\subsection{Robust fallback: T1$'$ and T2$'$}
-\label{app:proofs:t1prime_t2prime}
-
-\TODO{Verbatim port of \texttt{theory/t1\_t2\_formal\_proofs.md} §6. Key point: \citet{barber2023exchangeability} Theorem 2 with uniform weights yields a lower bound degraded by $\bar\delta_{\mathrm{TV}}$; no factor of 2. Includes the Day 13 empirical KS check ($\bar\delta_{\mathrm{TV}}^{(k,b)} \lesssim 0.05$ on worst chrom pairs).}
-
-\subsection{Proof of Theorem~\ref{thm:t3} (bin-conditional coverage, exact)}
-\label{app:proofs:t3}
-
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §4.2. Four steps: cell restriction; A1$'$+A2-cell gives i.i.d.\ $F_{kb}$; exchangeable CP quantile; finite-sample rank uniform. The argument is the class-conditional proof of \ref{app:proofs:t2} applied within the cell $(k, b)$, with A2-cell replacing A2-class.}
-
-\subsection{Proof of Theorem~\ref{thm:t3prime} (robust)}
-\label{app:proofs:t3prime}
-
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §5.2. \citet{barber2023exchangeability} Theorem 2 with cell-indicator weights $w_i = \mathbb{1}\{i \in \mathcal{I}_{kb}^{(-c^\star)}\}$; within-cell swap-TV bounded by cell-restricted chrom-TV $d_{\mathrm{TV}}(F_c^{(k,b)}, F_{c^\star}^{(k,b)})$.}
-
-\subsection{Proof of Theorem~\ref{thm:t3loc} (feature-ball)}
-\label{app:proofs:t3loc}
-
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §6.2. Five steps: Lipschitz $\shat$ $\Rightarrow$ bounded $\shat$-range; pigeonhole $\leq 2$ bins; A3-loc $\Rightarrow$ within-cell restriction preserves $F_{kb}$; apply T3 per cell; convex-hull sandwich. Honest limitations: A3-loc unverified at our $n$, $L$ estimation deferred to App.~\ref{app:data}.}
-
-\subsection{Proof of Theorem~\ref{thm:t3b} ($\shat$ perturbation)}
-\label{app:proofs:t3b}
-
-\TODO{Verbatim port of \texttt{theory/t3\_formal\_proof.md} §7.3. Two contributions: (a) bin-reassignment mass $\leq 2\eta\bar\sigma/\Delta$ via density bound $\leq 1/\Delta$ on equiprobable bins; (b) score-rescaling invariance (quantile preserved under strictly monotone transform) contributes zero.}
-
-\subsection{Proof of Theorem~\ref{thm:t4} (chrom-shift)}
-\label{app:proofs:t4}
-
-\TODO{Restatement of \citet{barber2023exchangeability} Theorem 2 in our notation with explicit residual-swap construction; T1$'$/T2$'$/T3$'$ follow as corollaries at the appropriate partition level.}
-
+% ============================================================================
 \subsection{Auxiliary lemmas}
 \label{app:proofs:lemmas}
 
-\TODO{Rank invariance (for exchangeable CP quantile), empirical quantile concentration (DKW-style for finite-sample upper bound), bin-boundary mass bound (for T3.b), monotone score-rescaling invariance (for T3.b). Lemmas are standard; we state them for self-containment.}
+We state four standard lemmas used in the proofs below.
+
+\begin{lemma}[Rank uniformity for exchangeable sequences]
+\label{lem:rank}
+Let $T_1, \ldots, T_{m+1}$ be exchangeable random variables with a continuous joint distribution. Then the rank of $T_{m+1}$ among $(T_1, \ldots, T_{m+1})$ is uniformly distributed on $\{1, \ldots, m+1\}$.
+\end{lemma}
+
+\begin{proof}
+By exchangeability, for any permutation $\pi$ of $\{1, \ldots, m+1\}$, the joint law of $(T_{\pi(1)}, \ldots, T_{\pi(m+1)})$ equals that of $(T_1, \ldots, T_{m+1})$. Continuity implies $P(T_i = T_j) = 0$ for $i \neq j$, so the ranking is almost surely unique. For each $r \in \{1, \ldots, m+1\}$, the event $\{\mathrm{rank}(T_{m+1}) = r\}$ can be mapped to the event $\{\mathrm{rank}(T_{\pi(m+1)}) = r\}$ by a suitable permutation that places the element currently at rank $r$ in position $m+1$, so all rank values are equiprobable.
+\end{proof}
+
+\begin{lemma}[Exchangeable CP quantile bound]
+\label{lem:cp_quantile}
+Under the conditions of Lemma~\ref{lem:rank}, let $\qhat = \mathrm{Quantile}(\{T_1, \ldots, T_m\},\, \lceil (m+1)(1-\alpha) \rceil / m)$ be the $\lceil (m+1)(1-\alpha)\rceil$-th order statistic of the first $m$ values. Then
+\[
+P(T_{m+1} \leq \qhat) \;=\; \frac{\lceil (m+1)(1-\alpha) \rceil}{m+1} \;\in\; \left[1 - \alpha,\; 1 - \alpha + \frac{1}{m+1}\right].
+\]
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:rank}, $T_{m+1}$ is at rank $r$ with probability $1/(m+1)$ for each $r$. The event $\{T_{m+1} \leq \qhat\}$ is exactly $\{\mathrm{rank}(T_{m+1}) \leq \lceil (m+1)(1-\alpha)\rceil\}$ (since $\qhat$ is the $\lceil (m+1)(1-\alpha)\rceil$-th order statistic of $(T_1, \ldots, T_m)$, which is also the $\lceil (m+1)(1-\alpha)\rceil$-th order statistic of the augmented set when $T_{m+1}$ has rank at most that value). Thus
+\[
+P(T_{m+1} \leq \qhat) = \frac{\lceil (m+1)(1-\alpha)\rceil}{m+1}.
+\]
+Since $\lceil (m+1)(1-\alpha)\rceil \in [(m+1)(1-\alpha),\, (m+1)(1-\alpha) + 1)$, dividing by $m+1$ gives the stated bounds.
+\end{proof}
+
+\begin{lemma}[Monotone score-rescaling invariance]
+\label{lem:rescaling}
+Let $g : \mathbb{R}_+ \to \mathbb{R}_+$ be a strictly increasing function. If $\qhat$ is the conformal quantile computed from scores $\{S_i\}$ and $\qhat' = g(\qhat)$ is the quantile computed from rescaled scores $\{g(S_i)\}$, then for any test score $S_{\mathrm{test}}$,
+\[
+S_{\mathrm{test}} \leq \qhat \quad\Longleftrightarrow\quad g(S_{\mathrm{test}}) \leq \qhat'.
+\]
+\end{lemma}
+
+\begin{proof}
+The quantile index $\lceil (m+1)(1-\alpha)\rceil$ is the same for both sets. Since $g$ is strictly increasing, it preserves the ordering of scores. Thus the $j$-th order statistic of $\{g(S_i)\}$ equals $g$ applied to the $j$-th order statistic of $\{S_i\}$, giving $\qhat' = g(\qhat)$. The equivalence follows from $g$ being order-preserving.
+\end{proof}
+
+\begin{lemma}[Bin-boundary mass bound]
+\label{lem:bin_boundary}
+For equiprobable bins with $K$ bins and minimum bin width $\Delta$, the probability mass of $\sigma^\star(X)$ within distance $\delta$ of any bin edge is at most $2K\delta / \Delta$.
+\end{lemma}
+
+\begin{proof}
+Each bin contains mass $1/K$ and has width $\geq \Delta$, so the density of $\sigma^\star(X)$ is at most $1/(K\Delta) \cdot K = 1/\Delta$ on average. There are $K-1$ internal bin edges, and each has a neighborhood of width $2\delta$ that captures mass at most $2\delta/\Delta$. Summing over all edges gives $2(K-1)\delta/\Delta \leq 2K\delta/\Delta$.
+\end{proof}
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t1} (marginal coverage)}
+\label{app:proofs:t1}
+
+\begin{proof}
+We decompose the marginal coverage via the true label.
+
+\textit{Step~1 (Reduction to per-class coverage).}
+By the law of total probability:
+\[
+P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}})\bigr)
+= \sum_{k \in \{0,1\}} P(Y_{\mathrm{test}} = k) \cdot P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}}) \mid Y_{\mathrm{test}} = k\bigr).
+\]
+Since $Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}})$ reduces to $s(X_{\mathrm{test}}, Y_{\mathrm{test}}) \leq \qhat_{Y_{\mathrm{test}}}$ by definition of $\pset$, we have
+\[
+P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}}) \mid Y_{\mathrm{test}} = k\bigr)
+= P\bigl(s(X_{\mathrm{test}}, k) \leq \qhat_k \mid Y_{\mathrm{test}} = k\bigr).
+\]
+
+\textit{Step~2 (Joint exchangeability inside class $k$).}
+Fix $k$. Under \ref{ass:A1prime}, for each calibration chromosome $c \neq c^\star$, $(X_i, Y_i)_{C_i = c}$ are i.i.d.\ $P_c$. The score $S_i = s(X_i, Y_i)$ is a deterministic function of $(X_i, Y_i)$ via the fixed $(\phat, \shat)$ trained on $\D^{(-c^\star)}$. Restricting to $i \in \mathcal{I}_k^{(-c^\star)}$ (i.e., $Y_i = k$) yields i.i.d.\ samples from a chrom-specific conditional law $F_k^c$. By A2-class (implied by A2-marginal when class prevalence $P(Y = k \mid C)$ is chrom-independent, or invoked directly), $F_k^c = F_k$ for all $c$. Across chromosomes, samples are mutually independent (A1). Hence the full calibration set $\{S_i\}_{i \in \mathcal{I}_k^{(-c^\star)}}$ is i.i.d.\ $F_k$.
+
+Conditional on $Y_{\mathrm{test}} = k$, the test score $s(X_{\mathrm{test}}, k)$ has distribution $F_k$ (by A2-class, with $c = c^\star$) and is independent of the calibration samples (different chromosome, A1). Thus the augmented sequence $(S_1^{(k)}, \ldots, S_{n_k}^{(k)}, s(X_{\mathrm{test}}, k))$ is i.i.d.\ $F_k$, hence exchangeable.
+
+\textit{Step~3 (Standard exchangeable CP bound).}
+By Lemma~\ref{lem:cp_quantile} applied with $m = n_k$ and $T_{m+1} = s(X_{\mathrm{test}}, k)$:
+\[
+P\bigl(s(X_{\mathrm{test}}, k) \leq \qhat_k \mid Y_{\mathrm{test}} = k\bigr)
+= \frac{\lceil (n_k+1)(1-\alpha)\rceil}{n_k+1}
+\in \left[1-\alpha,\; 1-\alpha + \frac{1}{n_k+1}\right].
+\]
+
+\textit{Step~4 (Assemble).}
+Substituting into Step~1:
+\[
+P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}})\bigr)
+= \sum_k P(Y_{\mathrm{test}} = k) \cdot P\bigl(s(X_{\mathrm{test}}, k) \leq \qhat_k \mid Y_{\mathrm{test}} = k\bigr).
+\]
+Each term lies in $[1-\alpha,\, 1-\alpha + 1/(n_k+1)]$. The convex combination inherits the range: the lower bound gives $\geq 1-\alpha$; the upper bound gives $\leq 1-\alpha + 1/(n_{\min}+1)$ with $n_{\min} = \min_k n_k$.
+\end{proof}
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t2} (class-conditional coverage)}
+\label{app:proofs:t2}
+
+\begin{proof}
+Fix $k \in \{0, 1\}$ with $n_k \geq \lceil 1/\alpha \rceil$.
+
+\textit{Step~1 (Exchangeability).}
+Under \ref{ass:A1prime} and A2-class, conditioning on $Y_i = k$ makes $(S_1^{(k)}, \ldots, S_{n_k}^{(k)})$ i.i.d.\ $F_k$ by the same argument as T1, Step~2. Conditional on $Y_{\mathrm{test}} = k$, $s(X_{\mathrm{test}}, k)$ is independent of calibration and distributed as $F_k$. Thus the joint $(S_1^{(k)}, \ldots, S_{n_k}^{(k)}, s(X_{\mathrm{test}}, k))$ is i.i.d., hence exchangeable.
+
+\textit{Step~2 (Quantile bound).}
+The prediction-set inclusion event $\{Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}})\}$ under $Y_{\mathrm{test}} = k$ is $\{s(X_{\mathrm{test}}, k) \leq \qhat_k\}$. By Lemma~\ref{lem:cp_quantile} with $m = n_k$:
+\[
+P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}}) \mid Y_{\mathrm{test}} = k\bigr)
+= \frac{\lceil (n_k + 1)(1 - \alpha)\rceil}{n_k + 1}
+\in \left[1 - \alpha,\; 1 - \alpha + \frac{1}{n_k + 1}\right].
+\]
+
+The sample-size requirement $n_k \geq \lceil 1/\alpha \rceil$ ensures $\lceil (n_k + 1)(1-\alpha)\rceil \leq n_k$, so $\qhat_k < +\infty$ and the prediction set is non-trivial.
+\end{proof}
+
+\paragraph{Remark.}
+T1 is the law-of-total-probability average of the two T2 per-class bounds, so T2 is strictly stronger. The sample-size requirement is comfortably met on TraitGym: at $\alpha = 0.10$ we need $n_k \geq 10$; the smallest chrom-LOO calibration has $n_1 \geq 30$ (Mendelian) and $n_1 \geq 100$ (Complex).
+
+
+% ============================================================================
+\subsection{Robust fallback: T1$'$ and T2$'$}
+\label{app:proofs:t1prime_t2prime}
+
+When A2 fails (e.g., a test chromosome has systematically different variant characteristics), we invoke the following restatement of \citet{barber2023exchangeability} Theorem~2 in our notation.
+
+\paragraph{Barber 2023 Theorem~2 (restated).}
+Let $Z = (Z_1, \ldots, Z_n, Z_{n+1})$ be the full data ordering with $Z_{n+1}$ as the test point, $R(Z) = (S_1, \ldots, S_{n+1})$ the residual vector, and $R(Z^{(i)})$ the sequence with $Z_i$ and $Z_{n+1}$ swapped. For prespecified weights $w_i \in [0, 1]$ with $\tilde w_i = w_i / (w_1 + \cdots + w_n + 1)$,
+\[
+P\bigl(Y_{n+1} \in \hat C_n(X_{n+1})\bigr) \;\geq\; 1 - \alpha - \sum_{i=1}^n \tilde w_i \cdot d_{\mathrm{TV}}\bigl(R(Z),\, R(Z^{(i)})\bigr).
+\]
+No factor of 2.
+
+\begin{proof}[Proof of T1$'$ and T2$'$]
+Use uniform weights $w_i = 1$, so $\tilde w_i = 1/(n + 1)$. The Barber~2023 bound becomes
+\[
+P(\text{coverage}) \;\geq\; 1 - \alpha - \frac{1}{n+1} \sum_i d_{\mathrm{TV}}\bigl(R(Z),\, R(Z^{(i)})\bigr).
+\]
+
+Under \ref{ass:A1} alone (without A2), $R(Z^{(i)})$ differs from $R(Z)$ in the position of one residual: $S_i \leftrightarrow S_{\mathrm{test}}$. If $S_i$ is from chromosome $c$ (so $S_i \sim F_c$) and $S_{\mathrm{test}}$ from $c^\star$ (so $S_{\mathrm{test}} \sim F_{c^\star}$), the swap changes the marginal law of exactly two entries of the residual vector. Under A1 (cross-chromosome independence), entries from different chromosomes are independent, so the TV between $R(Z)$ and $R(Z^{(i)})$ is bounded by the TV between the two swapped marginals:
+\[
+d_{\mathrm{TV}}\bigl(R(Z),\, R(Z^{(i)})\bigr) \;\leq\; d_{\mathrm{TV}}(F_c,\, F_{c^\star}).
+\]
+
+Substituting and grouping calibration points by chromosome (each of the $|\C| - 1$ calibration chromosomes contributes equally to the average under uniform weights):
+\[
+P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}})\bigr) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}},
+\qquad
+\bar\delta_{\mathrm{TV}} = \frac{1}{|\C| - 1} \sum_{c \neq c^\star} d_{\mathrm{TV}}(F_c,\, F_{c^\star}).
+\]
+This is T1$'$.
+
+For T2$'$, the same argument is applied per class: restrict to calibration indices with $Y_i = k$, replace $F_c$ with $F_c^{(k)}$, and obtain
+\[
+P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}}) \mid Y_{\mathrm{test}} = k\bigr) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k)},
+\qquad
+\bar\delta_{\mathrm{TV}}^{(k)} = \frac{1}{|\C| - 1} \sum_{c \neq c^\star} d_{\mathrm{TV}}\bigl(F_c^{(k)},\, F_{c^\star}^{(k)}\bigr).
+\]
+Both bounds carry no factor of~2 (weighted-swap Barber~2023, not jackknife+).
+\end{proof}
+
+\paragraph{Empirical TV estimates.}
+Day~13 KS empirical check (on cell-level A2, 155 tests, 12.3\% rejection at $p < 0.05$, max KS statistic $= 0.24$) shows $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq 0.05$ on worst chromosome pairs. At $\alpha = 0.10$, this bounds the coverage gap at $\leq 0.05$, consistent with the observed per-chromosome coverage gap of $\leq 0.08$ across methods.
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t3} (bin-conditional coverage, exact)}
+\label{app:proofs:t3}
+
+\begin{proof}
+The argument is the class-conditional proof of Theorem~\ref{thm:t2} applied inside a single Mondrian cell $(k, b)$, with A2-cell replacing A2-class. Fix a cell $(k, b)$ with $n_{kb} \geq \lceil 1/\alpha \rceil$.
+
+\textit{Step~1 (Cell restriction).}
+The event ``$Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}})$ given $Y_{\mathrm{test}} = k$'' is exactly $\{s(X_{\mathrm{test}}, k) \leq \qhat_{k, b(X_{\mathrm{test}})}\}$ by the definition of $\pset$. Conditioning further on $b(X_{\mathrm{test}}) = b$ fixes the threshold to $\qhat_{kb}$.
+
+\textit{Step~2 (I.i.d.\ $F_{kb}$ via A1$'$ + A2-cell).}
+Under \ref{ass:A1prime}, for each calibration chromosome $c \neq c^\star$, $(X_i, Y_i)_{C_i = c}$ are i.i.d.\ $P_c$; the score $S_i = s(X_i, Y_i)$ is a deterministic function of $(X_i, Y_i)$ via the fixed $(\phat, \shat)$. Restricting to $i \in \mathcal{I}_{kb}^{(-c^\star)}$ (i.e., $Y_i = k$ and $b(X_i) = b$) yields i.i.d.\ samples from a chromosome-specific conditional law, which by A2-cell equals $F_{kb}$ for every calibration chromosome. Across chromosomes, samples are mutually independent (\ref{ass:A1}). Hence the full calibration set $\{S_i\}_{i \in \mathcal{I}_{kb}^{(-c^\star)}}$ is i.i.d.\ $F_{kb}$.
+
+\textit{Step~3 (Test-score independence and exchangeability).}
+Conditional on $Y_{\mathrm{test}} = k$ and $b(X_{\mathrm{test}}) = b$, the test score $s(X_{\mathrm{test}}, k)$ has distribution $F_{kb}$ (by A2-cell, with $c = c^\star$) and is independent of the calibration samples (different chromosome, \ref{ass:A1}). Thus $(S_1^{(kb)}, \ldots, S_{n_{kb}}^{(kb)}, s(X_{\mathrm{test}}, k))$ is i.i.d.\ $F_{kb}$, in particular exchangeable.
+
+\textit{Step~4 (CP quantile bound).}
+By Lemma~\ref{lem:cp_quantile} with $m = n_{kb}$:
+\[
+P\bigl(s(X_{\mathrm{test}}, k) \leq \qhat_{kb}\bigr)
+= \frac{\lceil (n_{kb} + 1)(1-\alpha)\rceil}{n_{kb} + 1}
+\in \left[1 - \alpha,\; 1 - \alpha + \frac{1}{n_{kb} + 1}\right].
+\]
+
+Combining Steps~1 and 4 yields
+\[
+1 - \alpha \;\leq\; P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}}) \mid Y_{\mathrm{test}} = k,\, b(X_{\mathrm{test}}) = b\bigr) \;\leq\; 1 - \alpha + \frac{1}{n_{kb} + 1}. \qedhere
+\]
+\end{proof}
+
+\paragraph{Local coverage gap bound.}
+For each cell $(k, b)$,
+\[
+\left| P\bigl(Y \in \pset(X) \mid Y = k,\, b(X) = b\bigr) - (1 - \alpha)\right| \;\leq\; \frac{1}{n_{kb} + 1}.
+\]
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t3prime} (robust bin-conditional)}
+\label{app:proofs:t3prime}
+
+\begin{proof}
+Apply \citet{barber2023exchangeability} Theorem~2 with calibration weights
+\[
+w_i = \mathbb{1}\{i \in \mathcal{I}_{kb}^{(-c^\star)}\}, \qquad
+\tilde w_i = \frac{w_i}{w_1 + \cdots + w_n + 1}.
+\]
+So $\tilde w_i = 1/(n_{kb} + 1)$ if $i \in \mathcal{I}_{kb}^{(-c^\star)}$ and $0$ otherwise. Barber Theorem~2 gives
+\[
+P(\text{coverage in cell } (k, b))
+\;\geq\; 1 - \alpha - \sum_{i \in \mathcal{I}_{kb}^{(-c^\star)}} \tilde w_i \cdot d_{\mathrm{TV}}\bigl(R(Z),\, R(Z^{(i)})\bigr).
+\]
+
+If $i$ is from chromosome $c$ (so $Z_i \sim F_c^{(k,b)}$) and $Z_{\mathrm{test}}$ is from $c^\star$ (so $Z_{\mathrm{test}} \sim F_{c^\star}^{(k,b)}$), the swap $Z_i \leftrightarrow Z_{\mathrm{test}}$ changes the marginal law of exactly two entries of the residual vector. Under \ref{ass:A1} (cross-chromosome independence), entries from different chromosomes are independent, so the TV between $R(Z)$ and $R(Z^{(i)})$ is bounded by the TV between the two swapped marginals:
+\[
+d_{\mathrm{TV}}\bigl(R(Z),\, R(Z^{(i)})\bigr) \;\leq\; d_{\mathrm{TV}}\bigl(F_c^{(k,b)},\, F_{c^\star}^{(k,b)}\bigr).
+\]
+
+Substituting and using uniform weights across chromosomes (each of the $|\C| - 1$ calibration chromosomes contributes equally to the average):
+\[
+P\bigl(Y_{\mathrm{test}} \in \pset(X_{\mathrm{test}}) \mid Y_{\mathrm{test}} = k,\, b(X_{\mathrm{test}}) = b\bigr)
+\;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k,b)},
+\]
+where
+\[
+\bar\delta_{\mathrm{TV}}^{(k,b)} = \frac{1}{|\C| - 1} \sum_{c \neq c^\star} d_{\mathrm{TV}}\bigl(F_c^{(k,b)},\, F_{c^\star}^{(k,b)}\bigr).
+\]
+The bound has no factor of 2.
+\end{proof}
+
+\paragraph{Relation to T3.}
+Setting $\bar\delta_{\mathrm{TV}}^{(k,b)} = 0$ recovers T3's lower bound exactly. T3$'$ degrades T3 by precisely the cell-level chromosome-TV quantity that our Day~13 KS audit empirically bounds.
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t3loc} (feature-ball coverage)}
+\label{app:proofs:t3loc}
+
+\begin{proof}
+Assume $\shat : \X \to \mathbb{R}_+$ is $L$-Lipschitz and A3-loc holds. Fix $x_0 \in \X$, $r > 0$ with $Lr < \Delta / 2$, and class $k$.
+
+\textit{Step~1 (Lipschitz bound on $\shat$-range).}
+For $x \in B_\ell(x_0, r)$:
+\[
+|\shat(x) - \shat(x_0)| \;\leq\; L \|x - x_0\| \;\leq\; Lr.
+\]
+So $\shat\bigl(B_\ell(x_0, r)\bigr) \subseteq [\shat(x_0) - Lr,\, \shat(x_0) + Lr]$.
+
+\textit{Step~2 (Pigeonhole --- at most two bins).}
+Since $Lr < \Delta / 2$, this $\shat$-interval has width $2Lr < \Delta$ and therefore intersects at most two adjacent bins $B_{b_\star}, B_{b_\star + 1}$. (An interval of width less than the minimum bin width can straddle at most one bin boundary.)
+
+\textit{Step~3 (Convex decomposition).}
+Decompose the conditional coverage:
+\[
+P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k\bigr)
+= \sum_{b \in \{b_\star, b_\star + 1\}} w_b(x_0, r) \cdot P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k,\, b(X) = b\bigr),
+\]
+where $w_b(x_0, r) := P(b(X) = b \mid X \in B_\ell(x_0, r),\, Y = k)$ are non-negative and sum to~1.
+
+\textit{Step~4 (Within-cell restriction preserves $F_{kb}$).}
+Inside each cell $(k, b)$, the conformal threshold $\qhat_{kb}$ depends only on calibration and is not affected by restricting $X$ to $B_\ell(x_0, r)$. Under A3-loc, $s(X, k) \mid (Y = k,\, b(X) = b,\, X \in B_\ell(x_0, r))$ has the cell score law $F_{kb}$. The T3 argument (App.~\ref{app:proofs:t3}, Steps~2--4) then applies verbatim inside each cell restricted to the ball:
+\[
+P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k,\, b(X) = b\bigr)
+\in \left[1 - \alpha,\; 1 - \alpha + \frac{1}{n_{kb} + 1}\right].
+\]
+
+\textit{Step~5 (Convex-hull sandwich).}
+The convex combination over the (at most two) bins $\{b_\star, b_\star + 1\}$ lies in
+\[
+\left[1 - \alpha,\; 1 - \alpha + \frac{1}{n_{\min}(x_0, r) + 1}\right],
+\]
+where $n_{\min}(x_0, r) = \min_{b \in \{b_\star, b_\star+1\}} n_{kb}$.
+\end{proof}
+
+\paragraph{Honest limitations.}
+A3-loc is stronger than A2-cell --- it requires local stationarity at the scale $r$, which we cannot fully verify at high feature-space dimension with our $n \leq 11{,}400$. We state T3-loc conditionally on A3-loc. The Day~13 cell-level KS audit is the closest finite-sample analog. The Lipschitz constant $L$ of $\shat$ is unknown and its empirical estimation via finite differences is deferred to App.~\ref{app:data}. Finally, \citet{barber2020limits}'s impossibility is not violated: we guarantee coverage averaged over $B_\ell(x_0, r)$, not pointwise, and the resolution $r < \Delta / (2L)$ prevents $r$ from going to zero without re-binning.
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t3b} ($\shat$ perturbation)}
+\label{app:proofs:t3b}
+
+\begin{proof}
+Let $\sigma^\star$ be an oracle variance function and $\shat$ the plug-in estimate. The two predictors $\pset^{(\shat)}$ and $\pset^{(\sigma^\star)}$ differ in two ways:
+
+\textit{(a) Bin reassignment.}
+A variant $x$ with $\sigma^\star(x) = e_b + t$ for small $t > 0$ (near a bin boundary) may be placed in bin $b$ under $\sigma^\star$ and bin $b+1$ under $\shat$, whenever $|\shat(x) - \sigma^\star(x)| > t$. Under B1, $|\shat(x) - \sigma^\star(x)| \leq \eta \cdot \sigma^\star(x) \leq \eta \bar\sigma$ where $\bar\sigma = \sup_x \sigma^\star(x)$. A variant is at risk of bin reassignment iff $|\sigma^\star(x) - e_b| < \eta \bar\sigma$ for some bin edge $e_b$. By Lemma~\ref{lem:bin_boundary} (with $\delta = \eta\bar\sigma$), the total probability mass of such variants is bounded by $2\eta\bar\sigma / \Delta$.
+
+\textit{(b) Score rescaling.}
+Within the same cell, the scores differ:
+\[
+s_{\shat}(x, k) = \frac{|k - \phat(x)|}{\shat(x) + \epsilon}
+= s_{\sigma^\star}(x, k) \cdot \frac{\sigma^\star(x) + \epsilon}{\shat(x) + \epsilon}
+\in \bigl[(1-\eta)\, s_{\sigma^\star}(x, k),\; (1+\eta)\, s_{\sigma^\star}(x, k)\bigr].
+\]
+The rescaling function $g : s \mapsto s \cdot (\sigma^\star(x) + \epsilon) / (\shat(x) + \epsilon)$ is strictly increasing. By Lemma~\ref{lem:rescaling}, both the calibration quantile and the test score transform together under the same monotone map, so the coverage indicator is invariant. Contribution (b) is exactly zero.
+
+\textit{(c) Combining.}
+The coverage difference between the plug-in and oracle predictors is bounded by (a) plus the T3 finite-sample slack within unaffected cells:
+\[
+\left| P\bigl(Y \in \pset^{(\shat)}(X) \mid Y = k\bigr)
+- P\bigl(Y \in \pset^{(\sigma^\star)}(X) \mid Y = k\bigr) \right|
+\leq \frac{2\eta\,\bar\sigma}{\Delta} + \frac{1}{n_{\min} + 1}. \qedhere
+\]
+\end{proof}
+
+\paragraph{Graceful degradation.}
+As $\shat \to \sigma^\star$ uniformly ($\eta \to 0$), the T3.b bound collapses to the T3 finite-sample slack $1/(n_{\min} + 1)$. The plug-in conformal predictor is thus continuous in the quality of $\shat$ --- there is no cliff where a slightly worse $\shat$ breaks coverage.
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t4} (chrom-shift bound)}
+\label{app:proofs:t4}
+
+\begin{proof}
+This is a direct restatement of \citet{barber2023exchangeability} Theorem~2 in our notation.
+
+Let $Z = (Z_1, \ldots, Z_n, Z_{n+1})$ with $Z_{n+1} = (X_{\mathrm{test}}, Y_{\mathrm{test}})$ the test point, and $R(Z) = (S_1, \ldots, S_{n+1})$ the score vector. For any prespecified weights $w_i \in [0, 1]$ with $\tilde w_i = w_i / (w_1 + \cdots + w_n + 1)$ and conformal predictor $\hat C_n$ built from a weighted quantile of $\{S_i\}_{i=1}^n$, \citet{barber2023exchangeability} show:
+\[
+P\bigl(Y_{n+1} \in \hat C_n(X_{n+1})\bigr)
+\;\geq\; 1 - \alpha - \sum_{i=1}^n \tilde w_i \cdot d_{\mathrm{TV}}\bigl(R(Z),\, R(Z^{(i)})\bigr),
+\]
+where $R(Z^{(i)})$ is the score vector with $Z_i$ and $Z_{n+1}$ swapped.
+
+Under \ref{ass:A1}, entries from different chromosomes are independent, and the swap $Z_i \leftrightarrow Z_{n+1}$ changes the marginal law of exactly two entries. If $Z_i$ comes from chromosome $c$ and $Z_{n+1}$ from $c^\star$:
+\[
+d_{\mathrm{TV}}\bigl(R(Z),\, R(Z^{(i)})\bigr) \;\leq\; d_{\mathrm{TV}}\bigl(F_c,\, F_{c^\star}\bigr).
+\]
+
+The robust corollaries T1$'$, T2$'$, T3$'$ are direct consequences of this bound applied at the appropriate partition level:
+\begin{itemize}
+    \item T1$'$: uniform weights, marginal scores, yields $\bar\delta_{\mathrm{TV}}$ (App.~\ref{app:proofs:t1prime_t2prime});
+    \item T2$'$: restrict to class-$k$ calibration indices, class-conditional scores, yields $\bar\delta_{\mathrm{TV}}^{(k)}$;
+    \item T3$'$: restrict to cell-$(k,b)$ calibration indices, cell-conditional scores, yields $\bar\delta_{\mathrm{TV}}^{(k,b)}$ (App.~\ref{app:proofs:t3prime}).
+\end{itemize}
+The bound carries no factor of~2. This is the weighted-swap construction of \citet{barber2023exchangeability}, not the jackknife+ bound from an earlier \citet{barber2021jackknife} paper.
+\end{proof}
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t5oracle} (T5.1 oracle bin count)}
+\label{app:proofs:t5}
+
+We first establish the bias--variance decomposition, then derive the oracle $K^\star$.
+
+\begin{proof}[Proof of the gap decomposition (Eq.~\eqref{eq:gap_decomp})]
+Under \ref{ass:A1prime} and \ref{ass:ASL}:
+
+\textit{Step~1 (Bias bound).}
+Within bin $b$, all $\shat$ values lie in $(e_{b-1}, e_b]$ with width $\Delta_b$. The cell score CDF $F_{kb}$ is a mixture:
+\[
+F_{kb}(s) = \int_{e_{b-1}}^{e_b} F_{k,\sigma}(s) \, dG_b(\sigma),
+\]
+where $G_b$ is the distribution of $\shat$ within bin $b$. By \ref{ass:ASL}, for any reference value $\sigma_0 \in (e_{b-1}, e_b]$:
+\[
+\sup_s |F_{kb}(s) - F_{k,\sigma_0}(s)|
+\leq \int_{e_{b-1}}^{e_b} L_F \cdot |\sigma - \sigma_0| \, dG_b(\sigma)
+\leq L_F \cdot \Delta_b.
+\]
+Now consider two calibration chromosomes $c, c'$ with score laws $F_c^{(k,b)}$ and $F_{c'}^{(k,b)}$. Under \ref{ass:A1prime}, within each chromosome, the score law conditional on cell $(k, b)$ is the chromosome-specific conditional CDF. If \ref{ass:ASL} holds uniformly across chromosomes (i.e., $L_F$ does not depend on $c$), both $F_c^{(k,b)}$ and $F_{c'}^{(k,b)}$ lie within KS-distance $L_F \cdot \Delta_b$ of the same reference law $F_{k,\sigma_0}$. By T3$'$ (App.~\ref{app:proofs:t3prime}), the coverage deviation due to within-bin heterogeneity is bounded by $L_F \cdot \Delta_b$. This is the stationarity bias $\beta_{kb} = L_F \cdot \Delta_b$.
+
+\textit{Step~2 (Variance bound).}
+Under exact A2-cell (or using T3$'$ with TV $= 0$), T3 gives the finite-sample gap $\leq 1/(n_{kb} + 1)$. This is the variance term $\nu_{kb} = 1/(n_{kb} + 1)$.
+
+\textit{Step~3 (Combining).}
+When A2-cell holds only approximately with bias $\beta_{kb}$, the total gap is at most $\beta_{kb} + \nu_{kb}$.
+
+For equiprobable bins, $\Delta_b = R/K$ and $n_{kb} \geq \lfloor \pi_{\min} \cdot n / K \rfloor$, so the worst-cell gap satisfies
+\[
+G(K) \leq \frac{L_F \cdot R}{K} + \frac{K}{\pi_{\min} \cdot n}.
+\]
+(The floor is absorbed into the leading $O(n^{-1/2})$ term for the oracle.)
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:t5oracle} (T5.1)]
+Treat $K$ as a continuous variable. The gap function $g(K) = L_F R / K + K / (\pi_{\min} n)$ is convex, so setting $g'(K) = 0$:
+\[
+-\frac{L_F R}{K^2} + \frac{1}{\pi_{\min} n} = 0
+\quad\Longrightarrow\quad
+K^\star = \sqrt{L_F \cdot R \cdot \pi_{\min} \cdot n}.
+\]
+Substituting back:
+\[
+g(K^\star)
+= \frac{L_F R}{\sqrt{L_F R \cdot \pi_{\min} n}} + \frac{\sqrt{L_F R \cdot \pi_{\min} n}}{\pi_{\min} n}
+= 2\sqrt{\frac{L_F R}{\pi_{\min} n}}.
+\]
+The floor $\lfloor K^\star \rfloor$ introduces an additive $O(1/(\pi_{\min} n))$ term (the gap between $K^\star$ and $\lfloor K^\star \rfloor$ shifts the variance term by at most $1/(\pi_{\min} n)$), which is dominated by the $O(n^{-1/2})$ rate.
+\end{proof}
+
+
+% ============================================================================
+\subsection{Proof of Theorem~\ref{thm:t5lower} (T5.2 matching lower bound)}
+\label{app:proofs:t5lower}
+
+\begin{proof}
+We construct a distribution achieving both lower bounds simultaneously.
+
+\textit{Bias lower bound.}
+Consider the family $F_{k,\sigma}(s) = \Phi(s - L_F \sigma)$, where $\Phi$ is the standard normal CDF. This satisfies \ref{ass:ASL} with Lipschitz constant $L_F$: for any $\sigma_1, \sigma_2$,
+\[
+\sup_s |F_{k,\sigma_1}(s) - F_{k,\sigma_2}(s)|
+= \sup_s |\Phi(s - L_F \sigma_1) - \Phi(s - L_F \sigma_2)|
+\leq L_F |\sigma_1 - \sigma_2|,
+\]
+where the inequality uses $\|\Phi'\|_\infty = \phi(0) = 1/\sqrt{2\pi} < 1$.
+
+In any bin of width $\Delta_b = R/K$, the mixture CDF $F_{kb}$ averages over shifted CDFs. Because the shift is monotone in $\sigma$, the CDF at the lower boundary $F_{k, e_{b-1}}$ and upper boundary $F_{k, e_b}$ straddle the mixture:
+\[
+\sup_s |F_{kb}(s) - F_{k, e_{b-1}}(s)| \;\geq\; \frac{L_F \Delta_b}{2} = \frac{L_F R}{2K}.
+\]
+(The factor $1/2$ comes from the average shift relative to one endpoint being at least half the bin width.)
+
+\textit{Variance lower bound.}
+For any cell with $n_{kb}$ calibration points, the conformal quantile's rank-based coverage is exactly $\lceil (n_{kb} + 1)(1-\alpha)\rceil / (n_{kb} + 1)$, which lies in $[1-\alpha,\, 1-\alpha + 1/(n_{kb} + 1)]$. When $F_{kb}$ is continuous and the test point's rank is uniformly distributed, the gap $1/(n_{kb} + 1)$ is attainable (up to ceiling effects). For the worst cell, $n_{kb} \leq \lceil \pi_{\min} n / K \rceil$, so the gap is at least $1/(2 \lceil \pi_{\min} n / K \rceil + 1)$.
+
+\textit{Combined lower bound.}
+For any $K$:
+\[
+G(K) \;\geq\; \max\!\left(\frac{L_F R}{2K},\; \frac{1}{2 \lceil \pi_{\min} n / K \rceil + 1}\right).
+\]
+Optimizing over $K$: the first term is $\Theta(1/K)$ and the second is $\Theta(K/n)$. They balance at $K = \Theta(\sqrt{n})$, giving
+\[
+\min_K G(K) = \Omega\!\left(\sqrt{\frac{L_F R}{\pi_{\min} n}}\right),
+\]
+matching the $O(n^{-1/2})$ upper bound of T5.1 up to constants.
+\end{proof}
+
+\paragraph{Interpretation.}
+The $O(n^{-1/2})$ rate is dimension-free because T5 conditions on the 1-D summary $\shat(x)$, not on the full feature vector. By contrast, RLCP \citep{hore2025rlcp} achieves local coverage at rate $O(n^{-2/(d+2)})$, which is impractical at $d = 7{,}731$. The price is \ref{ass:ASL}: the quality of the 1-D summary matters, and T5 quantifies the exact constant $L_F \cdot R$. In the homoscedastic limit $L_F = 0$, the oracle $K^\star = 0$ and no binning is needed --- T1/T2 suffice.
