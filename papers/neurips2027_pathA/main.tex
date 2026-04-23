@@ -21,6 +21,7 @@
 \usepackage{graphicx}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{tcolorbox}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{assumption}{Assumption}
@@ -40,15 +41,14 @@ with Local Coverage Guarantees}
 
 \author{%
   Anonymous Authors \\
-  \TODO{deanon at camera-ready}
+  Submission under double-blind review
 }
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-\TODO{Draft — replace after §6 results locked.}
-Variant effect prediction (VEP) powers clinical interpretation of genomic variants, yet production deployments lack calibrated uncertainty. We introduce \textbf{HCCP} (Heteroscedastic Class-Conditional Conformal Prediction), a post-hoc framework that pairs a gradient-boosted aggregator over pre-trained genomic features with a learned variance head and a Mondrian conformal calibration stratified by $(y \times \shat\text{-bin})$. On TraitGym \citep{benegas2025traitgym}, HCCP matches SOTA AUPRC (0.900 Mendelian, 0.350 Complex) while providing finite-sample marginal, class-conditional, and $\shat$-bin-local coverage. We prove these guarantees under a chrom-group exchangeability assumption and establish a bin-conditional coverage bound $1/(n_{k,b}+1)$ compatible with Barber's (2020) pointwise impossibility. Three-axis OOD evaluation (chromosome-LOO, trait-LOO, cross-dataset) shows $\shat$-bin coverage gap $\leq 0.04$ across all regimes, including a gap of $0.002$–$0.004$ reaching the finite-sample floor under trait-LOO. Our ablations position HCCP as a principled strengthening of DEGU's heteroscedastic distillation \citep{zhou2026degu}.
+We prove the first dimension-free optimal-partition bound for Mondrian conformal classification under Lipschitz score heteroscedasticity, with matching minimax lower bound, and use it to close a practical gap in variant effect prediction (VEP). Our framework, \textbf{HCCP} (Heteroscedastic Class-Conditional Conformal Prediction), pairs a gradient-boosted aggregator with a learned variance head $\shat$ and a Mondrian conformal calibration stratified by $(y \times \shat\text{-bin})$, and is the smallest modification of split conformal that simultaneously admits finite-sample marginal, class-conditional, and $\shat$-bin-local coverage. The central theoretical result (T5) shows the optimal bin count satisfies $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ with worst-cell gap $G(K^\star) = O(n^{-1/2})$, dimension-free because conditioning is on the 1-D summary $\shat(x)$ rather than the full feature vector; a matching $\Omega(n^{-1/2})$ lower bound rules out faster rates. On TraitGym \citep{benegas2025traitgym}, HCCP matches SOTA AUPRC ($0.900 \pm 0.002$ Mendelian, $0.353 \pm 0.003$ Complex over seeds $\{42,7,2024\}$) while the three-axis OOD stress test (chromosome-LOO, trait-LOO, cross-dataset) shows $\shat$-bin coverage gap $\leq 0.04$ across all regimes, reaching the finite-sample floor of $0.002$–$0.004$ under trait-LOO. Our ablations position HCCP as a principled strengthening of DEGU's heteroscedastic distillation \citep{zhou2026degu}: on Complex traits where aleatoric noise dominates, supervised $\shat$ achieves $4.3\times$ better worst-cell coverage than ensemble-variance $\shat$.
 \end{abstract}
 
 % -----------------------------------------------------------------------------
@@ -117,5 +117,9 @@ Variant effect prediction (VEP) powers clinical interpretation of genomic varian
 \section{Per-partition tables}
 \label{app:tables}
 \input{sections/C_tables.tex}
+
+\section{$\alpha$ sensitivity}
+\label{app:alpha}
+\input{sections/D_alpha_sweep.tex}
 
 \end{document}

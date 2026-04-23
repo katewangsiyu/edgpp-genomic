@@ -1,0 +1,21 @@
+% Appendix D: α sensitivity
+
+Figure~\ref{fig:alpha_sweep} and Table~\ref{tab:alpha_sweep} report HCCP's empirical coverage and $\shat$-bin gap as the miscoverage level $\alpha$ sweeps over $\{0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50\}$, fixed feature set CADD+GPN-MSA+Borzoi, fixed $K = 5$, single seed. The target $1 - \alpha$ line is included for reference.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/figD_alpha_sweep.pdf}
+\caption{Top row: empirical coverage vs nominal $1 - \alpha$ for Split CP (homoscedastic class-cond), HCCP class-cond, and HCCP Mondrian $(y \times \shat\text{-bin})$. All three variants track the target to within $\pm 0.015$. Bottom row: $\shat$-bin coverage range $\max_b \mathrm{cov}_b - \min_b \mathrm{cov}_b$ for HCCP Mondrian; the paper's $\alpha = 0.10$ headline 0.04 threshold (dashed) is respected across all $\alpha$.}
+\label{fig:alpha_sweep}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\small
+\caption{$\alpha$ sweep: marginal coverage, $\shat$-bin gap, and singleton fraction (Mendelian / Complex, CADD+GPN-MSA+Borzoi, $K = 5$, seed 42). HCCP maintains coverage within one finite-sample slack $1/(n_{\min}+1)$ of target across all $\alpha$. Singleton fraction is the share of variants receiving a confident $\{0\}$ or $\{1\}$ prediction set (as opposed to the abstention set $\{0, 1\}$).}
+\label{tab:alpha_sweep}
+\input{figures/figD_alpha_sweep_table.tex}
+\end{table}
+
+\paragraph{Observations.}
+(i) The marginal coverage is calibrated to within $\leq 0.015$ of target at every $\alpha$, consistent with the exact T1 two-sided bound $[1 - \alpha,\, 1 - \alpha + 1/(n_{\min}+1)]$. (ii) The worst-cell $\shat$-bin gap stays below the $\alpha = 0.10$ headline 0.04 threshold across the entire $\alpha$ range, confirming the T3 bound is not an artifact of a specific $\alpha$ choice. (iii) The singleton fraction grows monotonically with $\alpha$ on Complex (from $3\%$ at $\alpha = 0.01$ to $77\%$ at $\alpha = 0.50$) but is non-monotone on Mendelian (peaks at $82\%$ near $\alpha = 0.15$, falls back at higher $\alpha$ as empty sets $\emptyset$ emerge); this is expected for class-imbalanced problems where a very loose $\alpha$ can drop a small-$\shat$ variant below the lowered quantile bar on both classes simultaneously.

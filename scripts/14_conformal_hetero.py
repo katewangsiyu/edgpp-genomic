@@ -279,6 +279,27 @@ def alpha_sweep(p, sigma, y, chroms, score_fn, alphas=(0.01, 0.05, 0.10, 0.15, 0
     return out
 
 
+def alpha_sweep_mondrian(p, sigma, y, chroms, n_bins=5,
+                          alphas=(0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50)):
+    out = {}
+    for a in alphas:
+        pred_sets = mondrian_class_sigma_conformal(
+            p, sigma, y, chroms, a, n_sigma_bins=n_bins)
+        covered = np.array([y[i] in ps for i, ps in enumerate(pred_sets)])
+        sizes = np.array([len(ps) for ps in pred_sets])
+        cov_by_bin = coverage_by_sigma_bin(covered, sigma, n_bins=n_bins)
+        sigma_cov_range = (max(b["coverage"] for b in cov_by_bin)
+                           - min(b["coverage"] for b in cov_by_bin))
+        out[f"{a:.2f}"] = {
+            "coverage": float(covered.mean()),
+            "target": 1 - a,
+            "frac_singleton": float((sizes == 1).mean()),
+            "frac_both": float((sizes == 2).mean()),
+            "sigma_cov_range": float(sigma_cov_range),
+        }
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sigma-scores", required=True,
@@ -348,19 +369,22 @@ def main():
         "mondrian_y_sigma": m_mon,
     }
 
-    # 3. Alpha sweep for both
+    # 3. Alpha sweep for hetero class-cond, homosc class-cond, Mondrian (y×σ̂-bin).
     if not args.skip_sweep:
         print("\n--- α sweep (hetero class-cond) ---")
         sweep_het = alpha_sweep(p, sigma, y, chroms, hetero_score)
         print("\n--- α sweep (homosc class-cond) ---")
         sweep_hom = alpha_sweep(p, sigma, y, chroms, homosc_score)
+        print("\n--- α sweep (Mondrian y×σ̂-bin, K=5) ---")
+        sweep_mon = alpha_sweep_mondrian(p, sigma, y, chroms, n_bins=5)
         for a, v in sweep_het.items():
             vh = sweep_hom[a]
-            print(f"  α={a}: het cov={v['coverage']:.4f} sgl={v['frac_singleton']:.3f} "
-                  f"both={v['frac_both']:.3f}  |  hom cov={vh['coverage']:.4f} "
-                  f"sgl={vh['frac_singleton']:.3f} both={vh['frac_both']:.3f}")
+            vm = sweep_mon[a]
+            print(f"  α={a}: het cov={v['coverage']:.4f}  hom cov={vh['coverage']:.4f}  "
+                  f"mon cov={vm['coverage']:.4f} σ̂-range={vm['sigma_cov_range']:.3f}")
         results["alpha_sweep_hetero"] = sweep_het
         results["alpha_sweep_homosc"] = sweep_hom
+        results["alpha_sweep_mondrian"] = sweep_mon
 
     # Save results
     # Per-variant prediction sets (encode {0,1} → 0b01 etc.)
