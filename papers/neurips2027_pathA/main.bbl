@@ -1,0 +1,144 @@
+\begin{thebibliography}{21}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Avsec et~al.(2026)]{avsec2026alphagenome}
+{\v{Z}}iga Avsec et~al.
+\newblock {AlphaGenome}: a unified foundation model for genomics.
+\newblock \emph{Nature}, 2026.
+
+\bibitem[Barber et~al.(2020)Barber, Cand{\`e}s, Ramdas, and
+  Tibshirani]{barber2020limits}
+Rina~Foygel Barber, Emmanuel~J. Cand{\`e}s, Aaditya Ramdas, and Ryan~J.
+  Tibshirani.
+\newblock The limits of distribution-free conditional predictive inference.
+\newblock \emph{Information and Inference}, 2020.
+
+\bibitem[Barber et~al.(2021)Barber, Cand{\`e}s, Ramdas, and
+  Tibshirani]{barber2021jackknife}
+Rina~Foygel Barber, Emmanuel~J. Cand{\`e}s, Aaditya Ramdas, and Ryan~J.
+  Tibshirani.
+\newblock Predictive inference with the jackknife+.
+\newblock \emph{Annals of Statistics}, 49\penalty0 (1):\penalty0 486--507,
+  2021.
+
+\bibitem[Barber et~al.(2023)Barber, Cand{\`e}s, Ramdas, and
+  Tibshirani]{barber2023exchangeability}
+Rina~Foygel Barber, Emmanuel~J. Cand{\`e}s, Aaditya Ramdas, and Ryan~J.
+  Tibshirani.
+\newblock Conformal prediction beyond exchangeability.
+\newblock \emph{Annals of Statistics}, 51\penalty0 (2):\penalty0 816--845,
+  2023.
+
+\bibitem[Benegas et~al.(2023)Benegas, Albors, et~al.]{benegas2023gpnmsa}
+Gonzalo Benegas, Carlos Albors, et~al.
+\newblock {GPN-MSA}: Unsupervised variant effect prediction with genome-wide
+  {MSA}.
+\newblock \emph{bioRxiv}, 2023.
+
+\bibitem[Benegas et~al.(2025)Benegas, Eraslan, and Song]{benegas2025traitgym}
+Gonzalo Benegas, G{\"o}kcen Eraslan, and Yun~S. Song.
+\newblock {TraitGym}: A benchmark for deep learning on complex genomic
+  variants.
+\newblock \emph{bioRxiv}, 2025.
+\newblock TODO: update when published.
+
+\bibitem[De~Wolf et~al.(2025)De~Wolf, De~Baets, and
+  Waegeman]{dewolf2025conditional}
+Robin De~Wolf, Bernard De~Baets, and Willem Waegeman.
+\newblock Conditional validity of heteroskedastic conformal regression.
+\newblock \emph{Information and Inference: A Journal of the IMA}, 2025.
+
+\bibitem[El-Yaniv and Wiener(2010)]{elyaniv2010selective}
+Ran El-Yaniv and Yair Wiener.
+\newblock On the foundations of noise-free selective classification.
+\newblock \emph{Journal of Machine Learning Research}, 11:\penalty0 1605--1641,
+  2010.
+
+\bibitem[Hore and Barber(2025)]{hore2025rlcp}
+Rohan Hore and Rina~Foygel Barber.
+\newblock Conformal prediction with local weights: randomization enables robust
+  guarantees.
+\newblock \emph{Journal of the Royal Statistical Society: Series B}, 2025.
+
+\bibitem[Kircher et~al.(2014)Kircher, Witten, et~al.]{kircher2014cadd}
+Martin Kircher, Daniela~M. Witten, et~al.
+\newblock A general framework for estimating the relative pathogenicity of
+  human genetic variants.
+\newblock \emph{Nature Genetics}, 2014.
+
+\bibitem[Lakshminarayanan et~al.(2017)Lakshminarayanan, Pritzel, and
+  Blundell]{lakshminarayanan2017simple}
+Balaji Lakshminarayanan, Alexander Pritzel, and Charles Blundell.
+\newblock Simple and scalable predictive uncertainty estimation using deep
+  ensembles.
+\newblock In \emph{NeurIPS}, 2017.
+
+\bibitem[Linder et~al.(2025)]{linder2025borzoi}
+Johannes Linder et~al.
+\newblock Predicting {RNA}-seq coverage from {DNA} sequence as a unifying model
+  of gene regulation.
+\newblock \emph{Nature Genetics}, 2025.
+\newblock TODO: volume.
+
+\bibitem[Nix and Weigend(1994)]{nix1994nll}
+David~A. Nix and Andreas~S. Weigend.
+\newblock Estimating the mean and variance of the target probability
+  distribution.
+\newblock In \emph{IEEE ICNN}, 1994.
+
+\bibitem[Papangelou et~al.(2025)]{papangelou2025cpgenomics}
+Konstantinos Papangelou et~al.
+\newblock Conformal prediction in genomic medicine: a perspective.
+\newblock \emph{Frontiers in Bioinformatics}, 2025.
+
+\bibitem[Richards et~al.(2015)Richards, Aziz, Bale, Bick, Das, Gastier-Foster,
+  Grody, Hegde, Lyon, Spector, Voelkerding, and Rehm]{richards2015acmg}
+Sue Richards, Nazneen Aziz, Sherri Bale, David Bick, Soma Das, Julie
+  Gastier-Foster, Wayne~W. Grody, Madhuri Hegde, Elaine Lyon, Elaine Spector,
+  Karl Voelkerding, and Heidi~L. Rehm.
+\newblock Standards and guidelines for the interpretation of sequence variants:
+  a joint consensus recommendation of the {American College of Medical Genetics
+  and Genomics} and the {Association for Molecular Pathology}.
+\newblock \emph{Genetics in Medicine}, 17\penalty0 (5):\penalty0 405--424,
+  2015.
+
+\bibitem[Romano et~al.(2019)Romano, Patterson, and Cand{\`e}s]{romano2019cqr}
+Yaniv Romano, Evan Patterson, and Emmanuel~J. Cand{\`e}s.
+\newblock Conformalized quantile regression.
+\newblock In \emph{NeurIPS}, 2019.
+
+\bibitem[van~der Laan(2024)]{vanderlaan2024sccp}
+Lars van~der Laan.
+\newblock Self-calibrating conformal prediction.
+\newblock In \emph{NeurIPS}, 2024.
+
+\bibitem[Vovk et~al.(2003)Vovk, Lindsay, Nouretdinov, and
+  Gammerman]{vovk2003mondrian}
+Vladimir Vovk, David Lindsay, Ilia Nouretdinov, and Alex Gammerman.
+\newblock Mondrian confidence machine.
+\newblock 2003.
+\newblock Technical Report.
+
+\bibitem[Vovk et~al.(2005)Vovk, Gammerman, and Shafer]{vovk2005algorithmic}
+Vladimir Vovk, Alexander Gammerman, and Glenn Shafer.
+\newblock \emph{Algorithmic Learning in a Random World}.
+\newblock Springer, 2005.
+
+\bibitem[Wang et~al.(2025)]{wang2025cqrprs}
+Yixuan Wang et~al.
+\newblock Conformalized quantile regression for polygenic risk scores.
+\newblock \emph{bioRxiv}, 2025.
+
+\bibitem[Zhou et~al.(2026)Zhou, Rizzo, Christensen, Tang, and
+  Koo]{zhou2026degu}
+Jessica Zhou, Anthony Rizzo, Peter Christensen, Xiao Tang, and Peter~K. Koo.
+\newblock Deep ensemble distillation with gaussian uncertainty for regulatory
+  genomics.
+\newblock \emph{npj AI}, 2026.
+\newblock TODO: volume/issue.
+
+\end{thebibliography}

@@ -36,6 +36,12 @@ FEATURE_SETS = {
     "CADD+Borzoi_L2_L2":   ["CADD", "Borzoi_L2_L2"],
     "CADD+GPN-MSA+Borzoi": ["CADD", "GPN-MSA_LLR", "GPN-MSA_absLLR", "GPN-MSA_InnerProducts",
                             "Borzoi_L2", "Borzoi_L2_L2"],
+    # AlphaGenome-augmented feature sets (requires scripts/32_alphagenome_features.py).
+    # If AlphaGenome.parquet is a sentinel (ALPHAGENOME_API_KEY not set), 11 will skip.
+    "CADD+AlphaGenome":             ["CADD", "AlphaGenome"],
+    "CADD+GPN-MSA+Borzoi+AlphaGenome": ["CADD", "GPN-MSA_LLR", "GPN-MSA_absLLR",
+                                          "GPN-MSA_InnerProducts",
+                                          "Borzoi_L2", "Borzoi_L2_L2", "AlphaGenome"],
 }
 
 
@@ -84,8 +90,19 @@ def load_feature_matrix(features_dir: Path, feature_names: list[str]):
     for name in feature_names:
         path = features_dir / f"{name}.parquet"
         df = pd.read_parquet(path)
+        # AlphaGenome sentinel: skip silently and log.
+        if "_alphagenome_unavailable" in df.columns:
+            print(f"[load_feature_matrix] {name} is a sentinel "
+                  f"({df['_alphagenome_unavailable'].iloc[0]}); skipping.")
+            continue
+        # Drop chrom/pos/ref/alt metadata if AlphaGenome carries them
+        meta_drop = [c for c in ("chrom", "pos", "ref", "alt") if c in df.columns]
+        if meta_drop:
+            df = df.drop(columns=meta_drop)
         df.columns = [f"{name}__{c}" for c in df.columns]
         dfs.append(df)
+    if not dfs:
+        raise ValueError(f"No usable features from {feature_names}")
     return pd.concat(dfs, axis=1)
 
 

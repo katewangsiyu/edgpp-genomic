@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: plainnat.bst
+Database file #1: refs.bib
+Warning--empty booktitle in vovk2003mondrian
+You've used 21 entries,
+            2773 wiz_defined-function locations,
+            693 strings with 8126 characters,
+and the built_in function-call counts, 9480 in all, are:
+= -- 784
+> -- 676
+< -- 8
++ -- 228
+- -- 207
+* -- 753
+:= -- 1519
+add.period$ -- 67
+call.type$ -- 21
+change.case$ -- 125
+chr.to.int$ -- 21
+cite$ -- 43
+duplicate$ -- 436
+empty$ -- 735
+format.name$ -- 238
+if$ -- 1947
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 22
+newline$ -- 117
+num.names$ -- 84
+pop$ -- 269
+preamble$ -- 1
+purify$ -- 105
+quote$ -- 0
+skip$ -- 331
+stack$ -- 0
+substring$ -- 148
+swap$ -- 25
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 226
+warning$ -- 1
+while$ -- 71
+width$ -- 0
+write$ -- 270
+(There was 1 warning)
