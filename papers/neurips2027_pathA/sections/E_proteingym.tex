@@ -9,27 +9,27 @@ To test whether HCCP's coverage guarantees generalize \emph{beyond} human varian
 \paragraph{Results.}
 \label{app:proteingym:results}
 
-Across 20 assay-LOO held-out proteins (each trained on the union of the remaining $\approx 350$k mutants from 216 other assays), HCCP's marginal coverage tracks the target to within one finite-sample slack, and the $\shat$-bin gap distribution is tight and asymmetric around the TraitGym chrom-LOO reference.
+Across 50 assay-LOO held-out proteins (each trained on the union of the remaining $\approx 357$k mutants from 166 other assays), HCCP's marginal coverage tracks the target to within one finite-sample slack, and the $\shat$-bin gap distribution is tight and asymmetric around the TraitGym chrom-LOO reference.
 
 \begin{table}[h]
 \centering
 \small
-\caption{ProteinGym assay-LOO: HCCP coverage statistics aggregated over the 20 largest valid assays ($\geq 200$ mutants, $\geq 50$ positives; smallest included assay has 200 mutants, largest has $\approx 3000$ after per-assay cap). $\alpha = 0.10$, $K = 5$. Source: \texttt{outputs/proteingym\_hccp/summary.json}.}
+\caption{ProteinGym assay-LOO: HCCP coverage statistics aggregated over the 50 largest valid assays ($\geq 200$ mutants, $\geq 50$ positives; per-assay mutants capped at 3{,}000). $\alpha = 0.10$, $K = 5$. Source: \texttt{outputs/proteingym\_hccp\_n50/summary.json}.}
 \label{tab:proteingym}
 \begin{tabular}{lr}
 \toprule
 Metric & Value \\
 \midrule
-AUPRC test (mean over assays) & $0.685$ \\
-AUPRC test (median)           & $0.664$ \\
-Marginal coverage (mean)      & $\mathbf{0.891}$ \\
-Marginal coverage (std)        & $0.033$ \\
-Coverage within $\pm 0.02$ of target & $11/20$ assays \\
-Coverage within $\pm 0.05$ of target & $19/20$ assays \\
-$\shat$-bin gap (mean)        & $0.048$ \\
-$\shat$-bin gap (median)      & $0.038$ \\
-$\shat$-bin gap (p90)         & $0.072$ \\
-Frac.\ singleton (mean)       & $0.352$ \\
+AUPRC test (mean over assays) & $0.709$ \\
+AUPRC test (median)           & $0.678$ \\
+Marginal coverage (mean)      & $\mathbf{0.887}$ \\
+Marginal coverage (std)        & $0.028$ \\
+Coverage within $\pm 0.02$ of target & $27/50$ assays \\
+Coverage within $\pm 0.05$ of target & $44/50$ assays \\
+$\shat$-bin gap (mean)        & $0.052$ \\
+$\shat$-bin gap (median)      & $0.042$ \\
+$\shat$-bin gap (p90)         & $0.095$ \\
+Frac.\ singleton (mean)       & $0.358$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -37,15 +37,15 @@ Frac.\ singleton (mean)       & $0.352$ \\
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/figE_proteingym.pdf}
-\caption{ProteinGym cross-domain stress test. \textbf{Left:} marginal coverage vs.\ test-assay AUPRC per held-out protein. The coverage stays within $\pm 0.02$ of the $0.90$ target for 11/20 assays and within $\pm 0.05$ for 19/20; the lone outlier (\texttt{CD19\_HUMAN}, AUPRC $0.24$) has a base predictor that fails on its specific surface-expression readout, so the conformal layer reverts to a pooled fallback. \textbf{Right:} distribution of $\shat$-bin coverage gap across the 20 assays, with TraitGym trait-LOO floor ($0.004$) and chrom-LOO ($0.077$) references overlaid. ProteinGym sits between the two, consistent with a genuine but bounded distribution shift.}
+\caption{ProteinGym cross-domain stress test (50 held-out assays). \textbf{Left:} marginal coverage vs.\ test-assay AUPRC per held-out protein. Coverage stays within $\pm 0.02$ of the $0.90$ target for $27/50$ assays and within $\pm 0.05$ for $44/50$; the six outliers below $0.85$ all have AUPRC $< 0.4$, indicating base-predictor failure rather than conformal failure. \textbf{Right:} distribution of $\shat$-bin coverage gap across the 50 assays, with TraitGym trait-LOO floor ($0.004$) and chrom-LOO ($0.077$) references overlaid. ProteinGym sits between the two (median $0.042$, p90 $0.095$), consistent with a genuine but bounded distribution shift.}
 \label{fig:proteingym}
 \end{figure}
 
 \paragraph{Interpretation against pre-specified predictions.}
 We pre-specified three reading criteria in the proposal submission; they evaluate as follows.
-(i) \emph{Coverage within $\pm 0.02$ of target.} \textbf{Achieved on the aggregate}: mean coverage $0.891$, $|$gap$|= 0.009$. Per-assay, $11/20$ assays hit the $\pm 0.02$ band; $19/20$ hit the $\pm 0.05$ band. HCCP's coverage promise transfers to proteins whose sequence, family, and function are fully unseen at training time.
-(ii) \emph{$\shat$-bin gap at TraitGym trait-LOO scale ($0.002$--$0.004$).} \textbf{Not achieved}: ProteinGym gap is $\approx 0.04$, roughly an order of magnitude above the TraitGym trait-LOO floor. We interpret this as an \emph{honest OOD signal}: each new protein has assay-specific catalytic residues, structural hotspots, and readout idiosyncrasies (e.g., surface expression vs.\ activity in the CP2C9 pair) that physicochemical features cannot fully capture; the $\shat$ head learned on other proteins is therefore a less precise calibrator than on TraitGym's shared feature pipeline. The gap is of the same order as TraitGym's chrom-LOO result ($0.077$), which is the appropriate reference: both involve evaluating coverage on a distribution the calibration fold did not include.
-(iii) \emph{Large gap diagnostic of distribution shift.} The $0.04$--$0.07$ range is diagnostic of bounded shift, not of coverage collapse: marginal coverage remains at $0.89$ on aggregate, and only the single outlier assay drops meaningfully below $0.85$. HCCP degrades gracefully.
+(i) \emph{Coverage within $\pm 0.02$ of target.} \textbf{Achieved on the aggregate}: mean coverage $0.887$ across 50 held-out assays, $|$gap$|= 0.013$, std across assays $0.028$. Per-assay, $27/50$ assays hit the $\pm 0.02$ band; $44/50$ hit the $\pm 0.05$ band. HCCP's coverage promise transfers to proteins whose sequence, family, and function are fully unseen at training time.
+(ii) \emph{$\shat$-bin gap at TraitGym trait-LOO scale ($0.002$--$0.004$).} \textbf{Not achieved}: ProteinGym gap has median $0.042$, roughly an order of magnitude above the TraitGym trait-LOO floor. We interpret this as an \emph{honest OOD signal}: each new protein has assay-specific catalytic residues, structural hotspots, and readout idiosyncrasies (e.g., surface expression vs.\ activity in the CP2C9 pair) that physicochemical features cannot fully capture; the $\shat$ head learned on other proteins is therefore a less precise calibrator than on TraitGym's shared feature pipeline. The gap is of the same order as TraitGym's chrom-LOO result ($0.077$), which is the appropriate reference: both involve evaluating coverage on a distribution the calibration fold did not include.
+(iii) \emph{Large gap diagnostic of distribution shift.} The $0.04$--$0.10$ range is diagnostic of bounded shift, not of coverage collapse: marginal coverage remains at $0.89$ on aggregate, and the six outlier assays that drop below $0.85$ all have AUPRC $< 0.4$ (base-predictor failure rather than conformal failure). HCCP degrades gracefully.
 
 \paragraph{Why this matters for the main paper.} This appendix addresses the most likely reviewer concern --- \emph{``results on one benchmark only''} --- with a completely different benchmark (protein variant fitness vs.\ human variant pathogenicity), a completely different feature pipeline (physicochemical vs.\ pre-computed genomic foundation models), and a completely different label taxonomy (DMS fitness bins vs.\ ClinVar/GWAS labels). The fact that the coverage machinery behaves the same way on both --- tight marginal coverage, graceful degradation of local coverage under shift --- is evidence that HCCP's theoretical guarantees (T1 marginal, T2 class-cond, T3 $\shat$-bin-local) are properties of the conformal calibration itself, not artifacts of TraitGym.
 

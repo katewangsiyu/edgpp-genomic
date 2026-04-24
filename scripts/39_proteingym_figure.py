@@ -8,7 +8,7 @@ import numpy as np
 
 
 def main() -> None:
-    results = json.load(open("outputs/proteingym_hccp/per_assay_results.json"))
+    results = json.load(open("outputs/proteingym_hccp_n50/per_assay_results.json"))
     valid = [r for r in results if "marginal_coverage" in r]
 
     auprcs = np.array([r["AUPRC_test"] for r in valid])
@@ -27,7 +27,7 @@ def main() -> None:
                label=r"$\pm 0.02$ band")
     ax.set_xlabel("AUPRC on target assay")
     ax.set_ylabel("Marginal coverage on target assay")
-    ax.set_title(f"ProteinGym assay-LOO (n={len(valid)} held-out proteins)")
+    ax.set_title(f"ProteinGym assay-LOO (n={len(valid)} held-out assays)")
     ax.grid(ls="--", lw=0.3, alpha=0.4)
     ax.legend(fontsize=8, loc="lower right")
     ax.set_xlim(0.15, 1.0)
@@ -55,7 +55,7 @@ def main() -> None:
                 label="TraitGym chrom-LOO (0.077)")
     ax2.set_xlabel(r"$\hat\sigma$-bin coverage gap")
     ax2.set_ylabel("number of assays")
-    ax2.set_title(r"HCCP $\hat\sigma$-bin gap across 20 proteins")
+    ax2.set_title(rf"HCCP $\hat\sigma$-bin gap across {len(valid)} assays")
     ax2.grid(ls="--", lw=0.3, alpha=0.4)
     ax2.legend(fontsize=7, loc="upper right")
 
