@@ -1,0 +1,40 @@
+% Appendix E: ProteinGym cross-domain stress test
+
+To test whether HCCP's coverage guarantees generalize \emph{beyond} human variant pathogenicity classification, we evaluate on \textbf{ProteinGym} \citep{notin2023proteingym}, a large-scale protein variant fitness benchmark with 217 deep mutational scanning (DMS) assays across $2.4$M mutants. We use the \texttt{DMS\_score\_bin} discretization provided by the benchmark authors ($\approx 57\%$ positive, high-fitness mutations) as the binary target, making the task directly comparable to HCCP's TraitGym setting.
+
+\paragraph{Features.} Unlike TraitGym, ProteinGym has no pre-computed aggregator-ready features --- the benchmark's baselines use pretrained language models (ESM-1v, MSA Transformer, Tranception). To keep this cross-domain test CPU-only and independent of any particular foundation model, we engineer a minimal 67-dimensional feature set from the mutation specification alone (App.~\ref{app:proteingym:features}): one-hot encodings of wild-type and mutant amino acids, position normalized by sequence length, BLOSUM62 substitution score, physicochemical deltas (hydrophobicity, volume, charge, polarity), and local composition in a $\pm 5$ AA window. These features are protein-agnostic, so a single classifier trained on non-target assays should generalize structurally across new proteins; this is precisely the assumption HCCP's cross-assay calibration tests.
+
+\paragraph{Protocol (assay-LOO).} For each target assay, we train the base classifier $\phat$ on all mutants from the remaining 216 assays, fit $\shat$ on OOF residuals using the same pool, and calibrate Mondrian-$(y \times \shat\text{-bin})$ conformal thresholds ($K = 5$, $\alpha = 0.10$, minimum cell size $10$). We then compute marginal coverage, $\shat$-bin coverage gap, and singleton fraction on the target assay. This is the ProteinGym analogue of the trait-LOO stress test reported in §\ref{sec:experiments}.
+
+\paragraph{Results placeholder.}
+\label{app:proteingym:results}
+
+\emph{Results filled in once scripts/38\_proteingym\_hccp.py completes.}
+
+\begin{table}[h]
+\centering
+\small
+\caption{ProteinGym assay-LOO: HCCP coverage statistics aggregated over the 20 largest valid assays ($\geq 200$ mutants, $\geq 50$ positives). $\alpha = 0.10$, $K = 5$. Numbers auto-populated from \texttt{outputs/proteingym\_hccp/summary.json}.}
+\label{tab:proteingym}
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+AUPRC test (mean over assays) & \textsc{TBD} \\
+Marginal coverage (mean)      & \textsc{TBD} \\
+Marginal coverage (std)        & \textsc{TBD} \\
+$\shat$-bin gap (mean)        & \textsc{TBD} \\
+$\shat$-bin gap (median)      & \textsc{TBD} \\
+$\shat$-bin gap (p90)         & \textsc{TBD} \\
+Frac.\ singleton (mean)       & \textsc{TBD} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Interpretation (pre-specified).}
+Before running the experiment, we pre-committed to the following reading: (i) if HCCP's marginal coverage stays within $\pm 0.02$ of target $0.90$ averaged over held-out assays, it demonstrates that the conformal coverage promise transfers to a completely different biological domain; (ii) if the $\shat$-bin gap is of the same order as our TraitGym trait-LOO result ($0.002$--$0.004$), it suggests the Mondrian-$(y \times \shat\text{-bin})$ partition is domain-agnostic; (iii) any large gap between ProteinGym and TraitGym would be diagnostic of distribution-shift failure rather than of HCCP's coverage machinery.
+
+\subsection{Feature engineering details}
+\label{app:proteingym:features}
+
+The 67-dimensional feature vector concatenates: (a) one-hot encodings of wild-type AA ($20$) and mutant AA ($20$); (b) position normalized by sequence length ($1$); (c) BLOSUM62 score for the WT$\to$MT substitution ($1$); (d) Kyte-Doolittle hydrophobicity delta ($1$); (e) van der Waals volume delta ($1$, Chothia 1975 values); (f) charge delta at pH 7 ($1$); (g) Grantham polarity delta ($1$); (h) a mismatch flag indicating whether the reported WT AA matches the target sequence at the given position ($1$); (i) local amino-acid composition in the $\pm 5$ AA window around the mutation site ($20$). Total: $20 + 20 + 7 + 20 = 67$. Multi-mutants (e.g., double substitutions \texttt{A1C:D2E}) are excluded, retaining $\approx 78\%$ of the raw rows per assay. Extractor code: \texttt{scripts/37\_proteingym\_features.py}.
