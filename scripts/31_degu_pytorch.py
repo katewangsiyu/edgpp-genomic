@@ -43,11 +43,12 @@ class DEGUCNN(nn.Module):
     """1-D CNN for binary variant effect prediction with heteroscedastic head.
 
     Matches DEGU's DeepSTARR backbone but shrunk for TraitGym scale. Outputs
-    two logits: mean (before sigmoid) and log-variance.
+    two logits: mean (before sigmoid) and log-variance. Input expects 8-channel
+    one-hot (ref 4-hot + alt 4-hot concatenated).
     """
 
-    def __init__(self, seq_len: int = 200, n_channels: int = 4,
-                 hidden: int = 64, out_heads: int = 2):
+    def __init__(self, seq_len: int = 200, n_channels: int = 8,
+                 hidden: int = 64, out_heads: int = 2) -> None:
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv1d(n_channels, hidden, kernel_size=11, padding=5),
@@ -70,67 +71,84 @@ class DEGUCNN(nn.Module):
 
 # -------------------- Losses --------------------
 def heteroscedastic_bce(logit_mean: torch.Tensor, logvar: torch.Tensor,
-                       y: torch.Tensor) -> torch.Tensor:
+                       y: torch.Tensor, logvar_min: float = -4.0,
+                       logvar_max: float = 4.0) -> torch.Tensor:
     """Binary classification analog of DEGU's Gaussian NLL.
 
     We model P(y | x) = σ(μ(x)) and uncertainty via var = exp(logvar).
     Loss: BCE + 0.5 * logvar scaled by BCE → high logvar suppresses gradient on
-    uncertain points.
+    uncertain points. Logvar is clamped to prevent exp(-logvar) blowup which
+    otherwise destabilizes training in the first few epochs.
     """
+    logvar_clamped = logvar.clamp(logvar_min, logvar_max)
     bce = nn.functional.binary_cross_entropy_with_logits(
         logit_mean, y.float(), reduction="none")
-    return (bce * torch.exp(-logvar) + 0.5 * logvar).mean()
+    return (bce * torch.exp(-logvar_clamped) + 0.5 * logvar_clamped).mean()
 
 
 # -------------------- Dataset --------------------
 class OneHotVariantSet(Dataset):
-    """Placeholder — real impl should load pre-extracted DNA windows from disk.
+    """Loads (L, 8) one-hot windows produced by scripts/36_extract_dna_windows.py.
 
-    Expected data layout:
-        <seq-window-dir>/<variant_id>.npy    # shape (L, 4) one-hot
-        <variant_id> column in parquet matches filenames.
+    Channel layout: ``[ref_A, ref_C, ref_G, ref_T, alt_A, alt_C, alt_G, alt_T]``.
+    Variant ID is reconstructed from the parquet columns as
+    ``chr{chrom}_{pos}_{ref}_{alt}`` to match the extractor's naming.
     """
 
-    def __init__(self, parquet_path: Path, seq_dir: Path, seq_len: int = 200):
+    def __init__(self, parquet_path: Path, seq_dir: Path, seq_len: int = 200) -> None:
         import pandas as pd
         self.df = pd.read_parquet(parquet_path).reset_index(drop=True)
         self.seq_dir = Path(seq_dir)
         self.seq_len = seq_len
-        self._check()
-
-    def _check(self) -> None:
         if not self.seq_dir.exists():
             raise FileNotFoundError(
                 f"Sequence windows not found at {self.seq_dir}. "
-                "DEGU requires pre-extracted one-hot windows.")
+                "Run scripts/36_extract_dna_windows.py first.")
 
     def __len__(self) -> int:
         return len(self.df)
 
+    def _variant_id(self, row) -> str:
+        c = str(row["chrom"])
+        prefix = c if c.startswith("chr") else f"chr{c}"
+        return f"{prefix}_{int(row['pos'])}_{row['ref']}_{row['alt']}"
+
     def __getitem__(self, i: int) -> tuple[np.ndarray, int, str]:
         row = self.df.iloc[i]
-        vid = row.get("variant_id", f"var_{i}")
+        vid = self._variant_id(row)
         path = self.seq_dir / f"{vid}.npy"
-        x = np.load(path).astype(np.float32)  # (L, 4)
-        assert x.shape == (self.seq_len, 4), f"{path}: {x.shape}"
-        return x.T, int(row["label"]), str(row["chrom"])
+        x = np.load(path).astype(np.float32)  # (L, 8)
+        assert x.shape == (self.seq_len, 8), f"{path}: {x.shape}"
+        return x.T, int(row["label"]), str(row["chrom"])  # -> (8, L)
 
 
 # -------------------- Ensemble training loop --------------------
 def train_single(model: DEGUCNN, train_loader: DataLoader, val_loader: DataLoader,
-                 epochs: int, lr: float, device: torch.device) -> dict:
+                 epochs: int, lr: float, device: torch.device,
+                 grad_clip: float = 1.0, pos_weight: float = 9.0) -> dict:
+    """Train one teacher with BCE. DEGU's σ̂ is the cross-ensemble std, not a
+    learned logvar head, so we use plain BCE (matching baselines/degu.py
+    uncertainty_std). The logvar head is trained as a secondary signal but
+    σ̂ = std(ensemble) is the reported uncertainty.
+    """
     opt = torch.optim.Adam(model.parameters(), lr=lr)
+    # Balance ~10% positive class via pos_weight ≈ n_neg / n_pos
+    pos_w = torch.tensor([pos_weight], device=device)
+    loss_fn = nn.BCEWithLogitsLoss(pos_weight=pos_w)
     history = {"train_loss": [], "val_loss": []}
     for ep in range(epochs):
         model.train()
         losses = []
         for x, y, _ in train_loader:
             x, y = x.to(device), y.to(device)
-            mu, logvar = model(x)
-            loss = heteroscedastic_bce(mu, logvar, y)
-            opt.zero_grad(); loss.backward(); opt.step()
+            mu, _ = model(x)
+            loss = loss_fn(mu, y.float())
+            opt.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
+            opt.step()
             losses.append(float(loss))
-        val_loss = eval_loss(model, val_loader, device)
+        val_loss = eval_loss(model, val_loader, device, pos_weight)
         history["train_loss"].append(float(np.mean(losses)))
         history["val_loss"].append(val_loss)
         print(f"  ep {ep+1}/{epochs}: train {np.mean(losses):.4f}  val {val_loss:.4f}")
@@ -138,13 +156,16 @@ def train_single(model: DEGUCNN, train_loader: DataLoader, val_loader: DataLoade
 
 
 @torch.no_grad()
-def eval_loss(model: DEGUCNN, loader: DataLoader, device: torch.device) -> float:
+def eval_loss(model: DEGUCNN, loader: DataLoader, device: torch.device,
+              pos_weight: float = 9.0) -> float:
     model.eval()
+    pos_w = torch.tensor([pos_weight], device=device)
+    loss_fn = nn.BCEWithLogitsLoss(pos_weight=pos_w)
     losses = []
     for x, y, _ in loader:
         x, y = x.to(device), y.to(device)
-        mu, logvar = model(x)
-        losses.append(float(heteroscedastic_bce(mu, logvar, y)))
+        mu, _ = model(x)
+        losses.append(float(loss_fn(mu, y.float())))
     return float(np.mean(losses))
 
 
@@ -166,6 +187,53 @@ def predict(model: DEGUCNN, loader: DataLoader, device: torch.device) -> dict:
     }
 
 
+def train_one_member(member_idx: int, args, ds, idx_cal: list[int],
+                      idx_test: list[int], device: torch.device,
+                      out: Path) -> dict:
+    """Train one ensemble member with OOM retry (halve batch size on OOM)."""
+    torch.manual_seed(42 + member_idx)
+
+    batch_size = args.batch_size
+    for retry in range(3):
+        try:
+            train_loader = DataLoader(torch.utils.data.Subset(ds, idx_cal),
+                                      batch_size=batch_size, shuffle=True,
+                                      num_workers=2, drop_last=False,
+                                      pin_memory=True)
+            test_loader = DataLoader(torch.utils.data.Subset(ds, idx_test),
+                                     batch_size=batch_size, shuffle=False,
+                                     num_workers=2, drop_last=False,
+                                     pin_memory=True)
+            model = DEGUCNN(seq_len=args.seq_len).to(device)
+            history = train_single(model, train_loader, test_loader,
+                                   args.epochs, args.lr, device)
+            preds = predict(model, test_loader, device)
+            torch.save(model.state_dict(), out / f"member_{member_idx:02d}.pt")
+            (out / f"member_{member_idx:02d}_history.json").write_text(
+                json.dumps(history, indent=2))
+            # Save predictions immediately — survives crashes of later members.
+            np.savez(out / f"member_{member_idx:02d}_preds.npz",
+                     p_hat=preds["p_hat"], logvar=preds["logvar"],
+                     label=preds["label"], chrom=preds["chrom"])
+            del model
+            torch.cuda.empty_cache()
+            return preds
+        except torch.cuda.OutOfMemoryError:
+            torch.cuda.empty_cache()
+            batch_size = max(batch_size // 2, 4)
+            print(f"  [OOM] retry {retry+1}/3 with batch_size={batch_size}")
+    raise RuntimeError(f"member {member_idx} failed after 3 OOM retries")
+
+
+def load_cached_member(out: Path, member_idx: int) -> dict | None:
+    path = out / f"member_{member_idx:02d}_preds.npz"
+    if not path.exists():
+        return None
+    z = np.load(path, allow_pickle=True)
+    return {"p_hat": z["p_hat"], "logvar": z["logvar"],
+            "label": z["label"], "chrom": z["chrom"]}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--traitgym-parquet", required=True)
@@ -177,38 +245,43 @@ def main() -> None:
     ap.add_argument("--seq-len", type=int, default=200)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--gpu-memory-fraction", type=float, default=0.28,
+                    help="Upper bound on fraction of GPU memory this process may allocate "
+                         "(shared-GPU safety bound). Set to 0 to disable.")
     args = ap.parse_args()
 
     out = Path(args.out_dir); out.mkdir(parents=True, exist_ok=True)
     device = torch.device(args.device)
-    print(f"[DEGU-PyTorch] device={device} ensemble={args.ensemble_size}")
+    if device.type == "cuda" and args.gpu_memory_fraction > 0:
+        torch.cuda.set_per_process_memory_fraction(
+            args.gpu_memory_fraction, device.index or 0)
+        print(f"[memory-guard] capped to {args.gpu_memory_fraction*100:.0f}% "
+              f"of GPU {device.index or 0} (≈{15360*args.gpu_memory_fraction:.0f} MiB)")
+    print(f"[DEGU-PyTorch] device={device} ensemble={args.ensemble_size} "
+          f"batch={args.batch_size} epochs={args.epochs}")
 
     ds = OneHotVariantSet(args.traitgym_parquet, args.seq_window_dir, args.seq_len)
-    # Split chrom-LOO for each held-out chrom
-    chroms = [ds[i][2] for i in range(len(ds))]
+    # Fixed train/test split aligned with TraitGym test chroms. DEGU's original
+    # pipeline uses one split (not per-chrom LOO); we retain that to isolate the
+    # σ̂ contribution for downstream HCCP consumption.
+    chroms = ds.df["chrom"].astype(str).tolist()
     test_chroms = {"17", "18", "19", "20", "21", "22", "X"}
     idx_cal = [i for i, c in enumerate(chroms) if c not in test_chroms]
     idx_test = [i for i, c in enumerate(chroms) if c in test_chroms]
-    print(f"  cal n={len(idx_cal)}  test n={len(idx_test)}")
+    y_cal = ds.df["label"].iloc[idx_cal].astype(int).sum()
+    y_test = ds.df["label"].iloc[idx_test].astype(int).sum()
+    print(f"  cal n={len(idx_cal)} (pos {y_cal})  test n={len(idx_test)} (pos {y_test})")
 
-    train_loader = DataLoader(torch.utils.data.Subset(ds, idx_cal),
-                              batch_size=args.batch_size, shuffle=True,
-                              num_workers=4, drop_last=False)
-    test_loader = DataLoader(torch.utils.data.Subset(ds, idx_test),
-                             batch_size=args.batch_size, shuffle=False,
-                             num_workers=4, drop_last=False)
-
-    ensemble_preds = []
+    ensemble_preds: list[dict] = []
     for m in range(args.ensemble_size):
-        print(f"\n--- ensemble member {m+1}/{args.ensemble_size} ---")
-        torch.manual_seed(42 + m)
-        model = DEGUCNN(seq_len=args.seq_len).to(device)
-        history = train_single(model, train_loader, test_loader,
-                               args.epochs, args.lr, device)
-        preds = predict(model, test_loader, device)
+        cached = load_cached_member(out, m)
+        if cached is not None:
+            print(f"\n--- member {m+1}/{args.ensemble_size} [resume from cache] ---")
+            ensemble_preds.append(cached)
+            continue
+        print(f"\n--- member {m+1}/{args.ensemble_size} ---")
+        preds = train_one_member(m, args, ds, idx_cal, idx_test, device, out)
         ensemble_preds.append(preds)
-        torch.save(model.state_dict(), out / f"member_{m:02d}.pt")
-        (out / f"member_{m:02d}_history.json").write_text(json.dumps(history, indent=2))
 
     # Ensemble mean + uncertainty
     p_stack = np.stack([e["p_hat"] for e in ensemble_preds])
@@ -219,13 +292,16 @@ def main() -> None:
     summary = {
         "ensemble_size": args.ensemble_size,
         "epochs": args.epochs,
+        "batch_size": args.batch_size,
+        "seq_len": args.seq_len,
+        "n_cal": int(len(idx_cal)),
         "n_test": int(len(idx_test)),
         "mean_p_hat": float(p_mean.mean()),
         "mean_sigma_ensemble": float(sigma_ensemble.mean()),
     }
     (out / "ensemble_summary.json").write_text(json.dumps(summary, indent=2))
 
-    # Save per-variant predictions in the format HCCP's 14_conformal_hetero expects
+    # Save per-variant predictions matching the format 14_conformal_hetero expects.
     import pandas as pd
     y = ensemble_preds[0]["label"]
     chroms_out = ensemble_preds[0]["chrom"]
@@ -236,7 +312,7 @@ def main() -> None:
         "raw_pred": sigma_ensemble,
     }).to_parquet(out / "scores_with_sigma.parquet", index=False)
 
-    print(f"\nsaved: {out}/scores_with_sigma.parquet and member_*.pt")
+    print(f"\nsaved: {out}/scores_with_sigma.parquet + {args.ensemble_size} members")
 
 
 if __name__ == "__main__":
