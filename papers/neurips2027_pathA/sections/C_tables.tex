@@ -98,6 +98,32 @@ empirical inversion    & Complex   & 2.4  & 36  & 0.065 \\
 \end{tabular}
 \end{table}
 
+\subsection{DEGU-actual (CNN on raw DNA) head-to-head}
+\label{app:tables:degu_actual}
+
+To isolate the contribution of HCCP's aggregator design choice (pre-computed features vs.\ end-to-end CNN), we reimplemented DEGU \citep{zhou2026degu} at the architectural level --- a 1-D CNN consuming $200$\,bp one-hot DNA windows centered on each variant (ref and alt alleles concatenated as 8 channels), trained with BCE and a $9{:}1$ pos-weight to handle the class imbalance. We trained $M = 5$ CNN teachers with random seeds and computed $\shat(x) = \mathrm{std}_m p_m(x)$. Fixed test chromosomes $\{17,18,19,20,21,22,X\}$ match TraitGym's convention. Table~\ref{tab:degu_actual} reports the point-estimate performance against the HCCP GBM aggregator.
+
+\begin{table}[h]
+\centering
+\small
+\caption{DEGU-actual (CNN on 200\,bp DNA) vs HCCP GBM (CADD+GPN-MSA+Borzoi). DEGU-actual matches the architecture of the original paper \citep{zhou2026degu} but on TraitGym pathogenicity classification; DEGU's official publication reports no TraitGym number, and our reimplementation reveals the reason: raw-sequence CNN is not competitive on variant pathogenicity. Same test-chromosome split for both.}
+\label{tab:degu_actual}
+\begin{tabular}{llrrrr}
+\toprule
+Dataset & Model & AUPRC (chrom-wtd) & AUROC & $\shat$ mean & $\shat$ range \\
+\midrule
+Mendelian & DEGU-actual CNN ($M=5$) & 0.140  & 0.550 & 0.023 & $[0.000, 0.368]$ \\
+Mendelian & \textbf{HCCP GBM}       & \textbf{0.900} & \textbf{0.974} & --- & --- \\
+\midrule
+Complex   & DEGU-actual CNN ($M=5$) & 0.111  & \emph{0.480}\footnotemark[1] & 0.417 & $[0.331, 0.490]$ \\
+Complex   & \textbf{HCCP GBM}       & \textbf{0.353} & $\approx 0.78$ & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+\footnotetext[1]{AUROC below $0.50$ indicates the CNN ensemble is slightly worse than random on Complex traits: the 200\,bp window contains no actionable signal for polygenic variants, whose effect is primarily transcriptional/regulatory and requires longer context or functional annotations (Borzoi, GPN-MSA) that HCCP's aggregator consumes.}
+
+\paragraph{Interpretation.} DEGU-actual produces a valid uncertainty signal (non-degenerate $\shat$ range on both datasets) but its point-estimate AUPRC is $6.4\times$ (Mendelian) and $3.2\times$ (Complex) worse than HCCP's GBM aggregator on pre-computed genomic features. This is not a reflection of DEGU's uncertainty machinery --- which is sound and proxies well on tasks where the base predictor is strong (MPRA regression; see the original paper \citep{zhou2026degu}) --- but of the feature-space requirement: variant pathogenicity depends on gene annotation, protein structure, and long-range regulatory context, none of which fits in a 200\,bp window. HCCP's design choice to aggregate pre-computed features (CADD, Borzoi 524\,kb context, GPN-MSA phylogenetic score) is load-bearing; the conformal-partition contribution (§\ref{sec:method}) rides on top of a competent base predictor. A principled DEGU+HCCP hybrid would substitute $\shat_{\mathrm{HCCP}}$ with DEGU-style ensemble $\shat$ at matched feature inputs, which is exactly our DEGU-lite ablation (§\ref{sec:experiments}, Table~\ref{tab:degu}) --- and there DEGU-lite is $5\times$ worse on Complex worst-cell coverage, establishing that the supervised residual head captures aleatoric structure that ensemble disagreement does not.
+
 \subsection{DEGU-lite vs HCCP head-to-head}
 \label{app:tables:degu}
 
