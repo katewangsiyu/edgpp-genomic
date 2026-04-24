@@ -73,6 +73,39 @@ Complex   & 125 & 10.4\% (13/125) & 0.315 & 0.113 & 0.102 \\
 
 \paragraph{Interpretation.} A2-cell is approximately satisfied on Complex (10.4\% vs 5\% null, max KS $0.315$) but noticeably violated on Mendelian (46.2\%, max KS $0.434$). The violation concentrates in the highest-$\shat$ positive-class cell $(y{=}1, b{=}4)$ — chromosomes chr9, chr7, chr3, chr19, and chrX each show KS $\geq 0.40$ at this cell, consistent with chromosome-specific pathogenic variant concentration. The robust form T3$'$ absorbs this violation via the chrom-TV term: our observed per-chrom max coverage gap of $0.073$ (chr19, Table~\ref{tab:perchrom}) is within the $\bar\delta_{\mathrm{TV}}^{(k,b)}$ bound consistent with max KS $\leq 0.44 \Rightarrow d_{\mathrm{TV}} \leq 0.22$. Full per-chromosome breakdowns: \texttt{outputs/ks\_audit/*\_ks\_per\_chrom\_n20.json}.
 
+\subsection{Leakage sanity audit}
+\label{app:data:leakage}
+
+Because \texttt{HistGradientBoostingClassifier} at \texttt{max\_depth=2} with \texttt{early\_stopping=False}, default \texttt{subsample=1.0}, and \texttt{max\_features=None} contains no active random source, the classifier output is \emph{deterministic given the training data} and \texttt{random\_state} produces no variance. We view this as an algorithmic property (sklearn 1.4 documentation confirms that \texttt{random\_state} controls only early-stopping validation splits, row subsampling, and binning tie-breaking, none of which activate under our configuration), but algorithmic determinism is observationally indistinguishable from \emph{data leakage} absent additional tests. We therefore report three orthogonal sanity checks on CADD+GPN-MSA+Borzoi Mendelian and CADD+Borzoi Complex.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Leakage sanity audit. Test A trains on shuffled labels and evaluates on the original labels: under leakage, shuffling would leave AUPRC high; we observe collapse toward the positive-class prior ($\approx 0.10$). Test B forces row-level stochasticity via 80\% random row masking and confirms \texttt{random\_state} \emph{does} produce variance under active randomness --- but less than $0.003$ AUPRC std, reflecting TraitGym's strong feature signal rather than a bug. Test C audits the chrom-LOO split.}
+\label{tab:leakage_sanity}
+\begin{tabular}{llrr}
+\toprule
+Test & Condition & Mendelian AUPRC & Complex AUPRC \\
+\midrule
+Reference         & seed 42, no perturbation                    & 0.900 & 0.350 \\
+\midrule
+A: label shuffle  & 10\% of training labels flipped              & 0.898 & 0.327 \\
+A: label shuffle  & 30\% of training labels flipped              & 0.776 & 0.257 \\
+A: label shuffle  & \textbf{50\% of training labels flipped}     & \textbf{0.147} & \textbf{0.126} \\
+\midrule
+B: subsample+seed & row-mask 0.8, $\sigma$ over seeds $\{42,7,2024\}$ & 0.0006 (std) & 0.0027 (std) \\
+\midrule
+C: chrom-LOO audit & train $\cap$ test rows across 19--22 folds  & 0 overlap & 0 overlap \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Interpretation.}
+(i) \emph{Test A is the critical test}: on both datasets, training with 50\% random label corruption collapses test AUPRC from 0.90/0.35 to 0.147/0.126, approaching the positive-class base rate 0.10. This is inconsistent with data leakage --- a leaked model would retain its AUPRC regardless of training labels --- and consistent with the model genuinely learning label signal.
+(ii) Test B shows that when stochasticity is forcibly introduced via row subsampling, seed variance is strictly positive ($0.0006$ on Mendelian, $0.0027$ on Complex). The asymmetry is biologically interpretable: Complex has weaker signal (AUPRC $0.35$ vs $0.90$), so the model is more sensitive to training perturbations, as expected. The fact that both stds are small ($< 0.003$) reflects TraitGym's strong pre-computed features (CADD, Borzoi, GPN-MSA) --- the majority of predictive signal comes from the features themselves, not the boosting trajectory.
+(iii) Test C confirms the chrom-LOO split is structurally clean.
+Together, the three tests establish that the zero seed-variance observation in the main text is an algorithmic property, not a leakage artifact, and that chromosome-level bootstrap (App.~\ref{app:data:compute}) is the appropriate uncertainty quantifier.
+
 \subsection{Compute}
 \label{app:data:compute}
 
