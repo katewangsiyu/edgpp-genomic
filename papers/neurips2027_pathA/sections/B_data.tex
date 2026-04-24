@@ -24,14 +24,16 @@ Test chromosomes: $\{17, 18, 19, 20, 21, 22, X\}$ (TraitGym default). For each t
 Feature & Source & Dim \\
 \midrule
 CADD v1.7 & \citet{kircher2014cadd} & 1 \\
-Borzoi\_L2 & \citet{linder2025borzoi} zero-shot L2-norm & 3,846 \\
-Borzoi\_L2\_L2 & \citet{linder2025borzoi} L2-of-L2 & 3,846 \\
+Borzoi\_L2 & \citet{linder2025borzoi} zero-shot L2-norm & 3{,}846 \\
+Borzoi\_L2\_L2 & \citet{linder2025borzoi} L2-of-L2 & 3{,}846 \\
 GPN-MSA\_LLR & \citet{benegas2023gpnmsa} log-likelihood ratio & 1 \\
 GPN-MSA\_absLLR & \citet{benegas2023gpnmsa} absolute LLR & 1 \\
 GPN-MSA\_InnerProducts & \citet{benegas2023gpnmsa} inner products & 36 \\
+AlphaGenome & \citet{avsec2026alphagenome} RNA\_SEQ $+$ DNASE $\times$ 8 tissues & 140 \\
 \midrule
-\textbf{CADD+GPN-MSA+Borzoi (full)} & & \textbf{7,731} \\
-\textbf{CADD+Borzoi} & & \textbf{7,693} \\
+\textbf{CADD+GPN-MSA+Borzoi (full)} & & \textbf{7{,}731} \\
+\textbf{CADD+GPN-MSA+Borzoi+AlphaGenome} & & \textbf{7{,}871} \\
+\textbf{CADD+Borzoi} & & \textbf{7{,}693} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -41,6 +43,9 @@ GPN-MSA\_InnerProducts & \citet{benegas2023gpnmsa} inner products & 36 \\
 
 \paragraph{Base classifier $\phat$.}
 \texttt{HistGradientBoostingClassifier} (scikit-learn 1.4): \texttt{max\_depth=2}, \texttt{max\_iter=100}, \texttt{learning\_rate=0.1}, \texttt{class\_weight=balanced}, \texttt{random\_state=42}, \texttt{early\_stopping=False}. Feature imputation: mean via \texttt{SimpleImputer}. No feature scaling (GBM is scale-invariant).
+
+\paragraph{AlphaGenome features.}
+We extract predictions from the AlphaGenome API \citep{avsec2026alphagenome} on $16$\,kb windows centered on each variant, across 8 representative tissue ontology terms (brain, liver, heart, lung, kidney, colon, bone marrow, pancreas) for \texttt{RNA\_SEQ} and \texttt{DNASE} output tracks. For each $(\text{output}, \text{tissue})$ pair we record (a) window-mean $\log(1 + x)$ of ref and alt predictions, (b) center-position alt$-$ref delta in log space, and (c) maximum $|$alt$-$ref$|$ across the window, yielding $2 \cdot 8 \cdot (2 + 2) = 64$ entries per output type, 128 combined --- plus 12 aggregated cross-tissue summaries for 140 total. Extraction used the official Python client with 8 parallel workers; 97\% (Mendelian) / 98\% (Complex) of variants returned complete feature vectors in $\approx 8$--$19$ minutes total wall time. Remaining variants (near chromosome boundaries or in inaccessible regions) receive NaN features, which \texttt{HistGradientBoostingClassifier} handles natively.
 
 \paragraph{Heteroscedastic head $\shat$.}
 \texttt{HistGradientBoostingRegressor} with identical backbone parameters. Target: $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ (chrom-LOO OOF residuals). Loss: squared error (Gaussian NLL approximation). Floor: $\shat(x) = \max(\shat_{\mathrm{raw}}(x), \epsilon)$ with $\epsilon = 10^{-4}$.

@@ -30,6 +30,7 @@ Dataset & Aggregator & Calibration & AUPRC $\uparrow$ & Marg.\ cov.\ & Cov $|Y{=
  & GBM & Class-cond. (Day 10) & \textbf{0.900} & 0.900 & 0.90 & 0.46 & 92\% \\
  & GBM & DEGU-lite + split & 0.901 & 0.900 & 0.88 & 0.43 & 85\% \\
  & GBM & \textbf{HCCP (ours)} & \textbf{0.900} & $0.899_{\pm 0.006}$ & $0.894_{\pm 0.015}$ & $\textbf{0.020}_{\pm 0.012}$ & $0.776_{\pm 0.040}$ \\
+ & \textbf{GBM}+AlphaGenome & HCCP (ours) & $\mathbf{0.912}$ & $0.899_{\pm 0.005}$ & $0.899_{\pm 0.016}$ & $\mathbf{0.018}_{\pm 0.010}$ & $0.764_{\pm 0.063}$ \\
 \midrule
 \multirow{5}{*}{Complex} & LogReg & Split CP & 0.332 & 0.900 & 0.88 & 0.43 & 23\% \\
  & \textbf{GBM} & Split CP & 0.353 & 0.900 & 0.54 & 0.53 & 55\% \\
@@ -40,7 +41,7 @@ Dataset & Aggregator & Calibration & AUPRC $\uparrow$ & Marg.\ cov.\ & Cov $|Y{=
 \end{tabular}
 \end{table}
 
-\paragraph{Key reading.} (i) Our GBM aggregator alone gives SOTA Mendelian AUPRC $0.900$, a $+14.8$\,pp improvement over published LogReg \citep{benegas2025traitgym}. (ii) Class-conditional calibration (Day 10) fixes the minority-class pathology of split CP (Cov\,$|Y{=}1$ $0.54 \to 0.90$ on Complex) but leaves the \emph{local} gap untouched. (iii) HCCP's Mondrian-$(y \times \shat\text{-bin})$ partition reduces the $\shat$-bin gap by a further $5\text{--}25\times$ to within one standard error of the finite-sample $1/(n_{k,b}+1)$ floor. (iv) DEGU-lite \citep{zhou2026degu} learns $\shat$ but applies split CP rather than Mondrian, so its $\shat$-bin gap remains near the class-conditional level --- the conformal partition, not the $\shat$ head, is the load-bearing component.
+\paragraph{Key reading.} (i) Our GBM aggregator alone gives SOTA Mendelian AUPRC $0.900$, a $+14.8$\,pp improvement over published LogReg \citep{benegas2025traitgym}. (ii) Adding AlphaGenome \citep{avsec2026alphagenome} as a 140-dimensional feature panel (RNA\_SEQ and DNASE across 8 tissues, App.~\ref{app:data:features}) lifts Mendelian AUPRC to $0.912$ ($+1.15$\,pp) with the $\shat$-bin gap dropping from $0.020$ to $0.018$; the improvement is Mendelian-specific (Complex AUPRC $0.353 \to 0.352$, essentially flat), consistent with AlphaGenome's tissue-specific predictions being most informative for monogenic variants with dominant expression/splice effects. (iii) Class-conditional calibration (Day 10) fixes the minority-class pathology of split CP (Cov\,$|Y{=}1$ $0.54 \to 0.90$ on Complex) but leaves the \emph{local} gap untouched. (iv) HCCP's Mondrian-$(y \times \shat\text{-bin})$ partition reduces the $\shat$-bin gap by a further $5\text{--}25\times$ to within one standard error of the finite-sample $1/(n_{k,b}+1)$ floor. (v) DEGU-lite \citep{zhou2026degu} learns $\shat$ but applies split CP rather than Mondrian, so its $\shat$-bin gap remains near the class-conditional level --- the conformal partition, not the $\shat$ head, is the load-bearing component.
 
 \subsection{Three-axis OOD coverage}
 
