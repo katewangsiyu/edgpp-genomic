@@ -78,31 +78,29 @@ $K$ & Worst gap & Mean gap & $n_{\min}$ & fallback & Worst gap & Mean gap & $n_{
 (ii) \textbf{Variance-dominated} ($K \in [5, 30]$ Mendelian, $K \in [10, 30]$ Complex): worst-cell gap rises as cells drop toward the $n_{k,b} \geq \lceil 1/\alpha\rceil = 10$ floor. Mendelian saturates at gap $0.73$; Complex at $0.60$. This is the tradeoff captured by Eq.~\ref{eq:gap_decomp}.
 (iii) \textbf{Fallback-dominated} ($K \geq 50$, not modeled by T5): once the majority of cells trigger the pooled-fallback ($n_{k,b} < 5$), the predictor effectively reverts to T2 class-conditional calibration, which is uniform across $\shat$-bins. Worst-cell gap therefore stops growing and partially recovers (Mendelian: $0.73 \to 0.10$ as $K$ grows from 30 to 200; Complex: 0.90 plateau and $0.70$). This third regime is invisible in the asymptotic T5 bound but visible at the realistic $n \leq 11{,}400$ scale of TraitGym, and it explains why the cross-validated $\hat K_{\mathrm{CV}}$ does not approach the oracle $K^\star$ for any of the four $L_F$ estimators in Table~\ref{tab:LF_estimators}: the variance-dominated regime never ``wins'' before fallback takes over.
 
-\paragraph{$L_F$ estimator sensitivity.}
-The oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ depends on the plug-in Lipschitz estimate $\hat L_F$. We compare four estimators in Table~\ref{tab:LF_estimators}: the \emph{legacy max-of-ratios} over adjacent pilot bins (used in earlier drafts), a \emph{median-of-ratios} variant, a \emph{p90-of-ratios} variant, and an \emph{empirical inversion} that solves $G(K) = \hat L_F R/K + K/(\pi_{\min} n)$ for $\hat L_F$ at each observed $K$ and takes the median. The estimators span $[5.8, 49.7]$ on Mendelian and $[2.4, 21.8]$ on Complex. All four yield a theoretical $K^\star$ substantially above the cross-validated $\hat K_{\mathrm{CV}} \in \{2, 3\}$; the gap is driven by a finite-sample effect the T5 bound does not model: when $n_{k,b} < \lceil 1/\alpha\rceil$, the implementation falls back to the pooled class-conditional quantile $\hat q_k$ (T2), which is uniform across $\shat$-bins and therefore \emph{widens} the worst-cell gap non-monotonically in $K$. We interpret $\hat K_{\mathrm{CV}}$ as the CV-calibrated lower bound and $K^\star$ as the asymptotic upper bound; practitioners should choose $\hat K_{\mathrm{CV}}$ in the finite-sample regime and expect the two to converge as $n \to \infty$.
+\paragraph{$L_F$ estimator with concentration bound.}
+The oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ depends on the plug-in Lipschitz estimate $\hat L_F$. We adapt the Lipschitz-Constant Least-Squares estimator of \citet{lcls2024lipschitz} to our score-CDF Lipschitz problem: bin $\shat$ into 30 quantile bins per class with at least 20 variants per bin, compute pairwise Kolmogorov--Smirnov distances and $\shat$-gaps, then regress KS$_{ab} = \hat L_F \cdot \mathrm{gap}_{ab}$ via least squares through the origin. Bootstrap with $B = 500$ chrom-level resamples gives a 95\% CI. Table~\ref{tab:LF_estimators} shows that the LCLS estimator yields tight CIs ($\hat L_F = 2.97$ Mendelian, $4.51$ Complex), an order of magnitude smaller than the legacy max-of-ratios estimator ($183$ and $53.3$ respectively) which is biased high by KS-saturation noise on small $\shat$-gaps. Substituting LCLS $\hat L_F$ into Theorem~\ref{thm:t5oracle} gives $K^\star = 22$ (Mendelian) and $K^\star = 50$ (Complex), still above the cross-validated $\hat K_{\mathrm{CV}} \in \{2, 3\}$ but only by a factor of $7$--$25\times$ rather than the legacy $30$--$56\times$. The remaining gap is the finite-sample fallback effect (App.~\ref{app:tables:ksweep}, third regime).
 
 \begin{table}[h]
 \centering
 \small
 \caption{Four $L_F$ estimators and their oracle $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ and $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$ bounds. The cross-validated $\hat K_{\mathrm{CV}}$ is reported for comparison.}
 \label{tab:LF_estimators}
-\begin{tabular}{llrrr}
+\begin{tabular}{llrcrr}
 \toprule
-Estimator & Dataset & $\hat L_F$ & $K^\star$ & $G(K^\star)$ bound \\
+Estimator & Dataset & $\hat L_F$ & 95\% CI & $K^\star$ & $G(K^\star)$ bound \\
 \midrule
-legacy max-of-ratios   & Mendelian & 49.7 & 88  & 0.525 \\
-median-of-ratios       & Mendelian & 5.8  & 30  & 0.179 \\
-p90-of-ratios          & Mendelian & 23.5 & 61  & 0.362 \\
-empirical inversion    & Mendelian & 12.3 & 44  & 0.261 \\
+\textbf{LCLS regression} \citep{lcls2024lipschitz} & \textbf{Mendelian} & \textbf{2.97} & $[2.89, 3.45]$ & \textbf{22} & \textbf{0.130} \\
+isotonic envelope          & Mendelian & 26.9 & $[6.85, 93.2]$ & 61   & 0.388 \\
+legacy max-of-ratios       & Mendelian & 183  & --- & 169  & 1.011 \\
 \midrule
-\multicolumn{2}{l}{\emph{cross-validated} $\hat K_{\mathrm{CV}}$ (Mendelian)} &   & \textbf{3} & 0.047 (observed) \\
+\multicolumn{4}{l}{\emph{cross-validated} $\hat K_{\mathrm{CV}}$ (Mendelian)} & \textbf{3} & 0.047 (observed) \\
 \midrule
-legacy max-of-ratios   & Complex   & 21.8 & 110 & 0.194 \\
-median-of-ratios       & Complex   & 6.9  & 62  & 0.109 \\
-p90-of-ratios          & Complex   & 19.5 & 104 & 0.183 \\
-empirical inversion    & Complex   & 2.4  & 36  & 0.065 \\
+\textbf{LCLS regression} \citep{lcls2024lipschitz} & \textbf{Complex}  & \textbf{4.51} & $[4.47, 4.69]$ & \textbf{50} & \textbf{0.088} \\
+isotonic envelope          & Complex   & 8.02 & $[4.48, 33.1]$ & 67  & 0.118 \\
+legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \midrule
-\multicolumn{2}{l}{\emph{cross-validated} $\hat K_{\mathrm{CV}}$ (Complex)}   &   & \textbf{2} & 0.006 (observed) \\
+\multicolumn{4}{l}{\emph{cross-validated} $\hat K_{\mathrm{CV}}$ (Complex)}   & \textbf{2} & 0.006 (observed) \\
 \bottomrule
 \end{tabular}
 \end{table}
