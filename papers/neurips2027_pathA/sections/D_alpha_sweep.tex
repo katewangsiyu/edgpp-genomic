@@ -19,3 +19,14 @@ Figure~\ref{fig:alpha_sweep} and Table~\ref{tab:alpha_sweep} report HCCP's empir
 
 \paragraph{Observations.}
 (i) The marginal coverage is calibrated to within $\leq 0.015$ of target at every $\alpha$, consistent with the exact T1 two-sided bound $[1 - \alpha,\, 1 - \alpha + 1/(n_{\min}+1)]$. (ii) The worst-cell $\shat$-bin gap stays below the $\alpha = 0.10$ headline 0.04 threshold across the entire $\alpha$ range, confirming the T3 bound is not an artifact of a specific $\alpha$ choice. (iii) The singleton fraction grows monotonically with $\alpha$ on Complex (from $3\%$ at $\alpha = 0.01$ to $77\%$ at $\alpha = 0.50$) but is non-monotone on Mendelian (peaks at $82\%$ near $\alpha = 0.15$, falls back at higher $\alpha$ as empty sets $\emptyset$ emerge); this is expected for class-imbalanced problems where a very loose $\alpha$ can drop a small-$\shat$ variant below the lowered quantile bar on both classes simultaneously.
+
+\paragraph{Operating-point recommendations.}
+The singleton fraction column of Table~\ref{tab:alpha_sweep} is the practical knob: low $\alpha$ buys high coverage at the cost of frequent abstention; high $\alpha$ produces more confident calls at the cost of more uncovered cases. We provide three benchmarked operating points:
+
+\begin{itemize}
+    \item \textbf{High-stakes rare-disease classification} ($\alpha = 0.10$): Mendelian singleton $80\%$, Complex singleton $22\%$. Use when a missed pathogenic variant has clinical-grade cost (e.g., hereditary cancer panels). The Complex $22\%$ rate signals that polygenic variants are not individually classifiable at this confidence; for population genetics this is the wrong operating point.
+    \item \textbf{Polygenic screening triage} ($\alpha = 0.20$): Mendelian singleton $79\%$, Complex singleton $45\%$. Matches the operating point of \citet{pcos2025conformal} for clinical conformal-prediction deployment ($41\%$ abstention reported). Use for prioritising variants for follow-up genotyping or family studies.
+    \item \textbf{Hypothesis generation} ($\alpha = 0.30$): Mendelian singleton $70\%$, Complex singleton $67\%$. Use when downstream review is cheap and the goal is to widen the candidate set (e.g., GWAS fine-mapping, drug-target prioritisation).
+\end{itemize}
+
+The coverage guarantee remains $1 - \alpha$ at each operating point; only the singleton/abstention budget shifts. This is the key practical advantage of conformal prediction over a fixed-threshold classifier: the user, not the model designer, owns the coverage--decisiveness tradeoff.

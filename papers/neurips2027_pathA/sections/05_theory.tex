@@ -1,7 +1,12 @@
 % Source: theory/t1_t2_formal_proofs.md (T1/T2/T1'/T2'/T4), theory/t3_formal_proof.md (T3 / T3' / T3-loc / T3.b), theory/theorems_roadmap.md.
 % Main-text: theorem statements + one-paragraph proof sketches. Full proofs in App.~\ref{app:proofs}.
 
-This section states HCCP's coverage guarantees. Unless otherwise noted, all statements take the calibration fold $\D^{(-c^\star)}$ and the test point $(X, Y) \sim P_{c^\star}$ as described in §\ref{sec:formulation:setup}, and $\pset$ is the Mondrian prediction set of Eq.~\eqref{eq:pset}. We use the A1/A1$'$/A2 hierarchy of \ref{ass:A1}--\ref{ass:A2}, with two further assumptions introduced only where needed: \textbf{A3-loc} (local score stationarity inside feature balls, for T3-loc) and \textbf{B1} ($\hat\sigma$ relative error $\|\hat\sigma - \sigma^\star\|_\infty / \inf_x \sigma^\star(x) \leq \eta$, for T3.b). Both are explicitly stated in App.~\ref{app:proofs}.
+This section states HCCP's coverage guarantees. The principal contribution is Theorem~\ref{thm:t5oracle} (T5, §\ref{sec:theory:t5}), which derives the optimal Mondrian bin count $K^\star$ with a matching minimax lower bound (Theorem~\ref{thm:t5lower}, T5.2). T5 is the only result here that is genuinely new at the theorem level; T1/T2/T3 are partition-refinement consequences of split conformal applied at three increasingly fine partition granularities, and T1$'$/T2$'$/T3$'$/T4 are direct applications of \citet{barber2023exchangeability}'s Theorem~2 at the same partition levels. We state all of them because the layered structure (marginal $\to$ class-conditional $\to$ bin-conditional) is the point: HCCP delivers \emph{three} finite-sample coverage guarantees from the same calibration fold, with a single optimal $K$ governing all three.
+
+Unless otherwise noted, all statements take the calibration fold $\D^{(-c^\star)}$ and the test point $(X, Y) \sim P_{c^\star}$ as described in §\ref{sec:formulation:setup}, and $\pset$ is the Mondrian prediction set of Eq.~\eqref{eq:pset}. We use the A1/A1$'$/A2 hierarchy of \ref{ass:A1}--\ref{ass:A2}, with two further assumptions introduced only where needed: \textbf{A3-loc} (local score stationarity inside feature balls, for T3-loc) and \textbf{B1} ($\hat\sigma$ relative error $\|\hat\sigma - \sigma^\star\|_\infty / \inf_x \sigma^\star(x) \leq \eta$, for T3.b). Both are explicitly stated in App.~\ref{app:proofs}.
+
+\paragraph{Reading guide.}
+Readers primarily interested in the new theoretical content can read §\ref{sec:theory:t5} (T5 and its matching lower bound) first; the layered guarantees in §\ref{sec:theory:t1t2}--§\ref{sec:theory:t3} can be consulted as needed when interpreting the empirical results. Readers primarily interested in finite-sample deployment should read T3 (Theorem~\ref{thm:t3}) and the robust form T3$'$ (Theorem~\ref{thm:t3prime}), which together characterise the bin-local coverage HCCP actually delivers in the chrom-LOO regime.
 
 Each theorem below is stated in its \emph{exact} form (A1$'$~+~A2 at the relevant granularity); a \emph{robust} counterpart, in which A2 is dropped and the bound degrades by an empirical total-variation term, follows from \citet{barber2023exchangeability}'s Theorem~2 applied at the same partition level. We pair each theorem with its robust version (T1$'$, T2$'$, T3$'$) and collect all results in Table~\ref{tab:theory_summary}.
 
@@ -109,7 +114,7 @@ As $\eta \to 0$ the T3.b bound collapses to the T3 finite-sample slack. There is
 \subsection{Adaptive bin count --- the T5 bias--variance tradeoff}
 \label{sec:theory:t5}
 
-Theorems~\ref{thm:t3}--\ref{thm:t3b} hold for any fixed $K$. We now derive the \emph{optimal} $K$ by formalizing the bias--variance tradeoff that governs bin-conditional coverage.
+\textbf{This is the principal theoretical contribution.} Theorems~\ref{thm:t3}--\ref{thm:t3b} hold for any fixed $K$ but say nothing about \emph{which} $K$ to choose. We now derive the optimal $K$ by formalising the bias--variance tradeoff that governs bin-conditional coverage, prove a matching minimax lower bound to establish the rate is tight, and show the leading constant is dimension-free under \ref{ass:ASL}.
 
 \paragraph{Two sources of coverage gap.}
 Under \ref{ass:ASL}, the worst-cell coverage gap decomposes as
@@ -140,6 +145,9 @@ The $O(n^{-1/2})$ rate of Theorem~\ref{thm:t5oracle} is \emph{dimension-free} in
 
 \paragraph{Practical $\hat K$ selection.}
 We select $\hat K$ via cross-validation: for each candidate $K \in \{2, 3, 5, 8, 10, 15, 20\}$, we compute the leave-one-out worst-cell coverage gap on the calibration fold and pick $\hat K_{\mathrm{CV}} = \operatorname{argmin}_K \hat G(K)$. On TraitGym, $\hat K_{\mathrm{CV}} = 3$ (Mendelian) and $\hat K_{\mathrm{CV}} = 2$ (Complex), both below the $K = 5$ default, with $6{-}7\times$ worst-cell gap improvement (§\ref{sec:experiments}). The low optimal $K$ reflects class imbalance ($\pi_{\min} \approx 0.10$): with few positive variants, the variance term $K / (\pi_{\min} n)$ dominates.
+
+\paragraph{Asymptotic vs.\ finite-sample regimes.}
+A reader may notice that our plug-in estimates of $L_F$ (App.~\ref{app:tables:ksweep}, Table~\ref{tab:LF_estimators}) yield asymptotic $K^\star$ values in the range $[30, 110]$, while $\hat K_{\mathrm{CV}}$ selects $K \in \{2, 3\}$ at TraitGym scale. This is not a contradiction: T5.1 characterises the \emph{asymptotic} optimum where Eq.~\ref{eq:gap_decomp} is the binding constraint, while in the finite-sample regime ($n \leq 11{,}400$) the per-cell sample-size floor $n_{k,b} \geq \lceil 1/\alpha \rceil$ is binding before the variance term reaches the bias term. The empirical $K$-sweep extended to $K = 200$ (App.~\ref{app:tables:ksweep}) exposes a third \emph{fallback-dominated} regime not modelled by Eq.~\ref{eq:gap_decomp}, in which the predictor reverts to T2 pooled class-conditional thresholds and worst-cell gap saturates rather than diverging. We recommend $\hat K_{\mathrm{CV}}$ as the practical estimator at sample sizes typical of human-variant benchmarks; the gap between $\hat K_{\mathrm{CV}}$ and the asymptotic $K^\star$ closes as $n \to \infty$. A finite-sample concentration bound on $\hat L_F$ in the spirit of \citet{lcls2024lipschitz} would tighten this analysis; we leave the formal extension to future work.
 
 \subsection{Chrom-shift robustness}
 \label{sec:theory:t4}
