@@ -110,12 +110,14 @@ empirical inversion    & Complex   & 2.4  & 36  & 0.065 \\
 \subsection{DEGU-actual (CNN on raw DNA) head-to-head}
 \label{app:tables:degu_actual}
 
-To isolate the contribution of HCCP's aggregator design choice (pre-computed features vs.\ end-to-end CNN), we reimplemented DEGU \citep{zhou2026degu} at the architectural level --- a 1-D CNN consuming $200$\,bp one-hot DNA windows centered on each variant (ref and alt alleles concatenated as 8 channels), trained with BCE and a $9{:}1$ pos-weight to handle the class imbalance. We trained $M = 5$ CNN teachers with random seeds and computed $\shat(x) = \mathrm{std}_m p_m(x)$. Fixed test chromosomes $\{17,18,19,20,21,22,X\}$ match TraitGym's convention. Table~\ref{tab:degu_actual} reports the point-estimate performance against the HCCP GBM aggregator.
+DEGU \citep{zhou2026degu} was originally designed for MPRA regression --- a task where 200\,bp windows are sufficient because the readout is direct sequence-to-activity. To test whether HCCP's design decision to aggregate pre-computed features (CADD, Borzoi 524\,kb context, GPN-MSA phylogenetic signal) is load-bearing for the binary VEP setting, we ported the DEGU architecture to TraitGym pathogenicity classification: a 1-D CNN consuming $200$\,bp one-hot DNA windows (ref and alt alleles concatenated as 8 channels), trained with BCE and a $9{:}1$ pos-weight to handle class imbalance. We trained $M = 5$ CNN teachers with random seeds and computed $\shat(x) = \mathrm{std}_m p_m(x)$. Fixed test chromosomes $\{17,18,19,20,21,22,X\}$ match TraitGym's convention.
+
+We report this experiment not as a critique of DEGU --- whose uncertainty machinery is well-validated on its native MPRA regime --- but as empirical support for the field convention of using pre-computed genomic features for variant pathogenicity. Table~\ref{tab:degu_actual} shows the resulting AUPRC gap.
 
 \begin{table}[h]
 \centering
 \small
-\caption{DEGU-actual (CNN on 200\,bp DNA) vs HCCP GBM (CADD+GPN-MSA+Borzoi). DEGU-actual matches the architecture of the original paper \citep{zhou2026degu} but on TraitGym pathogenicity classification; DEGU's official publication reports no TraitGym number, and our reimplementation reveals the reason: raw-sequence CNN is not competitive on variant pathogenicity. Same test-chromosome split for both.}
+\caption{DEGU-actual (CNN on 200\,bp DNA) vs HCCP GBM (CADD+GPN-MSA+Borzoi). DEGU-actual is a faithful port of the architecture in \citet{zhou2026degu} to TraitGym pathogenicity classification. DEGU's original paper reports no TraitGym number, consistent with the architecture being designed for MPRA regression rather than variant pathogenicity. Same test-chromosome split for both models.}
 \label{tab:degu_actual}
 \begin{tabular}{llrrrr}
 \toprule

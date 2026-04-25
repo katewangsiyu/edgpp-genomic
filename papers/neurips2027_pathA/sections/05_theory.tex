@@ -33,14 +33,21 @@ Under the conditions of Theorem~\ref{thm:t1} with A2 at class level and $n_k \ge
 \paragraph{Proof sketch (T1 and T2).}
 Both reduce to the standard exchangeable split-CP argument applied \emph{within} each class. Fix $k$: under A1$'$~+~A2-class, the calibration scores $\{s(X_i, Y_i) : Y_i = k\}$ are i.i.d.\ from a common chrom-invariant law $F_k$, and the test score $s(X, k) \mid Y = k$ is independent of calibration and also $F_k$-distributed. Exchangeability of the augmented sequence implies the rank of $s(X, k)$ is uniform on $\{1, \ldots, n_k + 1\}$, so $P\bigl(s(X, k) \leq \qhat_k\bigr) = \lceil (n_k + 1)(1 - \alpha)\rceil / (n_k + 1)$, which sits in $[1 - \alpha,\, 1 - \alpha + 1/(n_k + 1)]$. T2 is this per-class statement directly; T1 is the law-of-total-probability average over $k$, so the marginal bound inherits the same range with $n_{\min}$ replacing $n_k$. Full proof in App.~\ref{app:proofs:t1} and \ref{app:proofs:t2}.
 
-\paragraph{Robust forms T1$'$, T2$'$.}
-Under A1 alone (no A2), \citet{barber2023exchangeability} Theorem~2 with uniform weights gives
+\paragraph{Robust forms T1$'$, T2$'$, T3$'$ --- a single Corollary.}
+The exact bounds T1, T2, T3 require A2 at the relevant partition granularity. When A2 fails but A1 (cross-chromosome independence) holds, all three degrade by a partition-appropriate total-variation term via the same construction: \citet{barber2023exchangeability}'s Theorem~2 with uniform calibration weights, applied at the corresponding partition level.
+
+\begin{lemma}[Unified robust forms, T1$'$/T2$'$/T3$'$]
+\label{cor:robust}
+Under \ref{ass:A1} alone, for any partition event $E$ with calibration count $n_E \geq \lceil 1/\alpha\rceil$,
 \[
-P(Y \in \pset(X)) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}},
+P\bigl(Y \in \pset(X) \mid E\bigr) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(E)},
 \qquad
-P(Y \in \pset(X) \mid Y = k) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k)},
+\bar\delta_{\mathrm{TV}}^{(E)} = \frac{1}{|\mathcal{C}| - 1} \sum_{c \neq c^\star} d_{\mathrm{TV}}\bigl(F_c^{(E)},\, F_{c^\star}^{(E)}\bigr).
 \]
-where $\bar\delta_{\mathrm{TV}}^{(k)} = (|\mathcal{C}| - 1)^{-1} \sum_{c \neq c^\star} d_{\mathrm{TV}}(F_c^{(k)}, F_{c^\star}^{(k)})$. Both bounds are the same residual-swap Barber~2023 reduction and carry \emph{no} factor of 2, a point we emphasize since several derivatives in the CP literature inherit a $2\times$ slack from an unrelated Barber~2021 jackknife+ bound. See App.~\ref{app:proofs:t1prime_t2prime} for the derivation and the (empirical) chrom-TV estimates.
+Setting $E = \emptyset$ (marginal), $E = \{Y = k\}$ (class), or $E = \{Y = k, b(X) = b\}$ (cell) recovers T1$'$, T2$'$, T3$'$, respectively. The bound carries \emph{no} factor of 2 (weighted-swap Barber~2023, not jackknife+).
+\end{lemma}
+
+App.~\ref{app:proofs:t1prime_t2prime} derives the three instances and reports the (empirical) chrom-TV estimates. We emphasise the no-factor-of-2 because several derivatives in the CP literature inherit a $2\times$ slack from an unrelated Barber~2021 jackknife+ bound; for our partition-based use the Barber~2023 weighted-swap form is the correct reduction.
 
 \paragraph{Sample-size check.}
 At $\alpha = 0.10$ the theorems require $n_k \geq 10$. On TraitGym Mendelian chrom-LOO the smallest positive-class calibration has $n_1 \geq 30$; on Complex, $n_1 \geq 100$. The finite-sample upper gap $1/(n_k + 1)$ is therefore $\leq 0.033$ (Mendelian) and $\leq 0.010$ (Complex), consistent with our observed marginal coverage of $0.900 \pm 0.002$ across all regimes (§\ref{sec:experiments}).
