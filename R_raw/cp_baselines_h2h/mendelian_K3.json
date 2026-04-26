@@ -1,0 +1,38 @@
+{
+  "HCCP": {
+    "label": "HCCP",
+    "marginal_coverage": 0.899112426035503,
+    "coverage_pos": 0.8905325443786982,
+    "coverage_neg": 0.9000657462195923,
+    "sigma_bin_gap": 0.047368421052631504,
+    "n_test": 3380,
+    "frac_singleton": 0.7642011834319526
+  },
+  "RLCP": {
+    "label": "RLCP",
+    "marginal_coverage": 0.9393491124260355,
+    "coverage_pos": 0.8757396449704142,
+    "coverage_neg": 0.9464168310322156,
+    "sigma_bin_gap": 0.32105263157894737,
+    "n_test": 3380,
+    "frac_singleton": 0.8899408284023669
+  },
+  "WeightedCP": {
+    "label": "WeightedCP",
+    "marginal_coverage": 0.9020710059171597,
+    "coverage_pos": 0.9822485207100592,
+    "coverage_neg": 0.8931623931623932,
+    "sigma_bin_gap": 0.18774422735346363,
+    "n_test": 3380,
+    "frac_singleton": 0.4985207100591716
+  },
+  "SCCP": {
+    "label": "SCCP",
+    "marginal_coverage": 0.900887573964497,
+    "coverage_pos": 0.834319526627219,
+    "coverage_neg": 0.908284023668639,
+    "sigma_bin_gap": 0.37368421052631584,
+    "n_test": 3380,
+    "frac_singleton": 0.8375739644970415
+  }
+}

@@ -3,46 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: plainnat.bst
 Database file #1: refs.bib
-Warning--empty booktitle in vovk2003mondrian
-You've used 21 entries,
+You've used 40 entries,
             2773 wiz_defined-function locations,
-            693 strings with 8126 characters,
-and the built_in function-call counts, 9480 in all, are:
-= -- 784
-> -- 676
-< -- 8
-+ -- 228
-- -- 207
-* -- 753
-:= -- 1519
-add.period$ -- 67
-call.type$ -- 21
-change.case$ -- 125
-chr.to.int$ -- 21
-cite$ -- 43
-duplicate$ -- 436
-empty$ -- 735
-format.name$ -- 238
-if$ -- 1947
+            775 strings with 11443 characters,
+and the built_in function-call counts, 17990 in all, are:
+= -- 1505
+> -- 1191
+< -- 21
++ -- 403
+- -- 363
+* -- 1384
+:= -- 2816
+add.period$ -- 123
+call.type$ -- 40
+change.case$ -- 233
+chr.to.int$ -- 40
+cite$ -- 80
+duplicate$ -- 873
+empty$ -- 1475
+format.name$ -- 423
+if$ -- 3760
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 22
-newline$ -- 117
-num.names$ -- 84
-pop$ -- 269
+missing$ -- 40
+newline$ -- 210
+num.names$ -- 160
+pop$ -- 522
 preamble$ -- 1
-purify$ -- 105
+purify$ -- 193
 quote$ -- 0
-skip$ -- 331
+skip$ -- 651
 stack$ -- 0
-substring$ -- 148
-swap$ -- 25
-text.length$ -- 0
+substring$ -- 322
+swap$ -- 77
+text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 226
-warning$ -- 1
-while$ -- 71
+type$ -- 435
+warning$ -- 0
+while$ -- 141
 width$ -- 0
-write$ -- 270
-(There was 1 warning)
+write$ -- 503

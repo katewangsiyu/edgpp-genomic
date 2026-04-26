@@ -114,4 +114,30 @@ Together, the three tests establish that the zero seed-variance observation in t
 \subsection{Compute}
 \label{app:data:compute}
 
-All experiments on a single machine with 4$\times$ NVIDIA T4 GPUs (SM 7.5, no BF16). The HCCP pipeline (aggregator + $\shat$ head + conformal calibration) runs entirely on CPU via scikit-learn; a full chrom-LOO sweep takes $<$4 CPU-hours per feature set. DEGU-lite ensemble ($M=10$) takes $\approx$35 CPU-minutes (Mendelian) and $\approx$75 CPU-minutes (Complex). Figure and proof generation: negligible. The multi-seed Table~\ref{tab:main_results} mean$\pm$std uses seeds $\{42, 7, 2024\}$, with total additional wall-time $\approx$30 CPU-minutes.
+All experiments on a single machine with 4$\times$ NVIDIA T4 GPUs (SM 7.5, no BF16). The HCCP pipeline (aggregator + $\shat$ head + conformal calibration) runs entirely on CPU via scikit-learn; DEGU-actual CNN baseline uses one T4 GPU.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Wall-clock cost of the full HCCP pipeline and main baselines, single chrom-LOO sweep on TraitGym. CPU times on 16-core Xeon; GPU on a single T4. Memory peak excludes Python overhead. The $B = 200$ chromosome-level bootstrap (Tab.~\ref{tab:main}) uses the cached calibration scores and adds $\sim 30$ CPU-min total.}
+\label{tab:compute}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{llrrrr}
+\toprule
+Stage & Backend & Mendelian time & Complex time & Mem peak & Notes \\
+\midrule
+$\phat$ training (HistGB) & CPU 16-core & $\approx 20$ min & $\approx 60$ min & 4 GB & per feature set \\
+$\shat$ training (HistGB Gaussian-NLL) & CPU 16-core & $\approx 15$ min & $\approx 45$ min & 4 GB & on chrom-LOO OOF residuals \\
+Mondrian conformal calibration & CPU single-thread & $< 5$ min & $< 5$ min & 1 GB & per $K$ \\
+Total HCCP (single feature set, all chroms) & CPU 16-core & $< 4$ CPU-h & $< 4$ CPU-h & 4 GB & --- \\
+\midrule
+DEGU-lite ($M = 10$ bootstrap GBM) & CPU 16-core & $\approx 35$ min & $\approx 75$ min & 6 GB & shared $\phat$ backbone \\
+DEGU-actual ($M = 5$ CNN, 200\,bp) & 1$\times$ T4 GPU & $\approx 8$ h & $\approx 22$ h & 8 GB GPU & one-hot DNA windows \\
+\midrule
+$B = 200$ chrom-bootstrap & CPU single-thread & $\approx 12$ min & $\approx 18$ min & 1 GB & cached scores reused \\
+Multi-seed sweep ($\{42, 7, 2024\}$) & CPU 16-core & $\approx 12$ min & $\approx 18$ min & 4 GB & per Tab.~\ref{tab:main} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure and proof generation are negligible (matplotlib + LaTeX).

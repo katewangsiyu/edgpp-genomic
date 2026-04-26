@@ -90,6 +90,34 @@ Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & \textbf{$\shat$-bin gap $\downar
 \paragraph{Reading.}
 B2 ($\shat$-Mondrian) achieves the lowest $\shat$-bin gap on each dataset but \emph{collapses on minority-class coverage} ($\mathrm{cov}_{|Y=1} = 0.66$ on Complex). B3 (class-Mondrian) recovers minority coverage but its $\shat$-bin gap is $0.32$–$0.45$. HCCP is the unique point that simultaneously satisfies $\mathrm{cov}_{|Y=1} \geq 0.89$ and $\shat$-bin gap $\leq 0.18$ across both datasets. The improvement is not Pareto-superior on $\shat$-bin gap alone (B2 ties or beats it) — it is Pareto-superior on the \emph{joint} (class, $\shat$-bin) frontier, which is the operationally relevant target for clinical VEP.
 
+\paragraph{Comparison against contemporary local CP methods.}
+We additionally benchmark HCCP against three contemporary CP methods that target conditional coverage along axes complementary to ours: \textbf{RLCP} \citep{hore2025rlcp} (kernel-weighted localization, feature-space local), \textbf{weighted CP} \citep{tibshirani2019weighted} (covariate-shift adaptation via likelihood-ratio weights estimated by a logistic discriminator between source and target chromosomes), and \textbf{Self-Calibrating CP} \citep{vanderlaan2024sccp} (binning along the calibrated point prediction $\hat\mu = \phat$, equivalent to a Venn--Abers refinement at first-order). Each is paired with the same $(\phat, \shat)$ as Tab.~\ref{tab:h2h} for a like-for-like comparison; RLCP is run in the $(\phat, \shat)$ 2-D space (favouring it; the original feature space $d \approx 7{,}731$ would put RLCP's rate $O(n^{-2/(d+2)})$ in the intractable regime).
+
+\begin{table}[t]
+\centering
+\small
+\caption{HCCP vs.\ contemporary local-CP methods on TraitGym CADD+GPN-MSA+Borzoi at $K = \hat K_{\mathrm{CV}}$, sharing the same $(\phat, \shat)$. \textbf{HCCP is the unique method achieving both $\mathrm{cov}_{|Y=1} \geq 0.89$ and $\shat$-bin gap $\leq 0.10$ on either dataset.} RLCP/SC-CP collapse minority coverage on Complex (under-covering pathogenic class), and all three baselines have $\shat$-bin gap $\geq 0.19$. Singleton fractions in column 6 reflect the trade-off: RLCP/SC-CP achieve high singleton rates by giving up minority coverage. Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py} (single seed, full chrom-LOO).}
+\label{tab:cp_baselines}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llccccc}
+\toprule
+Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Singleton & Conditioning \\
+\midrule
+\multirow{4}{*}{Complex ($K=2$)}
+ & \textbf{HCCP (ours)}                                & 0.900 & \textbf{0.899} & \textbf{0.010} & 0.314 & $(y, \shat\text{-bin})$ \\
+ & RLCP \citep{hore2025rlcp}                            & 0.952 & \textcolor{red}{0.545} & \textcolor{red}{0.799} & 0.762 & $(p, \shat)$ kernel \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.901 & \textcolor{red}{0.613} & \textcolor{red}{0.803} & 0.785 & chrom-shift weights \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & \textcolor{red}{0.654} & \textcolor{red}{0.803} & 0.701 & $\phat$-bin \\
+\midrule
+\multirow{4}{*}{Mendelian ($K=3$)}
+ & \textbf{HCCP (ours)}                                & 0.899 & \textbf{0.891} & \textbf{0.047} & 0.764 & $(y, \shat\text{-bin})$ \\
+ & RLCP \citep{hore2025rlcp}                            & 0.939 & 0.876 & \textcolor{red}{0.321} & 0.890 & $(p, \shat)$ kernel \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.902 & 0.982 & \textcolor{red}{0.188} & 0.499 & chrom-shift weights \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.901 & 0.834 & \textcolor{red}{0.374} & 0.838 & $\phat$-bin \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{Imbalance sweep validates T5's $\pi_{\min}$ dependence.}
 Tab.~\ref{tab:imbsweep} subsamples Complex to $\pi_{+} \in \{0.05, 0.10, 0.20, 0.30, 0.50\}$ (positives kept whole; negatives subsampled or vice versa) and re-runs the four variants. The minority-coverage of B1 and B2 \emph{degrades monotonically} as $\pi_{+} \to 0$, while B3 and B4 hold at the target — the empirical realization of the $\pi_{\min}$-explicit factor in T5's bound $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$. Fig.~\ref{fig:frontier} visualises the same data as a joint frontier scatter. Mendelian ($K = 3$, $\hat K_{\mathrm{CV}}$) replicates the same qualitative pattern: B2's $\mathrm{cov}_{|Y=1}$ ranges $0.787$–$0.867$ across $\pi_{+} \in [0.05, 0.50]$ while HCCP holds at $0.896$–$0.906$; B1 over-covers the minority on Mendelian (cov$_{|Y=1} \approx 0.95$) but at the cost of $\shat$-bin gap $\geq 0.41$ throughout. The Mendelian sweep at $\pi_{+} = 0.50$ uses only $n = 676$ variants and is the only regime in which HCCP's $\shat$-bin gap exceeds $0.20$ (0.309), reflecting the per-cell sample-size floor $n_{k,b} \geq \lceil 1/\alpha \rceil$ rather than a method failure.
 
@@ -115,8 +143,15 @@ B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_frontier_complex.pdf}
-\caption{(a) Joint frontier: $\mathrm{cov}_{|Y=1}$ versus $\shat$-bin gap, points colored by method, sized by $\pi_{+}$ (Tab.~\ref{tab:imbsweep}). Lower-right is best. HCCP cluster occupies the high-coverage, low-gap corner alone. (b) $\mathrm{cov}_{|Y=1}$ versus $\pi_{+}$. Single-axis predictors B1 and B2 collapse as $\pi_{+} \to 0$; HCCP and class-Mondrian (B3) hold at target. T5's $\pi_{\min}^{-1/2}$ dependence is visible in the divergence of the coloured curves.}
+\caption{\textbf{Complex.} (a) Joint frontier: $\mathrm{cov}_{|Y=1}$ versus $\shat$-bin gap, points colored by method, sized by $\pi_{+}$ (Tab.~\ref{tab:imbsweep}). Lower-right is best. HCCP cluster occupies the high-coverage, low-gap corner alone. (b) $\mathrm{cov}_{|Y=1}$ versus $\pi_{+}$. Single-axis predictors B1 and B2 collapse as $\pi_{+} \to 0$; HCCP and class-Mondrian (B3) hold at target. T5's $\pi_{\min}^{-1/2}$ dependence is visible in the divergence of the coloured curves.}
 \label{fig:frontier}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_frontier_mendelian.pdf}
+\caption{\textbf{Mendelian} companion to Fig.~\ref{fig:frontier}. (a) Joint frontier: HCCP (B4, red) is again the unique point at $\mathrm{cov}_{|Y=1} \approx 0.90$ \emph{and} low $\shat$-bin gap; B3 (class-Mondrian) holds class coverage but with higher gap; B2 ($\shat$-Mondrian) under-covers the minority class; B1 (vanilla split) over-covers the minority but at large gap. (b) Imbalance scaling: same qualitative pattern as Complex --- HCCP and B3 hold $\mathrm{cov}_{|Y=1} \approx 0.90$ across $\pi_{+} \in [0.05, 0.50]$, B2 collapses to $\sim 0.79$ at $\pi_{+} = 0.05$. The two datasets together establish the joint $(y \times \shat\text{-bin})$ Mondrian as the unique single-fold partition simultaneously satisfying class and bin-local coverage under imbalance.}
+\label{fig:frontier_mendelian}
 \end{figure}
 
 \subsection{Three-axis OOD coverage}
@@ -161,6 +196,13 @@ Axis & Dataset & Feature set & AUPRC $\uparrow$ & Marg.\ cov.\ & \textbf{$\shat$
 \end{tabular}
 \end{table}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig9_per_chrom.pdf}
+\caption{Per-chromosome HCCP marginal coverage on chrom-LOO. Dashed line: target $1 - \alpha = 0.90$; shaded band: $\pm 1$ std under exchangeability ($n_{c^\star}$-binomial). Mendelian (left) shows substantial cross-chromosome variability driven by clustering of pathogenic variants on a few chromosomes (chr6, chr19, chr20 under-cover; chrX, chr3, chr11 over-cover) — consistent with the high cell-level KS rejection rate on Mendelian (App.~\ref{app:proofs}). Complex (right) is tighter, all chromosomes within $\pm 0.04$ of target. The figure illustrates the regime where T3 (exact) is replaced by T3$'$ (robust, Lem.~\ref{thm:t3prime}) on Mendelian.}
+\label{fig:per_chrom}
+\end{figure}
+
 \paragraph{Three observations.}
 \begin{enumerate}
     \item \textbf{HCCP holds across the three axes with degraded margin in chrom-LOO Mendelian.} Trait-LOO reaches the $0.002$–$0.004$ floor on both datasets; chrom-LOO Complex stays $\leq 0.023$ across feature sets; chrom-LOO Mendelian is $0.198$ on CADD+Borzoi and tightens to $0.077$ with the SOTA feature set CADD+GPN-MSA+Borzoi (still $> 0.04$, the binding regime). The strong-shift M$\to$C cross-dataset direction (gap $0.331$–$0.530$) is reported as an honest limitation; C$\to$M direction is in-bound (gap $\leq 0.036$).
@@ -170,7 +212,16 @@ Axis & Dataset & Feature set & AUPRC $\uparrow$ & Marg.\ cov.\ & \textbf{$\shat$
 
 \subsection{Ablations}
 
-\paragraph{$K$ sweep (T3 finite-sample rate validation; $\hat K_{\mathrm{CV}}$ selection).} Across $K \in \{2, 3, 5, 8, 10, 15, 20\}$ on Complex CADD+Borzoi: empirical $\shat$-bin gap grows as $K$ grows (variance term $K/(\pi_{\min} n)$ of T5 dominates), staying below the theoretical $1/(n_{k,b}+1)$ bound (App.~\ref{app:tables:ksweep}). The CV-selected $\hat K_{\mathrm{CV}} = 2$ (Complex) and $\hat K_{\mathrm{CV}} = 3$ (Mendelian) outperform the $K = 5$ default by $6\text{--}7\times$ on worst-cell gap (consistent with §\ref{sec:method} and §\ref{sec:theory:t5}). The headline tables (Tables~\ref{tab:main}, \ref{tab:threeaxis}) are reported at $K = 5$ for direct comparability with the prior split-CP and class-conditional baselines (which use the same default); the $\hat K_{\mathrm{CV}}$ row is in App.~\ref{app:tables:ksweep}.
+\paragraph{$K$ sweep (T3 finite-sample rate validation; $\hat K_{\mathrm{CV}}$ selection).} Across $K \in \{2, 3, 5, 8, 10, 15, 20\}$ on Complex CADD+Borzoi: empirical $\shat$-bin gap grows as $K$ grows (variance term $K/(\pi_{\min} n)$ of T5 dominates), staying below the theoretical $1/(n_{k,b}+1)$ bound (App.~\ref{app:tables:ksweep}). The CV-selected $\hat K_{\mathrm{CV}} = 2$ (Complex) and $\hat K_{\mathrm{CV}} = 3$ (Mendelian) outperform the $K = 5$ default by $6\text{--}7\times$ on worst-cell gap (consistent with §\ref{sec:method} and §\ref{sec:theory:t5}). The headline tables (Tables~\ref{tab:main}, \ref{tab:threeaxis}) are reported at $K = 5$ for direct comparability with the prior split-CP and class-conditional baselines (which use the same default); the $\hat K_{\mathrm{CV}}$ row is in App.~\ref{app:tables:ksweep}. Figure~\ref{fig:k_sweep} (§\ref{sec:theory:t5}) overlays the empirical mean- and worst-cell gaps against the T5 bias-variance bound.
+
+\paragraph{$n$-sweep on synthetic data (T5 rate validation).} Theorem~\ref{thm:t5oracle} predicts $G(K^\star) = O(n^{-1/2})$ with constant $\propto \pi_{\min}^{-1/2}$ and \emph{independent of feature dimension $d$}. Because TraitGym is fixed at $n = 3{,}380$ (Mendelian) and $n = 11{,}400$ (Complex), the rate cannot be verified directly. We sample synthetic data from a Gaussian-shift family with oracle variance $\sigma^\star(x) = 0.1 + 0.4|x_1|$ (1-D heteroscedasticity along $x_1$), Lipschitz constant $L_F = 4$, sweeping $n \in \{500, 1{,}000, 2{,}000, 4{,}000, 8{,}000, 16{,}000, 32{,}000\}$, $d \in \{8, 32, 128\}$, $\pi_{\min} \in \{0.1, 0.5\}$, with 5 replicates per cell (App.~\ref{app:synthetic}). Figure~\ref{fig:n_sweep} reports the empirical worst-cell gap $G(\hat K_{\mathrm{CV}})$. The empirical curves track the theoretical $O(n^{-1/2})$ slope across all three feature dimensions $d$ — the dimension-free claim of T5.1 is visible as the three dimension curves overlapping inside each $\pi$ panel — and the $\pi_{\min} = 0.10$ panel sits above the $\pi_{\min} = 0.50$ panel by a factor of $\approx 2$ at matched $n$, close to the predicted $\sqrt{5} \approx 2.24$ from T5.1's $\pi_{\min}^{-1/2}$ constant. At $d = 32$, growing $n$ from $500$ to $32{,}000$ shrinks $G(\hat K_{\mathrm{CV}})$ from $0.092$ to $0.023$ ($\pi_{\min} = 0.10$) and from $0.075$ to $0.010$ ($\pi_{\min} = 0.50$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_n_sweep.pdf}
+\caption{Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem~\ref{thm:t5oracle}. Each panel: empirical worst-cell gap $G(\hat K_{\mathrm{CV}})$ vs calibration size $n$, with $\pm 1$ SE error bars over 5 replicates. Three coloured curves: feature dimensions $d \in \{8, 32, 128\}$. Black dashed: theoretical $O(n^{-1/2})$ slope anchored at $n = 4{,}000, d = 32$. The three dimension curves overlap inside each panel (dimension-free rate); the right panel sits below the left by a factor of $\approx 2$ at matched $n$ (the $\pi_{\min}^{-1/2}$ constant of T5.1).}
+\label{fig:n_sweep}
+\end{figure}
 
 \paragraph{$\shat$ source ablation.} We compare four heads: (a) supervised GBM on OOF residuals (HCCP default), (b) DEGU-lite bootstrap-GBM ensemble ($M = 10$, $\shat$ = ensemble std), (c) DEGU-actual CNN ensemble ($M = 5$, one-hot 200\,bp DNA windows centered on each variant, fixed test split matching TraitGym), (d) no $\shat$ (homoscedastic, Day 10). On Complex CADD+Borzoi at $K = 5$, HCCP (a) achieves gap $0.020$; DEGU-lite (b) gives $0.103$; the matched-feature-set comparison on CADD+GPN-MSA+Borzoi (App.~\ref{app:tables:degu}, Table~\ref{tab:degu}) gives the canonical ratio $4.3\times$ ($0.057$ vs $0.013$). The two $\shat$ sources are informative in complementary regimes: bin 0 of DEGU-lite (low ensemble std, i.e.\ high agreement) carries coverage $0.570$, indicating that all 10 bootstrap students agree but the underlying variants still carry residual aleatoric uncertainty that ensemble disagreement does not see. Ensemble $\shat$ remains the right primitive when epistemic uncertainty dominates (small training set, model misspecification); supervised residual $\shat$ wins on the polygenic regime where aleatoric noise is the binding constraint. DEGU-actual (c) produces a valid $\shat$ signal (ensemble std $0.023 \pm 0.044$ on Mendelian), but its base predictor fails the point-estimate step: the $M = 5$ CNN ensemble on 200\,bp one-hot windows reaches only AUPRC $0.140$ (vs HCCP GBM $0.900$, a $6.4\times$ gap). Raw-sequence CNN on variant pathogenicity is not competitive at TraitGym scale --- a finding consistent with the fact that DEGU's original paper \citep{zhou2026degu} reports no TraitGym number and evaluates exclusively on MPRA regression, where sequence-to-activity is a direct mapping. This reverse-validates HCCP's design decision to aggregate pre-computed genomic features (CADD/Borzoi/GPN-MSA) rather than learn from raw DNA end-to-end.
 
@@ -185,6 +236,13 @@ We compare four score functions under identical Mondrian-$(y \times \shat\text{-
 On Mendelian and Complex with the CADD+GPN-MSA+Borzoi feature set ($K = 5$, single seed), the $\shat$-bin gap is nearly indistinguishable across (A), (B), and (D): $0.009 / 0.010 / 0.007$ on Mendelian and $0.001 / 0.001 / 0.003$ on Complex, because the Mondrian partition already conditions on $\shat$. The per-chromosome maximum coverage gap, however, favours the $\shat$-normalised scores (A) and (B) ($0.100$) over (D) ($0.133$) on Mendelian, confirming that $\shat$ in the score provides cross-chromosome robustness beyond what the $\shat$-bin partition alone captures. Score (C) fails on Mendelian ($\shat$-gap $0.104$, singleton $0.60$) because $\Phi$ saturates at $1$ for large inputs, compressing the anomalous tail and widening the prediction set unnecessarily. We recommend (A) as the canonical HCCP score; (B) is a valid monotone alternative (Lemma~\ref{lem:rescaling}); (D) is acceptable when the Mondrian partition is already sufficient.
 
 \paragraph{Class-conditional on/off.} With class-cond on and no $\shat$-bin stratification, gap on Complex is $0.51$ (Day 10). With $\shat$-bin on but no class-cond, minority-class coverage collapses (Cov\,$|Y{=}1 = 0.54$). Both are needed; the product partition is not decomposable.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig4_local_heatmap.pdf}
+\caption{Local coverage by genomic region: per-region coverage minus target $0.90$ across three calibration schemes (Homoscedastic class-conditional / Heteroscedastic split CP / Mondrian-$(y \times \shat\text{-bin})$ HCCP). HCCP improves on at-risk regions — e.g., the deeply mis-covered PLS region on Complex ($-0.15$ homoscedastic $\to$ $+0.00$ HCCP) and the over-covered DNase-H3K4me ($+0.07$ $\to$ $-0.03$ HCCP) — while preserving coverage on regions where the simpler schemes already hold. Residual heterogeneity in PLS\_flank ($+0.10$ Mendelian) and DNase-H3K4me ($-0.10$ Complex) reflects local non-stationarity not captured by the global $\shat$-bin axis; T3-loc (Lem.~\ref{thm:t3loc}) characterises the feature-ball regime that would close these gaps under A3-loc.}
+\label{fig:local_heatmap}
+\end{figure}
 
 \paragraph{Benchmark audit byproduct.} CADD-alone LogReg on Mendelian reaches AUPRC $0.871$, exceeding TraitGym's published ``SOTA'' CADD+Borzoi LogReg of $0.752$ \citep{benegas2025traitgym}. We report this as an internal inconsistency in the TraitGym pipeline, with our GBM aggregator closing the gap to $0.900$.
 

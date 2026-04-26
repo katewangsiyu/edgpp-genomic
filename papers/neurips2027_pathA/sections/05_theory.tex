@@ -59,6 +59,13 @@ For any Mondrian conformal predictor using equiprobable $\shat$-bins, there exis
 \paragraph{Proof sketch.}
 For T5.1, set $g'(K) = -L_F R / K^2 + 1/(\pi_{\min} n) = 0$ to obtain $K^\star = \sqrt{L_F R \pi_{\min} n}$; substitution gives $g(K^\star) = 2\sqrt{L_F R / (\pi_{\min} n)}$, with the floor introducing $O(1/(\pi_{\min} n))$ slack dominated by the leading term. For T5.2, construct a linear-shift family $F_{k,\sigma}(s) = \Phi(s - L_F \sigma)$; both the bias and variance lower bounds are tight on this family. Full proofs in App.~\ref{app:proofs:t5}.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig2_k_sweep.pdf}
+\caption{Empirical validation of Theorem~\ref{thm:t5oracle} (T5.1) on TraitGym. Each panel sweeps $K \in \{2, 3, 5, 8, 10, 15, 20, 30\}$ and overlays the bias term $L_F R / K$ (green shaded) and variance term $K / (\pi_{\min} n)$ (red shaded) of Eq.~\ref{eq:gap_decomp}, plus the T5 bound $G(K) \leq L_F R / K + K / (\pi_{\min} n)$ (grey curve). Blue dots: empirical mean-cell gap. Red squares: empirical worst-cell gap. The CV-selected $\hat K_{\mathrm{CV}}$ (dashed vertical line) coincides with the empirical minimum on both datasets ($\hat K_{\mathrm{CV}} = 3$ on Mendelian, $\hat K_{\mathrm{CV}} = 2$ on Complex), and the empirical curves track the T5 bound across the bias-dominated and variance-dominated regimes.}
+\label{fig:k_sweep}
+\end{figure}
+
 \paragraph{Dimension-free rate --- what it does and does not say.}
 The $O(n^{-1/2})$ rate of Theorem~\ref{thm:t5oracle} is \emph{dimension-free} in the sense that the constant does not depend on the feature dimension $d$; it does depend on $L_F \cdot R$, the Lipschitz constant of the conditional score CDF with respect to the 1-D summary $\shat(x)$, and on the minority-class prevalence $\pi_{\min}$. This is a different guarantee from RLCP's \citep{hore2025rlcp} feature-space local coverage rate $O(n^{-2/(d+2)})$: RLCP targets $P(Y \in \pset(X) \mid X \approx x)$, our T3/T5 target $P(Y \in \pset(X) \mid \shat(X) \in B_b)$. We do not claim the two rates are comparable on their native targets; we claim that the $\shat$-bin conditioning is the coarsest practically useful conditioning under which a dimension-free rate exists, and T5 quantifies the exact constant $L_F \cdot R$ it costs. At $d = 7{,}731$ (our feature dimension), RLCP's rate is intractable on any realistic calibration set size, so the two methods occupy different operating points rather than competing on the same metric; T3-loc (Lem.~\ref{thm:t3loc}) provides the feature-ball bridge at the cost of the additional A3-loc assumption.
 

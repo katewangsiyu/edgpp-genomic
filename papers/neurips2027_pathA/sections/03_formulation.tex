@@ -79,7 +79,7 @@ and predict
 Equivalently, $k \in \pset(x)$ iff $|k - \phat(x)| \leq \qhat_{k, b(x)} \cdot \shat(x)$, so the decision radius scales with local heteroscedasticity.
 
 \paragraph{Comparison to prior scores.}
-Split conformal \citep{vovk2005algorithmic} uses $s = |y - \phat(x)|$, independent of $x$. CQR \citep{romano2019cqr} uses quantile regression, regression-only. DEGU \citep{zhou2026degu} learns $\shat$ but does not fold it into the score. Our score \eqref{eq:score} combines DEGU's $\shat$ machinery with the Mondrian partition of \citet{vovk2003mondrian} stratified by $(y, b(x))$; this is the smallest modification that simultaneously delivers class-conditional (T2) and bin-conditional (T3) coverage (§\ref{sec:theory}).
+Split conformal \citep{vovk2005algorithmic} uses $s = |y - \phat(x)|$, independent of $x$. CQR \citep{romano2019cqr} uses quantile regression, regression-only. DEGU \citep{zhou2026degu} learns $\shat$ but does not fold it into the score. Our score \eqref{eq:score} combines DEGU's $\shat$ machinery with the Mondrian partition of \citet{vovk2003mondrian} stratified by $(y, b(x))$, the unique product partition over $\{y, b(x)\}$ that admits both class-conditional (T2) and bin-conditional (T3) coverage simultaneously (§\ref{sec:method}, §\ref{sec:theory}).
 
 \paragraph{Coverage targets.}
 Given $\alpha \in (0, 1)$, we require:

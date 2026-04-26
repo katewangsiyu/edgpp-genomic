@@ -1,0 +1,34 @@
+[
+  {
+    "cluster": "Cardio-metabolic / anthropometric",
+    "n_traits": 17,
+    "n_total": 3940,
+    "marginal_coverage": 0.9048223350253807,
+    "cov_pos": 0.9060913705583756,
+    "max_per_trait_gap": 0.033333333333333326
+  },
+  {
+    "cluster": "Hematologic / blood-cell",
+    "n_traits": 8,
+    "n_total": 2160,
+    "marginal_coverage": 0.8962962962962963,
+    "cov_pos": 0.9120370370370371,
+    "max_per_trait_gap": 0.04285714285714293
+  },
+  {
+    "cluster": "Inflammatory / pulmonary / other",
+    "n_traits": 3,
+    "n_total": 600,
+    "marginal_coverage": 0.905,
+    "cov_pos": 0.9333333333333333,
+    "max_per_trait_gap": 0.016666666666666607
+  },
+  {
+    "cluster": "OVERALL",
+    "n_traits": 28,
+    "n_total": 6700,
+    "marginal_coverage": 0.9020895522388059,
+    "cov_pos": NaN,
+    "max_per_trait_gap": 0.04285714285714293
+  }
+]

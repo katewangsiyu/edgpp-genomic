@@ -39,6 +39,47 @@ X  & 250 & 0.958 & 0.058 \\
 \end{tabular}
 \end{table}
 
+\subsection{Per-trait clinical clustering (Complex traits)}
+\label{app:tables:trait_cluster}
+
+To rule out ``is HCCP holding because one easy trait class dominates the average'', we cluster the 28 Complex traits and 30 Mendelian OMIMs into clinically-meaningful super-categories and report per-cluster HCCP coverage. Cluster assignments are listed in \texttt{T\_tools/trait\_cluster\_aggregate.py}; weighted aggregation by trait sample size.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Per-cluster HCCP coverage on the 28 Complex traits with $\geq 10$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 2$). All three clusters hold target marginal coverage to within $\pm 0.005$ and minority-class coverage to within $\pm 0.04$; the per-trait worst gap stays $\leq 0.043$ in each cluster, confirming that the trait-LOO floor in the headline is not driven by one easy cluster.}
+\label{tab:trait_cluster}
+\begin{tabular}{lrrrrr}
+\toprule
+Cluster & \# traits & $n_{\mathrm{tot}}$ & Marg.\ cov.\ & Cov$|Y{=}1$ & Worst per-trait gap $\downarrow$ \\
+\midrule
+Cardio-metabolic / anthropometric    & 17 & 3940 & 0.905 & 0.906 & 0.033 \\
+Hematologic / blood-cell             & 8  & 2160 & 0.896 & 0.912 & 0.043 \\
+Inflammatory / pulmonary / other     & 3  & 600  & 0.905 & 0.933 & 0.017 \\
+\midrule
+\textbf{Overall (28 traits)} & 28 & 6700 & 0.902 & --- & 0.043 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Per-cluster HCCP coverage on the 30 Mendelian OMIMs with $\geq 5$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 3$). Skeletal/connective shows the highest worst per-trait gap ($0.122$) driven by under-coverage of the minority pathogenic class ($\mathrm{cov}_{|Y=1} = 0.745$); the smaller $n_{\mathrm{tot}}$ in this cluster ($n = 470$) means per-cell calibration size approaches the $\lceil 1/\alpha\rceil = 10$ floor, where T3's bound widens. The other two clusters hold target tightly.}
+\label{tab:omim_cluster}
+\begin{tabular}{lrrrrr}
+\toprule
+Cluster & \# OMIMs & $n_{\mathrm{tot}}$ & Marg.\ cov.\ & Cov$|Y{=}1$ & Worst per-trait gap $\downarrow$ \\
+\midrule
+Skeletal / connective           & 8  & 470  & 0.913 & 0.745 & 0.122 \\
+Neuromuscular / nervous-system  & 10 & 610  & 0.897 & 1.000 & 0.067 \\
+Metabolic / hematologic / other & 12 & 1340 & 0.909 & 0.918 & 0.100 \\
+\midrule
+\textbf{Overall (30 OMIMs)} & 30 & 2420 & 0.907 & --- & 0.122 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{K-sweep ablation}
 \label{app:tables:ksweep}
 
@@ -105,6 +146,20 @@ legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_lf_forest.pdf}
+\caption{$L_F$ estimator 95\% bootstrap CIs and resulting $K^\star$. LCLS gives a tight CI ($\hat L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star$ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star$ by an order of magnitude. The cross-validated $\hat K_{\mathrm{CV}} \in \{2, 3\}$ is the binding finite-sample constraint, well below all three asymptotic $K^\star$ predictions.}
+\label{fig:lf_forest}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_bootstrap_density.pdf}
+\caption{Bootstrap distribution of HCCP $\shat$-bin gap across $B = 200$ chromosome-level resamples. Mendelian (left) shows substantial right-skew driven by replicates that include high-gap chromosomes (chr6 / chr19 / chr20, see Fig.~\ref{fig:per_chrom}); the all-chrom point estimate $0.077$ in Table~\ref{tab:threeaxis} sits on the right tail of the distribution, while the bootstrap mean $0.020$ is closer to the centre. Complex (right) is much tighter (point estimate and bootstrap mean both $\approx 0.02$). The skew on Mendelian explains the apparent disagreement between Tab.~\ref{tab:main} and Tab.~\ref{tab:threeaxis}.}
+\label{fig:bootstrap_density}
+\end{figure}
+
 \subsection{DEGU-actual (CNN on raw DNA) head-to-head}
 \label{app:tables:degu_actual}
 
@@ -131,7 +186,7 @@ Complex   & \textbf{HCCP GBM}       & \textbf{0.353} & $\approx 0.78$ & --- & --
 \end{table}
 \footnotetext[1]{AUROC below $0.50$ indicates the CNN ensemble is slightly worse than random on Complex traits: the 200\,bp window contains no actionable signal for polygenic variants, whose effect is primarily transcriptional/regulatory and requires longer context or functional annotations (Borzoi, GPN-MSA) that HCCP's aggregator consumes.}
 
-\paragraph{Interpretation.} DEGU-actual produces a valid uncertainty signal (non-degenerate $\shat$ range on both datasets) but its point-estimate AUPRC is $6.4\times$ (Mendelian) and $3.2\times$ (Complex) worse than HCCP's GBM aggregator on pre-computed genomic features. This is not a reflection of DEGU's uncertainty machinery --- which is sound and proxies well on tasks where the base predictor is strong (MPRA regression; see the original paper \citep{zhou2026degu}) --- but of the feature-space requirement: variant pathogenicity depends on gene annotation, protein structure, and long-range regulatory context, none of which fits in a 200\,bp window. HCCP's design choice to aggregate pre-computed features (CADD, Borzoi 524\,kb context, GPN-MSA phylogenetic score) is load-bearing; the conformal-partition contribution (§\ref{sec:method}) rides on top of a competent base predictor. A principled DEGU+HCCP hybrid would substitute $\shat_{\mathrm{HCCP}}$ with DEGU-style ensemble $\shat$ at matched feature inputs, which is exactly our DEGU-lite ablation (§\ref{sec:experiments}, Table~\ref{tab:degu}) --- and there DEGU-lite is $5\times$ worse on Complex worst-cell coverage, establishing that the supervised residual head captures aleatoric structure that ensemble disagreement does not.
+\paragraph{Interpretation.} DEGU-actual produces a valid uncertainty signal (non-degenerate $\shat$ range on both datasets) but its point-estimate AUPRC is $6.4\times$ (Mendelian) and $3.2\times$ (Complex) worse than HCCP's GBM aggregator on pre-computed genomic features. This is not a reflection of DEGU's uncertainty machinery --- which is sound and proxies well on tasks where the base predictor is strong (MPRA regression; see the original paper \citep{zhou2026degu}) --- but of the feature-space requirement: variant pathogenicity depends on gene annotation, protein structure, and long-range regulatory context, none of which fits in a 200\,bp window. HCCP's design choice to aggregate pre-computed features (CADD, Borzoi 524\,kb context, GPN-MSA phylogenetic score) is load-bearing; the conformal-partition contribution (§\ref{sec:method}) rides on top of a competent base predictor. A principled DEGU+HCCP hybrid would substitute $\shat_{\mathrm{HCCP}}$ with DEGU-style ensemble $\shat$ at matched feature inputs, which is exactly our DEGU-lite ablation (§\ref{sec:experiments}, Table~\ref{tab:degu}) --- and there DEGU-lite is $4.3\times$ worse on Complex worst-cell coverage, establishing that the supervised residual head captures aleatoric structure that ensemble disagreement does not.
 
 \subsection{DEGU-lite vs HCCP head-to-head}
 \label{app:tables:degu}

@@ -1,9 +1,33 @@
-\begin{thebibliography}{21}
+\begin{thebibliography}{40}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Angelopoulos and Bates(2022)]{angelopoulos2022gentle}
+Anastasios~N. Angelopoulos and Stephen Bates.
+\newblock A gentle introduction to conformal prediction and distribution-free
+  uncertainty quantification.
+\newblock \emph{Foundations and Trends in Machine Learning}, 16\penalty0 (4),
+  2022.
+
+\bibitem[Angelopoulos et~al.(2021)Angelopoulos, Bates, Malik, and
+  Jordan]{angelopoulos2021raps}
+Anastasios~N. Angelopoulos, Stephen Bates, Jitendra Malik, and Michael~I.
+  Jordan.
+\newblock Uncertainty sets for image classifiers using conformal prediction.
+\newblock In \emph{ICLR}, 2021.
+
+\bibitem[Anonymous(2026)]{crps_binning2026}
+Anonymous.
+\newblock {CRPS}-optimal binning for conformal regression.
+\newblock \emph{arXiv preprint arXiv:2603.22000}, 2026.
+
+\bibitem[authors(2024)]{lcls2024lipschitz}
+ICLR~2024 authors.
+\newblock On the sample complexity of lipschitz constant estimation.
+\newblock In \emph{ICLR}, 2024.
 
 \bibitem[Avsec et~al.(2026)]{avsec2026alphagenome}
 {\v{Z}}iga Avsec et~al.
@@ -44,7 +68,22 @@ Gonzalo Benegas, G{\"o}kcen Eraslan, and Yun~S. Song.
 \newblock {TraitGym}: A benchmark for deep learning on complex genomic
   variants.
 \newblock \emph{bioRxiv}, 2025.
-\newblock TODO: update when published.
+\newblock \doi{10.1101/2025.04.07.646951}.
+
+\bibitem[Bostr{\"o}m(2022)]{bostrom2022crepes}
+Henrik Bostr{\"o}m.
+\newblock crepes: a python package for generating conformal regressors and
+  predictive systems.
+\newblock In \emph{Proceedings of the Eleventh Symposium on Conformal and
+  Probabilistic Prediction with Applications (COPA), PMLR 179}, pages 24--41,
+  2022.
+
+\bibitem[Bostr{\"o}m and Johansson(2020)]{bostrom2020mondrian}
+Henrik Bostr{\"o}m and Ulf Johansson.
+\newblock Mondrian conformal regressors.
+\newblock In \emph{Proceedings of the Ninth Symposium on Conformal and
+  Probabilistic Prediction with Applications (COPA), PMLR 128}, pages 114--133,
+  2020.
 
 \bibitem[De~Wolf et~al.(2025)De~Wolf, De~Baets, and
   Waegeman]{dewolf2025conditional}
@@ -52,11 +91,34 @@ Robin De~Wolf, Bernard De~Baets, and Willem Waegeman.
 \newblock Conditional validity of heteroskedastic conformal regression.
 \newblock \emph{Information and Inference: A Journal of the IMA}, 2025.
 
+\bibitem[Deng et~al.(2021)Deng, Han, and Zhang]{deng2021isotonic}
+Hang Deng, Qiyang Han, and Cun-Hui Zhang.
+\newblock Confidence intervals for the means of the selected populations and
+  convergence rates of isotonic estimators.
+\newblock \emph{arXiv preprint arXiv:2103.04340}, 2021.
+
+\bibitem[Ding et~al.(2023)Ding, Angelopoulos, Bates, Jordan, and
+  Tibshirani]{ding2023classcond}
+Tiffany Ding, Anastasios~N. Angelopoulos, Stephen Bates, Michael~I. Jordan, and
+  Ryan~J. Tibshirani.
+\newblock Class-conditional conformal prediction with many classes.
+\newblock In \emph{NeurIPS}, 2023.
+
 \bibitem[El-Yaniv and Wiener(2010)]{elyaniv2010selective}
 Ran El-Yaniv and Yair Wiener.
 \newblock On the foundations of noise-free selective classification.
 \newblock \emph{Journal of Machine Learning Research}, 11:\penalty0 1605--1641,
   2010.
+
+\bibitem[Geifman and El-Yaniv(2017)]{geifman2017selective}
+Yonatan Geifman and Ran El-Yaniv.
+\newblock Selective classification for deep neural networks.
+\newblock In \emph{NeurIPS}, 2017.
+
+\bibitem[Gibbs and Cand{\`e}s(2021)]{gibbs2021adaptive}
+Isaac Gibbs and Emmanuel~J. Cand{\`e}s.
+\newblock Adaptive conformal inference under distribution shift.
+\newblock In \emph{NeurIPS}, 2021.
 
 \bibitem[Hore and Barber(2025)]{hore2025rlcp}
 Rohan Hore and Rina~Foygel Barber.
@@ -77,18 +139,54 @@ Balaji Lakshminarayanan, Alexander Pritzel, and Charles Blundell.
   ensembles.
 \newblock In \emph{NeurIPS}, 2017.
 
+\bibitem[Laufer-Goldshtein et~al.(2023)Laufer-Goldshtein, Fisch, Barzilay, and
+  Jaakkola]{laufer2023paretotest}
+Bracha Laufer-Goldshtein, Adam Fisch, Regina Barzilay, and Tommi Jaakkola.
+\newblock Efficiently controlling multiple risks with {P}areto testing.
+\newblock In \emph{ICLR}, 2023.
+
+\bibitem[Lei et~al.(2018)Lei, G'Sell, Rinaldo, Tibshirani, and
+  Wasserman]{lei2018distribution}
+Jing Lei, Max G'Sell, Alessandro Rinaldo, Ryan~J. Tibshirani, and Larry
+  Wasserman.
+\newblock Distribution-free predictive inference for regression.
+\newblock \emph{Journal of the American Statistical Association}, 113\penalty0
+  (523):\penalty0 1094--1111, 2018.
+
 \bibitem[Linder et~al.(2025)]{linder2025borzoi}
 Johannes Linder et~al.
 \newblock Predicting {RNA}-seq coverage from {DNA} sequence as a unifying model
   of gene regulation.
 \newblock \emph{Nature Genetics}, 2025.
-\newblock TODO: volume.
+
+\bibitem[medRxiv~preprint authors(2025)]{pcos2025conformal}
+medRxiv~preprint authors.
+\newblock Enhancing clinical utility of {AI} models in polycystic ovary
+  syndrome ({PCOS}): Integrating staged modelling with uncertainty-aware triage
+  and conformal prediction.
+\newblock \emph{medRxiv}, 2025.
+\newblock \doi{10.1101/2025.10.27.25338898}.
 
 \bibitem[Nix and Weigend(1994)]{nix1994nll}
 David~A. Nix and Andreas~S. Weigend.
 \newblock Estimating the mean and variance of the target probability
   distribution.
 \newblock In \emph{IEEE ICNN}, 1994.
+
+\bibitem[Notin et~al.(2023)]{notin2023proteingym}
+Pascal Notin et~al.
+\newblock {ProteinGym}: Large-scale benchmarks for protein fitness prediction
+  and design.
+\newblock In \emph{NeurIPS Datasets and Benchmarks}, 2023.
+
+\bibitem[Papadopoulos et~al.(2008)Papadopoulos, Gammerman, and
+  Vovk]{papadopoulos2008normalized}
+Harris Papadopoulos, Alex Gammerman, and Vladimir Vovk.
+\newblock Normalized nonconformity measures for regression conformal
+  prediction.
+\newblock In \emph{Proceedings of the IASTED International Conference on
+  Artificial Intelligence and Applications (AIA)}, pages 64--69. ACTA Press,
+  2008.
 
 \bibitem[Papangelou et~al.(2025)]{papangelou2025cpgenomics}
 Konstantinos Papangelou et~al.
@@ -111,6 +209,24 @@ Yaniv Romano, Evan Patterson, and Emmanuel~J. Cand{\`e}s.
 \newblock Conformalized quantile regression.
 \newblock In \emph{NeurIPS}, 2019.
 
+\bibitem[Sadinle et~al.(2019)Sadinle, Lei, and Wasserman]{sadinle2019lac}
+Mauricio Sadinle, Jing Lei, and Larry Wasserman.
+\newblock Least ambiguous set-valued classifiers with bounded error levels.
+\newblock \emph{Journal of the American Statistical Association}, 114\penalty0
+  (525):\penalty0 223--234, 2019.
+
+\bibitem[Shi et~al.(2024)]{shi2024augmentedrank}
+Jianqiao Shi et~al.
+\newblock Augmented label rank for class-wise coverage in conformal prediction.
+\newblock In \emph{NeurIPS}, 2024.
+
+\bibitem[Tibshirani et~al.(2019)Tibshirani, Barber, Cand{\`e}s, and
+  Ramdas]{tibshirani2019weighted}
+Ryan~J. Tibshirani, Rina~Foygel Barber, Emmanuel~J. Cand{\`e}s, and Aaditya
+  Ramdas.
+\newblock Conformal prediction under covariate shift.
+\newblock In \emph{NeurIPS}, 2019.
+
 \bibitem[van~der Laan(2024)]{vanderlaan2024sccp}
 Lars van~der Laan.
 \newblock Self-calibrating conformal prediction.
@@ -120,8 +236,7 @@ Lars van~der Laan.
   Gammerman]{vovk2003mondrian}
 Vladimir Vovk, David Lindsay, Ilia Nouretdinov, and Alex Gammerman.
 \newblock Mondrian confidence machine.
-\newblock 2003.
-\newblock Technical Report.
+\newblock Technical report, Royal Holloway, University of London, 2003.
 
 \bibitem[Vovk et~al.(2005)Vovk, Gammerman, and Shafer]{vovk2005algorithmic}
 Vladimir Vovk, Alexander Gammerman, and Glenn Shafer.
@@ -133,12 +248,17 @@ Yixuan Wang et~al.
 \newblock Conformalized quantile regression for polygenic risk scores.
 \newblock \emph{bioRxiv}, 2025.
 
+\bibitem[Xie et~al.(2025)Xie, Zhou, Liang, Favaro, and
+  Sesia]{xie2025imbalancedcp}
+Tianmin Xie, Yixuan Zhou, Tengyuan Liang, Stefano Favaro, and Matteo Sesia.
+\newblock Conformal inference for open-set and imbalanced classification.
+\newblock \emph{arXiv preprint arXiv:2510.13037}, 2025.
+
 \bibitem[Zhou et~al.(2026)Zhou, Rizzo, Christensen, Tang, and
   Koo]{zhou2026degu}
 Jessica Zhou, Anthony Rizzo, Peter Christensen, Xiao Tang, and Peter~K. Koo.
 \newblock Deep ensemble distillation with gaussian uncertainty for regulatory
   genomics.
-\newblock \emph{npj AI}, 2026.
-\newblock TODO: volume/issue.
+\newblock \emph{npj Artificial Intelligence}, 2026.
 
 \end{thebibliography}
