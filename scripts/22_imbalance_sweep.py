@@ -31,6 +31,10 @@ from importlib import import_module
 crepes_mod = import_module("21_crepes_baseline")
 chrom_loo_crepes_per_class_pred_sets = crepes_mod.chrom_loo_crepes_per_class_pred_sets
 evaluate_pred_sets = crepes_mod.evaluate_pred_sets
+in0_in1_to_pred_sets = crepes_mod.in0_in1_to_pred_sets
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "T_tools"))
+import nested_kcv_helpers as nkv
 
 
 def subsample_to_target_pi(
@@ -77,7 +81,13 @@ def main() -> None:
     ap.add_argument("--test-parquet", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--alpha", type=float, default=0.10)
-    ap.add_argument("--K", type=int, default=2)
+    ap.add_argument("--K-mode", choices=["fixed", "nested-cv"], default="fixed")
+    ap.add_argument("--K", type=int, default=2,
+                    help="Fixed K for B2/B4 (used when --K-mode fixed)")
+    ap.add_argument("--K-grid", type=str, default="2,3,5,8,10,15,20",
+                    help="K candidates for nested CV")
+    ap.add_argument("--K-eval", type=int, default=5,
+                    help="sigma-bin count for metric reporting")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--pi-pos-grid", type=float, nargs="+",
                     default=[0.05, 0.10, 0.20, 0.30, 0.50])
@@ -96,20 +106,17 @@ def main() -> None:
 
     rng = np.random.default_rng(args.seed)
     obs_pi = float(y_full.mean())
-    print(f"[load] n={len(V)} n_pos={int(y_full.sum())} observed pi={obs_pi:.4f}")
+    print(f"[load] n={len(V)} n_pos={int(y_full.sum())} observed pi={obs_pi:.4f} "
+          f"K-mode={args.K_mode} K_eval={args.K_eval}")
 
     all_results = {
-        "alpha": args.alpha, "K": args.K, "seed": args.seed,
+        "alpha": args.alpha, "K_mode": args.K_mode, "K_eval": args.K_eval,
+        "K_fixed": args.K, "seed": args.seed,
         "observed_pi": obs_pi, "n_full": int(len(V)),
         "sweep": [],
     }
 
-    methods = [
-        ("B1_split", "none"),
-        ("B2_sigma", "sigma"),
-        ("B3_class", "class"),
-        ("B4_HCCP", "class_sigma"),
-    ]
+    K_grid = [int(s) for s in args.K_grid.split(",")] if args.K_mode == "nested-cv" else None
 
     print(f"\n{'pi':>6} {'n':>6} {'n+':>5} | {'method':<10} {'cov':>7} {'cov|+':>7} {'sig-gap':>9}")
     print("-" * 70)
@@ -119,12 +126,46 @@ def main() -> None:
         achieved_pi = float(y.mean())
         n = len(y); n_pos = int(y.sum())
 
-        per_method = {}
-        for method_name, mode in methods:
-            ps = chrom_loo_crepes_per_class_pred_sets(
-                p, sigma, y, chroms, args.alpha, mode, args.K)
-            metrics = evaluate_pred_sets(
-                ps, y, sigma, chroms, args.alpha, f"{method_name}_pi{target_pi:.2f}")
+        if args.K_mode == "nested-cv":
+            sel_b4 = nkv.select_K_nested_chrom_loo(p, sigma, y, chroms, K_grid,
+                                                   method="b4_hccp",
+                                                   K_eval=args.K_eval, alpha=args.alpha)
+            sel_b2 = nkv.select_K_nested_chrom_loo(p, sigma, y, chroms, K_grid,
+                                                   method="b2_sigma",
+                                                   K_eval=args.K_eval, alpha=args.alpha)
+            K_b4 = sel_b4["K_per_fold"]
+            K_b2 = sel_b2["K_per_fold"]
+        else:
+            K_b4 = args.K
+            K_b2 = args.K
+
+        per_method: dict = {}
+        kcv_log: dict = {}
+        if args.K_mode == "nested-cv":
+            kcv_log = {"K_b4_per_fold": K_b4, "K_b2_per_fold": K_b2}
+
+        # B1 (no Mondrian) and B3 (class-Mondrian): no partition K, use crepes API.
+        ps_b1 = chrom_loo_crepes_per_class_pred_sets(
+            p, sigma, y, chroms, args.alpha, "none", args.K_eval)
+        m_b1 = evaluate_pred_sets(ps_b1, y, sigma, chroms, args.alpha,
+                                  f"B1_split_pi{target_pi:.2f}", n_sigma_bins=args.K_eval)
+        ps_b3 = chrom_loo_crepes_per_class_pred_sets(
+            p, sigma, y, chroms, args.alpha, "class", args.K_eval)
+        m_b3 = evaluate_pred_sets(ps_b3, y, sigma, chroms, args.alpha,
+                                  f"B3_class_pi{target_pi:.2f}", n_sigma_bins=args.K_eval)
+
+        # B2 sigma-Mondrian, B4 HCCP: use nkv (partition K via nested CV or fixed).
+        in0, in1, _ = nkv.chrom_loo_predict(p, sigma, y, chroms, K_b2, "b2_sigma", alpha=args.alpha)
+        m_b2 = evaluate_pred_sets(in0_in1_to_pred_sets(in0, in1), y, sigma, chroms,
+                                  args.alpha, f"B2_sigma_pi{target_pi:.2f}",
+                                  n_sigma_bins=args.K_eval)
+        in0, in1, _ = nkv.chrom_loo_predict(p, sigma, y, chroms, K_b4, "b4_hccp", alpha=args.alpha)
+        m_b4 = evaluate_pred_sets(in0_in1_to_pred_sets(in0, in1), y, sigma, chroms,
+                                  args.alpha, f"B4_HCCP_pi{target_pi:.2f}",
+                                  n_sigma_bins=args.K_eval)
+
+        for method_name, metrics in (("B1_split", m_b1), ("B2_sigma", m_b2),
+                                     ("B3_class", m_b3), ("B4_HCCP", m_b4)):
             per_method[method_name] = {
                 "marginal_coverage": metrics["marginal_coverage"],
                 "coverage_pos": metrics["coverage_pos"],
@@ -144,6 +185,7 @@ def main() -> None:
             "n": n,
             "n_pos": n_pos,
             "methods": per_method,
+            "K_selection": kcv_log,
         })
         print()
 
@@ -162,18 +204,18 @@ def main() -> None:
     df.to_csv(out / "imbalance_sweep_summary.csv", index=False)
     print(f"summary: {out}/imbalance_sweep_summary.csv")
 
-    # Key takeaway: cov|pos vs pi for each method
+    method_names = ("B1_split", "B2_sigma", "B3_class", "B4_HCCP")
     print(f"\n{'='*70}")
     print(f"{'method':<10} | " + "  ".join(f"pi={s['achieved_pi']:.2f}" for s in all_results["sweep"]))
     print(f"{'-'*70}")
     print(f"{'cov|pos':<10}")
-    for m, _ in methods:
+    for m in method_names:
         line = f"{m:<10} | "
         for s in all_results["sweep"]:
             line += f"  {s['methods'][m]['coverage_pos']:.3f} "
         print(line)
     print(f"\n{'sig-gap':<10}")
-    for m, _ in methods:
+    for m in method_names:
         line = f"{m:<10} | "
         for s in all_results["sweep"]:
             line += f"  {s['methods'][m]['sigma_bin_gap']:.3f} "

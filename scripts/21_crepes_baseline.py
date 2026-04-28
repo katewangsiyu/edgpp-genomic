@@ -7,26 +7,35 @@ Bostrom 2020 / crepes 2022". We run crepes' ConformalRegressor with the same
   B1: crepes normalized split CP        (no Mondrian)
   B2: crepes normalized + sigma-Mondrian (Bostrom 2020 default; bins along sigma only)
   B3: crepes normalized + class-Mondrian (Mondrian by label only)
-  B4: HCCP (class x sigma-bin Mondrian, K=K_CV)         <-- already in 14_conformal_hetero.py
+  B4: HCCP (class x sigma-bin Mondrian)
 
-We rerun B4 here so all four numbers come out of the same pipeline + parquet for fair
-comparison.
+K-selection modes:
+  --K-mode fixed --K {int}   legacy fixed K for all outer folds.
+  --K-mode nested-cv         proper nested chrom-LOO CV for B2 (sigma-Mondrian)
+                             and B4 (HCCP) partition K, scored on K_eval-fair
+                             sigma-bin metric. B1 (no Mondrian) and B3
+                             (class-only Mondrian) do not use a partition K, so
+                             nested CV does not apply.
 
 Usage:
     conda run -n edgpp_t4 --no-capture-output python scripts/21_crepes_baseline.py \
         --sigma-scores outputs/hetero_head/CADD+GPN-MSA+Borzoi_mendelian_abs/scores_with_sigma.parquet \
         --test-parquet data/raw/traitgym/mendelian_traits_matched_9/test.parquet \
         --out-dir outputs/crepes_baseline/CADD+GPN-MSA+Borzoi_mendelian_abs \
-        --alpha 0.10 --K 3
+        --alpha 0.10 --K-mode nested-cv --K-grid 2,3,5,8,10,15,20 --K-eval 3
 """
 from __future__ import annotations
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from crepes import ConformalRegressor
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "T_tools"))
+import nested_kcv_helpers as nkv
 
 
 def chrom_loo_crepes(
@@ -224,6 +233,10 @@ def evaluate_pred_sets(
     label: str,
     n_sigma_bins: int = 10,
 ) -> dict:
+    """Evaluate prediction sets. sigma_bin_gap is the (y, sigma-bin)-conditional
+    worst-cell |cov - (1-alpha)|, matching the metric used in cp_baselines_h2h.py
+    and paper hero claim. The per-outer-fold sigma-bin index is computed via
+    nkv.compute_metric_bin_idx for cross-method-fair reporting."""
     n = len(y)
     covered = np.array([y[i] in pred_sets[i] for i in range(n)])
     sizes = np.array([len(ps) for ps in pred_sets])
@@ -233,17 +246,22 @@ def evaluate_pred_sets(
     cov_pos = float(covered[pos].mean()) if pos.any() else float("nan")
     cov_neg = float(covered[neg].mean()) if neg.any() else float("nan")
 
-    # sigma-bin gap (the headline T3 metric)
-    bins = pd.qcut(sigma, q=n_sigma_bins, labels=False, duplicates="drop")
-    bin_covs = []
-    for b in sorted(set(bins[~pd.isna(bins)])):
-        m = bins == b
-        if m.sum() < 5:
-            continue
-        bin_covs.append(float(covered[m].mean()))
-    sigma_gap = float(max(bin_covs) - min(bin_covs)) if bin_covs else float("nan")
+    bin_idx = nkv.compute_metric_bin_idx(sigma, chroms, n_sigma_bins)
+    cell_gaps: list[float] = []
+    bin_covs: list[float] = []
+    for k in (0, 1):
+        for b in range(n_sigma_bins):
+            mask = (y == k) & (bin_idx == b)
+            if mask.sum() >= 5:
+                cov_kb = float(covered[mask].mean())
+                cell_gaps.append(abs(cov_kb - (1 - alpha)))
+    for b in range(n_sigma_bins):
+        m = bin_idx == b
+        if m.sum() >= 5:
+            bin_covs.append(float(covered[m].mean()))
+    sigma_gap = float(max(cell_gaps)) if cell_gaps else float("nan")
+    sigma_marg_gap = float(max(bin_covs) - min(bin_covs)) if bin_covs else float("nan")
 
-    # per-chrom gap
     chrom_covs = []
     for c in sorted(set(chroms)):
         m = chroms == c
@@ -255,7 +273,8 @@ def evaluate_pred_sets(
     print(f"\n--- {label} ---")
     print(f"  marginal cov={covered.mean():.4f}  cov|pos={cov_pos:.4f}  cov|neg={cov_neg:.4f}")
     print(f"  singleton={float((sizes==1).mean()):.3f}  both={float((sizes==2).mean()):.3f}  empty={float((sizes==0).mean()):.3f}")
-    print(f"  sigma-bin gap (K={n_sigma_bins}) = {sigma_gap:.4f}")
+    print(f"  sigma-bin gap (y-conditional, K_eval={n_sigma_bins}) = {sigma_gap:.4f}")
+    print(f"  sigma-bin gap (marginal-over-y, K_eval={n_sigma_bins}) = {sigma_marg_gap:.4f}")
     print(f"  per-chrom gap = {chrom_gap:.4f}")
 
     return {
@@ -268,9 +287,21 @@ def evaluate_pred_sets(
         "frac_both": float((sizes == 2).mean()),
         "frac_empty": float((sizes == 0).mean()),
         "sigma_bin_gap": sigma_gap,
+        "sigma_bin_gap_marg_over_y": sigma_marg_gap,
         "per_chrom_gap": chrom_gap,
         "sigma_bin_coverage": bin_covs,
     }
+
+
+def in0_in1_to_pred_sets(in0: np.ndarray, in1: np.ndarray) -> list:
+    """Convert (in0, in1) bool arrays to list of label sets."""
+    out = [set() for _ in range(len(in0))]
+    for i in range(len(in0)):
+        if in0[i]:
+            out[i].add(0)
+        if in1[i]:
+            out[i].add(1)
+    return out
 
 
 def main() -> None:
@@ -279,8 +310,13 @@ def main() -> None:
     ap.add_argument("--test-parquet", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--alpha", type=float, default=0.10)
+    ap.add_argument("--K-mode", choices=["fixed", "nested-cv"], default="fixed")
     ap.add_argument("--K", type=int, default=5,
-                    help="sigma-bin count for B2/B4")
+                    help="Fixed K for B2/B4 (used when --K-mode fixed)")
+    ap.add_argument("--K-grid", type=str, default="2,3,5,8,10,15,20",
+                    help="K candidates for nested CV")
+    ap.add_argument("--K-eval", type=int, default=5,
+                    help="sigma-bin count for metric reporting and inner-fold scoring")
     args = ap.parse_args()
 
     out = Path(args.out_dir); out.mkdir(parents=True, exist_ok=True)
@@ -296,34 +332,76 @@ def main() -> None:
     p = sig["p_hat"].to_numpy()
     sigma = sig["sigma"].to_numpy()
 
-    print(f"[load] n={len(V)} pos={int(y.sum())} alpha={args.alpha} K={args.K}")
+    print(f"[load] n={len(V)} pos={int(y.sum())} alpha={args.alpha} "
+          f"K-mode={args.K_mode} K_eval={args.K_eval}")
 
-    results = {"alpha": args.alpha, "K": args.K, "n": int(len(V))}
+    K_b2: int | dict
+    K_b4: int | dict
+    kcv_log: dict = {}
+    if args.K_mode == "fixed":
+        K_b2 = args.K
+        K_b4 = args.K
+        K_label = f"fixed_K{args.K}_Keval{args.K_eval}"
+    else:
+        K_grid = [int(s) for s in args.K_grid.split(",")]
+        print(f"\n[nested-cv] selecting K_B4 (HCCP) on K_eval={args.K_eval} fair score...")
+        sel_b4 = nkv.select_K_nested_chrom_loo(p, sigma, y, chroms, K_grid,
+                                                method="b4_hccp", K_eval=args.K_eval,
+                                                alpha=args.alpha)
+        K_b4 = sel_b4["K_per_fold"]
+        print(f"  K_B4 mode = {pd.Series(list(K_b4.values())).mode().iloc[0]}")
+        print(f"  K_B4 per-fold: {K_b4}")
+        print(f"\n[nested-cv] selecting K_B2 (sigma-Mondrian) on K_eval={args.K_eval} fair score...")
+        sel_b2 = nkv.select_K_nested_chrom_loo(p, sigma, y, chroms, K_grid,
+                                                method="b2_sigma", K_eval=args.K_eval,
+                                                alpha=args.alpha)
+        K_b2 = sel_b2["K_per_fold"]
+        print(f"  K_B2 mode = {pd.Series(list(K_b2.values())).mode().iloc[0]}")
+        print(f"  K_B2 per-fold: {K_b2}")
+        K_label = f"nestedcv_Keval{args.K_eval}"
+        kcv_log = {
+            "K_grid": K_grid,
+            "K_b4_per_fold": K_b4,
+            "K_b2_per_fold": K_b2,
+            "b4_inner_avg_gap": sel_b4["inner_avg_gap"],
+            "b2_inner_avg_gap": sel_b2["inner_avg_gap"],
+        }
 
-    # B1: crepes normalized split CP (no Mondrian)
-    ps_b1 = chrom_loo_crepes_per_class_pred_sets(p, sigma, y, chroms, args.alpha, "none", args.K)
+    results = {"alpha": args.alpha, "K_mode": args.K_mode, "K_eval": args.K_eval,
+               "n": int(len(V))}
+
+    # B1 (no Mondrian) and B3 (class-only) do not use partition K. K passed to
+    # crepes here is just the API placeholder; they do not consume it.
+    ps_b1 = chrom_loo_crepes_per_class_pred_sets(p, sigma, y, chroms, args.alpha, "none", args.K_eval)
     results["B1_crepes_normalized_split"] = evaluate_pred_sets(
-        ps_b1, y, sigma, chroms, args.alpha, "B1: crepes normalized split (no Mondrian)")
+        ps_b1, y, sigma, chroms, args.alpha,
+        "B1: crepes normalized split (no Mondrian)", n_sigma_bins=args.K_eval)
 
-    # B2: crepes normalized + sigma-Mondrian (Bostrom 2020 default)
-    ps_b2 = chrom_loo_crepes_per_class_pred_sets(p, sigma, y, chroms, args.alpha, "sigma", args.K)
-    results["B2_crepes_sigma_mondrian"] = evaluate_pred_sets(
-        ps_b2, y, sigma, chroms, args.alpha, f"B2: crepes normalized + sigma-Mondrian K={args.K}")
-
-    # B3: crepes normalized + class-Mondrian
-    ps_b3 = chrom_loo_crepes_per_class_pred_sets(p, sigma, y, chroms, args.alpha, "class", args.K)
+    ps_b3 = chrom_loo_crepes_per_class_pred_sets(p, sigma, y, chroms, args.alpha, "class", args.K_eval)
     results["B3_crepes_class_mondrian"] = evaluate_pred_sets(
-        ps_b3, y, sigma, chroms, args.alpha, "B3: crepes normalized + class-Mondrian")
+        ps_b3, y, sigma, chroms, args.alpha,
+        "B3: crepes normalized + class-Mondrian", n_sigma_bins=args.K_eval)
 
-    # B4: HCCP (class x sigma-bin Mondrian) via crepes API for fair comparison
-    ps_b4 = chrom_loo_crepes_per_class_pred_sets(p, sigma, y, chroms, args.alpha, "class_sigma", args.K)
+    # B2 / B4 use the nested-cv-selected K_per_fold (or fixed K).
+    in0, in1, _ = nkv.chrom_loo_predict(p, sigma, y, chroms, K_b2, "b2_sigma", alpha=args.alpha)
+    ps_b2 = in0_in1_to_pred_sets(in0, in1)
+    results["B2_crepes_sigma_mondrian"] = evaluate_pred_sets(
+        ps_b2, y, sigma, chroms, args.alpha,
+        f"B2: sigma-Mondrian (K-mode {args.K_mode})", n_sigma_bins=args.K_eval)
+
+    in0, in1, _ = nkv.chrom_loo_predict(p, sigma, y, chroms, K_b4, "b4_hccp", alpha=args.alpha)
+    ps_b4 = in0_in1_to_pred_sets(in0, in1)
     results["B4_HCCP_via_crepes"] = evaluate_pred_sets(
-        ps_b4, y, sigma, chroms, args.alpha, f"B4: HCCP (class x sigma-bin Mondrian) K={args.K}")
+        ps_b4, y, sigma, chroms, args.alpha,
+        f"B4: HCCP class x sigma-bin Mondrian (K-mode {args.K_mode})",
+        n_sigma_bins=args.K_eval)
 
-    (out / "crepes_baseline_results.json").write_text(json.dumps(results, indent=2))
-    print(f"\nsaved: {out}/crepes_baseline_results.json")
+    if kcv_log:
+        results["K_selection_log"] = kcv_log
 
-    # Summary table
+    (out / f"crepes_baseline_{K_label}.json").write_text(json.dumps(results, indent=2, default=str))
+    print(f"\nsaved: {out}/crepes_baseline_{K_label}.json")
+
     print(f"\n{'='*92}")
     print(f"{'method':<48} {'cov':>7} {'cov|+':>7} {'sig-gap':>9} {'chr-gap':>9}")
     print(f"{'='*92}")
