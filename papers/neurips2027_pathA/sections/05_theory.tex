@@ -1,7 +1,7 @@
 % Source: theory/t1_t2_formal_proofs.md (T1/T2/T1'/T2'/T4), theory/t3_formal_proof.md (T3 / T3' / T3-loc / T3.b), theory/t5_adaptive_K.md (T5.1, T5.2).
 % Main-text: 3 hero theorems + brief mentions of auxiliary lemmas. All proofs and auxiliary lemma statements in App.~\ref{app:proofs}.
 
-This section states HCCP's three hero theorems: \textbf{Theorem~\ref{thm:t3}} (T3, exact bin-conditional coverage) and the principal new contribution \textbf{Theorems~\ref{thm:t5oracle}--\ref{thm:t5lower}} (T5.1 oracle bin count + T5.2 matching minimax lower bound). Auxiliary lemmas (T1/T2 corollaries at coarser partitions; T1$'$/T2$'$/T3$'$/T4 robust counterparts via \citet{barber2023exchangeability} Theorem~2; T3-loc feature-ball extension; T3.b $\shat$-perturbation robustness) are stated and proved in App.~\ref{app:proofs}.
+This section states HCCP's four hero theorems: \textbf{Theorem~\ref{thm:t3}} (T3, exact bin-conditional coverage), \textbf{Theorem~\ref{thm:t3prime_main}} (T3$'$, the robust counterpart that is the binding guarantee on Mendelian under verifiably violated cell-level exchangeability), and the principal new theoretical contributions \textbf{Theorems~\ref{thm:t5oracle}--\ref{thm:t5lower}} (T5.1 oracle bin count within the equi-bin Mondrian-$K$ family + T5.2 a matching finite-sample lower bound on the same class). Auxiliary lemmas (T1/T2 corollaries at coarser partitions; T1$'$/T2$'$/T4 robust counterparts via \citet{barber2023exchangeability} Theorem~2; T3-loc feature-ball extension; T3.b $\shat$-perturbation robustness) are stated and proved in App.~\ref{app:proofs}.
 
 Unless otherwise noted, all statements take the calibration fold $\D^{(-c^\star)}$ and the test point $(X, Y) \sim P_{c^\star}$ as in §\ref{sec:formulation:setup}, and $\pset$ is the Mondrian prediction set of Eq.~\eqref{eq:pset}. We use the A1/A1$'$/A2 hierarchy of \ref{ass:A1}--\ref{ass:A2}; two further assumptions used only by appendix lemmas (\textbf{A3-loc}, \textbf{B1}) are stated explicitly in App.~\ref{app:proofs}.
 
@@ -30,10 +30,27 @@ Theorem~\ref{thm:t3} specialises to standard split-CP at coarser partitions: mar
 \paragraph{T3 vs T3$'$ on TraitGym.}
 T3$'$ degrades T3 by exactly the cell-level chrom-TV $\bar\delta_{\mathrm{TV}}^{(k,b)}$ that our per-chromosome KS audit (App.~\ref{app:data:ks}) bounds empirically. On Complex the audit is close to the $5\%$ null ($10.4\%$ rejection at $p < 0.05$, max KS $0.315$), so T3 exact is adequate. On Mendelian the audit rejects $46\%$ of cell-chrom pairs, driven by the highest-$\shat$ positive-class cell where pathogenic variants concentrate on a few chromosomes (chr9, chr7, chr3); $d_{\mathrm{TV}} \leq \mathrm{KS}/\sqrt{2}$ then gives $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq 0.31$ on the worst cell, consistent with the observed per-chromosome coverage gap $\leq 0.073$ (Table~\ref{tab:perchrom}). T3$'$ is therefore the operational guarantee for Mendelian; T3 exact remains valid on Complex.
 
-\subsection{Theorems 2--3: Adaptive bin count and matching minimax lower bound}
+\subsection{Theorem 2: Robust bin-conditional coverage under exchangeability violation (T3$'$)}
+\label{sec:theory:t3prime}
+
+T3 requires A2-cell (within-cell exchangeability between calibration and test scores). Our per-chromosome KS audit (App.~\ref{app:data:ks}) verifies that A2-cell holds approximately on Complex ($10.4\%$ rejection, near the $5\%$ null) but fails on $46\%$ of $(k, b)$-cell-by-chromosome pairs on Mendelian. T3$'$ is the operational guarantee in this regime.
+
+\begin{theorem}[T3$'$ bin-conditional coverage, robust]
+\label{thm:t3prime_main}
+Let $\bar\delta_{\mathrm{TV}}^{(k,b)}$ denote the average total-variation distance between the calibration-fold and test-fold conditional score distributions in cell $(k, b)$. Under \ref{ass:A1prime} (without A2-cell), for each cell with $n_{k,b} \geq \lceil 1/\alpha\rceil$,
+\[
+P\bigl(Y \in \pset(X) \mid Y = k,\, b(X) = b\bigr) \;\geq\; (1 - \alpha) - \bar\delta_{\mathrm{TV}}^{(k,b)}.
+\]
+\end{theorem}
+
+\paragraph{Proof sketch.} A direct application of \citet{barber2023exchangeability} Theorem~2 (uniform calibration weights) at the cell level: the swap-TV bound on coverage degradation specialises to $\bar\delta_{\mathrm{TV}}^{(k,b)}$ on the (k, b) cell. Full proof in App.~\ref{app:proofs:t3prime}.
+
+T3$'$ is what carries Mendelian: the empirical $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq 0.31$ on the worst cell yields a coverage lower bound of $0.59$, which is loose, but the observed per-chromosome coverage gap remains $\leq 0.073$ throughout (Table~\ref{tab:perchrom}); this means the operational coverage is much closer to the target than T3$'$'s worst-case bound, but T3$'$ provides the uniform finite-sample certificate that T3 cannot in this regime. We treat T3$'$, not T3, as the load-bearing guarantee on Mendelian.
+
+\subsection{Theorems 3--4: Optimal bin count and matching lower bound within the equi-bin Mondrian-$K$ class}
 \label{sec:theory:t5}
 
-\textbf{This is the principal theoretical contribution.} Theorem~\ref{thm:t3} holds for any fixed $K$ but says nothing about \emph{which} $K$ to choose. We now derive the optimal $K$ by formalising the bias--variance tradeoff that governs bin-conditional coverage and prove a matching minimax lower bound to establish that the rate is tight, dimension-free, and not improvable without extra assumptions.
+\textbf{This is the principal theoretical contribution.} Theorem~\ref{thm:t3} holds for any fixed $K$ but says nothing about \emph{which} $K$ to choose. We now derive the optimal $K$ by formalising the bias--variance tradeoff that governs bin-conditional coverage and prove a matching finite-sample lower bound \emph{within the equi-bin Mondrian-$K$ family} to establish that the $O(n^{-1/2})$ rate is tight on this class, dimension-free, and depends explicitly on the minority-class prevalence $\pi_{\min}$ through the $\pi_{\min}^{-1/2}$ constant. The lower bound is not a distribution-free minimax bound over arbitrary CP procedures (other axes of conditioning, e.g.\ self-calibrating CP \citep{vanderlaan2024sccp}, achieve different rates on different metrics; we discuss this below); it certifies that $O(n^{-1/2})$ is unimprovable for the specific equi-bin Mondrian-$K$ partition that HCCP uses.
 
 \paragraph{Two sources of coverage gap.}
 Under \ref{ass:ASL}, the worst-cell coverage gap decomposes as
@@ -51,9 +68,9 @@ K^\star \;=\; \bigl\lfloor \sqrt{L_F \cdot R \cdot \pi_{\min} \cdot n}\,\bigr\rf
 \]
 \end{theorem}
 
-\begin{theorem}[T5.2 Matching lower bound]
+\begin{theorem}[T5.2 Matching lower bound within the equi-bin Mondrian-$K$ class]
 \label{thm:t5lower}
-For any Mondrian conformal predictor using equiprobable $\shat$-bins, there exists a distribution satisfying \ref{ass:A1prime} and \ref{ass:ASL} such that $\min_K G(K) = \Omega\!\bigl(\sqrt{L_F R / (\pi_{\min} n)}\bigr)$, so the $O(n^{-1/2})$ rate is tight.
+Restrict attention to conformal predictors using equiprobable $\shat$-bin Mondrian partitions on the calibration fold (the class HCCP belongs to). There exists a distribution satisfying \ref{ass:A1prime} and \ref{ass:ASL} such that, for any choice of $K$ within this class, $\min_K G(K) = \Omega\!\bigl(\sqrt{L_F R / (\pi_{\min} n)}\bigr)$. Hence the $O(n^{-1/2})$ rate of T5.1 is tight on this class, and the $\pi_{\min}^{-1/2}$ constant is not improvable without strengthening assumptions or moving outside the class.
 \end{theorem}
 
 \paragraph{Proof sketch.}
@@ -69,11 +86,14 @@ For T5.1, set $g'(K) = -L_F R / K^2 + 1/(\pi_{\min} n) = 0$ to obtain $K^\star =
 \paragraph{Dimension-free rate --- what it does and does not say.}
 The $O(n^{-1/2})$ rate of Theorem~\ref{thm:t5oracle} is \emph{dimension-free} in the sense that the constant does not depend on the feature dimension $d$; it does depend on $L_F \cdot R$, the Lipschitz constant of the conditional score CDF with respect to the 1-D summary $\shat(x)$, and on the minority-class prevalence $\pi_{\min}$. This is a different guarantee from RLCP's \citep{hore2025rlcp} feature-space local coverage rate $O(n^{-2/(d+2)})$: RLCP targets $P(Y \in \pset(X) \mid X \approx x)$, our T3/T5 target $P(Y \in \pset(X) \mid \shat(X) \in B_b)$. We do not claim the two rates are comparable on their native targets; we claim that the $\shat$-bin conditioning is the coarsest practically useful conditioning under which a dimension-free rate exists, and T5 quantifies the exact constant $L_F \cdot R$ it costs. At $d = 7{,}731$ (our feature dimension), RLCP's rate is intractable on any realistic calibration set size, so the two methods occupy different operating points rather than competing on the same metric; T3-loc (Lem.~\ref{thm:t3loc}) provides the feature-ball bridge at the cost of the additional A3-loc assumption.
 
+\paragraph{Comparison to prior CP minimax / impossibility results.}
+T5.2 sits inside an existing landscape of CP lower bounds, none of which directly subsume it. \citet{barber2020limits} prove that pointwise conditional coverage $P(Y \in \pset(X) \mid X = x) \geq 1 - \alpha$ is unattainable in finite samples without structural assumptions; this is an \emph{impossibility} result, not a rate, and motivates partition-based conditioning of the type T3 / T5 instantiate. \citet{foygelbarber2021limits} extend the impossibility to a continuum of conditional-coverage targets and identify which are distribution-free attainable, again without explicit minimax rates. \citet{bian2023training} establish $\Omega(n^{-1})$ training-conditional coverage gaps for fixed-partition CP under Lipschitz score families, but their lower bound is on a different conditioning event (training set vs.\ partition cell) and does not place the minority-class prevalence in the constant. Vovk's classical CP minimax results \citep{vovk2005algorithmic} establish $n^{-1/2}$ as unimprovable for marginal coverage. T5.2's contribution is orthogonal to these: it places an explicit $\pi_{\min}^{-1/2}$ in the constant of the worst-cell bin-conditional gap within the equi-bin Mondrian-$K$ family, certifying that the imbalance dependence cannot be hidden in implicit constants. This is the load-bearing claim for imbalanced VEP at $\pi_{\min} \approx 0.10$.
+
 \paragraph{Comparison to SC-CP's $O(n^{-2/3})$ rate.}
 \citet{vanderlaan2024sccp} achieve a faster $O(n^{-2/3})$ rate (their Thm.~4.2) on the $\hat\mu$-axis via the monotone structure of isotonic regression, inheriting the segment-count concentration of \citet{deng2021isotonic} \emph{without} requiring \ref{ass:ASL}. Our $O(n^{-1/2})$ rate trades a slower asymptotic rate for three properties SC-CP does not provide: (i) conditioning on $\shat$ rather than $\hat\mu$, which adapts to mean-independent heteroscedasticity (SC-CP §5 explicitly notes its $\hat\mu$-axis binning cannot adapt unless heteroscedasticity is mean-driven); (ii) explicit dependence on minority-class prevalence $\pi_{\min}$, which makes T5 directly applicable to severely imbalanced classification (TraitGym $\pi_{\min} \approx 0.10$) where SC-CP's regression formulation does not encode the class-conditional sample-size constraint; (iii) a matching minimax lower bound (Thm.~\ref{thm:t5lower}) under \ref{ass:ASL}, certifying that the $O(n^{-1/2})$ rate is unimprovable in the $(y \times \shat\text{-bin})$ regime without strengthening assumptions. The two results are therefore complementary rather than competing: SC-CP is the recommended choice when heteroscedasticity is mean-driven; T5 is the recommended choice when $\shat$ is supplied as an independent learned summary, as in DEGU-style \citep{zhou2026degu} VEP pipelines.
 
-\paragraph{Practical $\hat K$ selection.}
-We select $\hat K$ via cross-validation: for each candidate $K \in \{2, 3, 5, 8, 10, 15, 20\}$, we compute the leave-one-out worst-cell coverage gap on the calibration fold and pick $\hat K_{\mathrm{CV}} = \operatorname{argmin}_K \hat G(K)$. On TraitGym, $\hat K_{\mathrm{CV}} = 3$ (Mendelian) and $\hat K_{\mathrm{CV}} = 2$ (Complex), both below the $K = 5$ default, with $6{-}7\times$ worst-cell gap improvement (§\ref{sec:experiments}). The low optimal $K$ reflects class imbalance ($\pi_{\min} \approx 0.10$): with few positive variants, the variance term $K / (\pi_{\min} n)$ dominates.
+\paragraph{Practical $\hat K$ selection: nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring.}
+We select $\hat K$ per outer fold via \emph{proper nested chrom-LOO cross-validation}, ensuring $\hat K(c_{\mathrm{outer}})$ is a deterministic function of the outer calibration set alone (CP exchangeability-preserving). For each outer fold $c_{\mathrm{outer}}$, we run inner chrom-LOO on the remaining chromosomes and pick $\hat K(c_{\mathrm{outer}}) = \operatorname{argmin}_K \overline G_{\mathrm{inner}}(K)$ where the inner-fold worst-cell gap is measured on a fixed-$K_{\mathrm{eval}}$ sigma-bin partition (NOT on each candidate $K$ itself, which would artificially favour smaller $K$ via fewer cells). $K_{\mathrm{eval}}$ is set per-dataset to ensure $\geq 30$ minority-class samples per cell on average ($K_{\mathrm{eval}} = \lfloor n \pi_{\min} / 30 \rfloor$, clamped to $[2, 10]$): $K_{\mathrm{eval}} = 3$ on Mendelian ($n = 3{,}380$) and $K_{\mathrm{eval}} = 5$ on Complex ($n = 11{,}400$). On TraitGym, the modal $\hat K(c_{\mathrm{outer}})$ across outer folds is $K = 5$ on Complex and $K = 5\text{--}8$ on Mendelian (App.~\ref{app:tables:ksweep}); these are above the legacy $\hat K_{\mathrm{CV}} \in \{2, 3\}$ that an earlier draft reported under a non-nested protocol where K-selection used the same chrom-LOO worst-cell gap that the manuscript subsequently reported, an invalid double-use of the test fold that we have rectified.
 
 \paragraph{Asymptotic vs.\ finite-sample regimes.}
 A reader may notice the gap between asymptotic $K^\star$ and the cross-validated $\hat K_{\mathrm{CV}}$. Plugging the LCLS estimate of $L_F$ \citep{lcls2024lipschitz} into Theorem~\ref{thm:t5oracle} gives $K^\star = 22$ (Mendelian, $\hat L_F = 2.97 \in [2.89, 3.45]$) and $K^\star = 50$ (Complex, $\hat L_F = 4.51 \in [4.47, 4.69]$); see App.~\ref{app:tables:ksweep}, Table~\ref{tab:LF_estimators} for the bootstrap CI. These are still above $\hat K_{\mathrm{CV}} \in \{2, 3\}$, but the legacy max-of-ratios estimator overstates $K^\star$ by an order of magnitude ($88$ Mendelian, $110$ Complex), so the apparent contradiction is largely an artefact of the estimator. The remaining gap is genuine: T5.1 characterises the \emph{asymptotic} optimum where Eq.~\ref{eq:gap_decomp} is binding, while in the finite-sample regime ($n \leq 11{,}400$) the per-cell sample-size floor $n_{k,b} \geq \lceil 1/\alpha \rceil$ becomes binding before the variance term reaches the bias term. The empirical $K$-sweep extended to $K = 200$ (App.~\ref{app:tables:ksweep}) exposes a third \emph{fallback-dominated} regime not modelled by Eq.~\ref{eq:gap_decomp}, in which the predictor reverts to T2 pooled class-conditional thresholds and the worst-cell gap saturates. We therefore recommend $\hat K_{\mathrm{CV}}$ as the practical selector at the sample sizes typical of human-variant benchmarks; the gap to the LCLS-derived $K^\star$ closes as $n \to \infty$.
@@ -86,7 +106,7 @@ Table~\ref{tab:theory_summary} consolidates the three hero theorems and points t
 \begin{table}[h]
 \centering
 \small
-\caption{HCCP coverage guarantees at a glance. $n_{k,b}$: cell calibration count. Three numbered theorems in main text; auxiliary lemmas (T1/T2 corollaries, T1$'$/T2$'$/T3$'$/T4 robust counterparts via \citet{barber2023exchangeability} Theorem~2, T3-loc/T3.b extensions) live in App.~\ref{app:proofs}.}
+\caption{HCCP coverage guarantees at a glance. $n_{k,b}$: cell calibration count. Four numbered hero theorems in main text. Auxiliary lemmas (T1/T2 corollaries; T1$'$/T2$'$/T4 robust counterparts via \citet{barber2023exchangeability} Theorem~2; T3-loc/T3.b extensions) live in App.~\ref{app:proofs}.}
 \label{tab:theory_summary}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llll}
@@ -94,10 +114,11 @@ Table~\ref{tab:theory_summary} consolidates the three hero theorems and points t
 Result & Assumptions & Bound type & Guarantee \\
 \midrule
 \textbf{Theorem~\ref{thm:t3} (T3)} & A1$'$ + A2-cell & exact two-sided & $\mathrm{cov}_{k,b} \in [1-\alpha,\, 1-\alpha + 1/(n_{k,b}+1)]$ \\
-\textbf{Theorem~\ref{thm:t5oracle} (T5.1)} & A1$'$ + \ref{ass:ASL} & oracle rate & $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$, $K^\star = O(\sqrt{n})$ \\
-\textbf{Theorem~\ref{thm:t5lower} (T5.2)} & (minimax) & matching lower bound & $\min_K G(K) = \Omega(\sqrt{L_F R / (\pi_{\min} n)})$ \\
+\textbf{Theorem~\ref{thm:t3prime_main} (T3$'$)} & A1$'$ only & robust lower bound & $\mathrm{cov}_{k,b} \geq (1-\alpha) - \bar\delta_{\mathrm{TV}}^{(k,b)}$ \\
+\textbf{Theorem~\ref{thm:t5oracle} (T5.1)} & A1$'$ + \ref{ass:ASL} & oracle rate (within equi-bin Mondrian-$K$) & $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$, $K^\star = O(\sqrt{n})$ \\
+\textbf{Theorem~\ref{thm:t5lower} (T5.2)} & (within equi-bin Mondrian-$K$) & matching lower bound & $\min_K G(K) = \Omega(\sqrt{L_F R / (\pi_{\min} n)})$ \\
 \midrule
-App.~\ref{app:proofs} (auxiliaries) & A1 / A1$'$ & robust / extensions & T1, T2, T1$'$, T2$'$, T3$'$, T3-loc, T3.b, T4 \\
+App.~\ref{app:proofs} (auxiliaries) & A1 / A1$'$ & robust / extensions & T1, T2, T1$'$, T2$'$, T3-loc, T3.b, T4 \\
 \bottomrule
 \end{tabular}
 \end{table}
