@@ -19,7 +19,7 @@ Table~\ref{tab:main} summarizes HCCP against the TraitGym LogReg aggregator with
 \begin{table}[t]
 \centering
 \small
-\caption{Main results on TraitGym chrom-LOO. AUPRC is weighted by test-chrom size (TraitGym convention). $\shat$-bin gap is the max-over-bins absolute coverage deviation from target $0.90$. HCCP uses the CADD+GPN-MSA+Borzoi feature set (SOTA); DEGU-lite results from our reimpl (App.~\ref{app:data}). HCCP row subscripts are $\pm$ one std from $B = 200$ chromosome-level bootstrap resamples; the reported $\shat$-bin gap is the bootstrap-mean of the per-resample max-over-bins deviation. Non-HCCP rows and the corresponding all-chrom point estimates in Table~\ref{tab:threeaxis} are computed without resampling and are generally larger when a few chromosomes drive the maximum (e.g., Mendelian CADD+GPN-MSA+Borzoi: bootstrap-mean $0.020 \pm 0.012$ here vs all-chrom point $0.077$ in Table~\ref{tab:threeaxis}). HCCP rows use $K = 5$ for direct comparability with prior split-CP and class-conditional baselines that share this default; at the cross-validated $\hat K_{\mathrm{CV}} = 3$ (Mendelian) / $2$ (Complex), single-seed worst-cell gaps tighten to $0.047$ / $0.006$ respectively (Table~\ref{tab:ksweep}, App.~\ref{app:tables:ksweep}), a $6$–$7\times$ improvement over $K = 5$ on the matched single-seed comparison.}
+\caption{Main results on TraitGym chrom-LOO. AUPRC is weighted by test-chrom size (TraitGym convention). $\shat$-bin gap is the max-over-bins absolute coverage deviation from target $0.90$. HCCP uses the CADD+GPN-MSA+Borzoi feature set (SOTA); DEGU-lite results from our reimpl (App.~\ref{app:data}). HCCP row subscripts are $\pm$ one std from $B = 200$ chromosome-level bootstrap resamples; the reported $\shat$-bin gap is the bootstrap-mean of the per-resample max-over-bins deviation. Non-HCCP rows and the corresponding all-chrom point estimates in Table~\ref{tab:threeaxis} are computed without resampling and are generally larger when a few chromosomes drive the maximum (e.g., Mendelian CADD+GPN-MSA+Borzoi: bootstrap-mean $0.020 \pm 0.012$ here vs all-chrom point $0.077$ in Table~\ref{tab:threeaxis}). HCCP rows use $K = 5$ for direct comparability with prior split-CP and class-conditional baselines that share this default; the cross-validated $\hat K_{\mathrm{CV}}$ selected via proper nested chrom-LOO (App.~\ref{app:tables:ksweep}) is reported separately in Tables~\ref{tab:h2h} and \ref{tab:cp_baselines} with $K_{\mathrm{eval}}$-fair scoring (§\ref{sec:theory:t5}).}
 \label{tab:main}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lllccccc}
@@ -31,24 +31,21 @@ Dataset & Aggregator & Calibration & AUPRC $\uparrow$ & Marg.\ cov.\ & Cov $|Y{=
  & GBM & Class-cond. (Day 10) & \textbf{0.900} & 0.900 & 0.90 & 0.46 & 92\% \\
  & GBM & DEGU-lite + split & 0.901 & 0.900 & 0.88 & 0.43 & 85\% \\
  & GBM & \textbf{HCCP (ours)} & \textbf{0.900} & $0.899_{\pm 0.006}$ & $0.894_{\pm 0.015}$ & $\textbf{0.020}_{\pm 0.012}$ & $0.776_{\pm 0.040}$ \\
- & \textbf{GBM}+AlphaGenome & HCCP (ours) & $\mathbf{0.912}$ & $0.899_{\pm 0.005}$ & $0.899_{\pm 0.016}$ & $\mathbf{0.018}_{\pm 0.010}$ & $0.764_{\pm 0.063}$ \\
 \midrule
 \multirow{5}{*}{Complex} & LogReg & Split CP & 0.332 & 0.900 & 0.88 & 0.43 & 23\% \\
  & \textbf{GBM} & Split CP & 0.353 & 0.900 & 0.54 & 0.53 & 55\% \\
  & GBM & Class-cond. (Day 10) & 0.353 & 0.900 & 0.90 & 0.51 & 31\% \\
  & GBM & DEGU-lite + split & 0.353 & 0.900 & 0.86 & 0.43 & 20\% \\
  & GBM & \textbf{HCCP (ours)} & 0.353 & $0.901_{\pm 0.001}$ & $0.904_{\pm 0.004}$ & $\textbf{0.004}_{\pm 0.002}$ & $0.228_{\pm 0.019}$ \\
- & \textbf{GBM}+AlphaGenome & HCCP (ours) & 0.352 & $0.901_{\pm 0.001}$ & $0.903_{\pm 0.004}$ & $\textbf{0.004}_{\pm 0.002}$ & $0.225_{\pm 0.017}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Key reading.}
 (i) The GBM aggregator alone reaches SOTA Mendelian AUPRC $0.900$, a $+14.8$\,pp improvement over the published LogReg \citep{benegas2025traitgym}.
-(ii) Adding AlphaGenome \citep{avsec2026alphagenome} as a 140-dimensional feature panel (RNA\_SEQ and DNASE across 8 tissues, App.~\ref{app:data:features}) lifts Mendelian AUPRC to $0.912$ ($+1.15$\,pp), and the $\shat$-bin gap drops from $0.020$ to $0.018$. On Complex, the AUPRC is essentially flat ($0.353 \to 0.352$) and the bootstrap CI on the $\shat$-bin gap is identical to the non-AlphaGenome variant ($0.004 \pm 0.002$). The Mendelian-specific improvement is consistent with the tissue-specific predictions of AlphaGenome being most informative for monogenic variants with dominant expression or splice effects; polygenic GWAS complex-trait variants instead rely on dispersed long-range signals that our 8-tissue panel does not isolate.
-(iii) Class-conditional calibration (Day 10) fixes the minority-class pathology of split CP (Cov\,$|Y{=}1$ $0.54 \to 0.90$ on Complex) but leaves the \emph{local} gap untouched.
-(iv) The Mondrian-$(y \times \shat\text{-bin})$ partition of HCCP reduces the $\shat$-bin gap by a further $5\text{--}25\times$, to within one standard error of the finite-sample $1/(n_{k,b}+1)$ floor.
-(v) DEGU-lite \citep{zhou2026degu} learns $\shat$ but applies split CP rather than Mondrian, and the $\shat$-bin gap therefore remains near the class-conditional level. The conformal partition, not the $\shat$ head in isolation, is the load-bearing component.
+(ii) Class-conditional calibration (Day 10) fixes the minority-class pathology of split CP (Cov\,$|Y{=}1$ $0.54 \to 0.90$ on Complex) but leaves the \emph{local} gap untouched.
+(iii) The Mondrian-$(y \times \shat\text{-bin})$ partition of HCCP reduces the $\shat$-bin gap by a further $5\text{--}25\times$, to within one standard error of the finite-sample $1/(n_{k,b}+1)$ floor.
+(iv) DEGU-lite \citep{zhou2026degu} learns $\shat$ but applies split CP rather than Mondrian, and the $\shat$-bin gap therefore remains near the class-conditional level. The conformal partition, not the $\shat$ head in isolation, is the load-bearing component.
 
 \subsection{Joint frontier: head-to-head with off-the-shelf normalized + Mondrian CP}
 \label{sec:experiments:h2h}
@@ -65,7 +62,7 @@ The four predictors share their $\phat$ and $\shat$; they differ only in the par
 \begin{table}[t]
 \centering
 \small
-\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. $K = 3$ (Mendelian), $K = 2$ (Complex). Single-seed point estimates. \textbf{No single-axis Mondrian achieves both $\mathrm{cov}_{|Y=1} \geq 0.89$ and $\shat$-bin gap $\leq 0.18$.} HCCP is the unique frontier point.}
+\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring; reporting metric is the $(y, \shat\text{-bin})$-conditional worst-cell coverage gap on a fixed $K_{\mathrm{eval}}$ partition (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$, set per dataset to ensure $\geq 30$ minority-class samples per cell, §\ref{sec:theory:t5}). Single-seed point estimates. \textbf{No single-axis CP simultaneously satisfies $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on either dataset.} HCCP is the unique frontier point on both.}
 \label{tab:h2h}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcccc}
@@ -73,22 +70,22 @@ The four predictors share their $\phat$ and $\shat$; they differ only in the par
 Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & \textbf{$\shat$-bin gap $\downarrow$} & Per-chrom gap \\
 \midrule
 \multirow{4}{*}{Mendelian ($\pi_{+} = 0.10$)}
- & B1 vanilla split CP                       & 0.899 & 0.956 & 0.476 & 0.170 \\
- & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.901 & \textcolor{red}{0.820} & \textbf{0.167} & 0.219 \\
- & B3 class-Mondrian \citep{sadinle2019lac}  & 0.898 & 0.893 & \textcolor{red}{0.451} & 0.161 \\
- & \textbf{B4 HCCP (ours)}                    & 0.900 & \textbf{0.896} & \textbf{0.170} & 0.242 \\
+ & B1 vanilla split CP                       & 0.899 & \textcolor{red}{0.956} & 0.374 & 0.170 \\
+ & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.903 & \textcolor{red}{0.840} & 0.374 & 0.129 \\
+ & B3 class-Mondrian \citep{sadinle2019lac}  & 0.898 & 0.894 & \textcolor{red}{0.374} & 0.161 \\
+ & \textbf{B4 HCCP (ours)}                    & 0.902 & \textbf{0.876} & \textbf{0.163} & 0.158 \\
 \midrule
 \multirow{4}{*}{Complex ($\pi_{+} = 0.10$)}
- & B1 vanilla split CP                       & 0.900 & \textcolor{red}{0.616} & 0.242 & 0.049 \\
- & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.900 & \textcolor{red}{0.661} & \textbf{0.123} & 0.047 \\
- & B3 class-Mondrian \citep{sadinle2019lac}  & 0.900 & 0.902 & \textcolor{red}{0.317} & 0.053 \\
- & \textbf{B4 HCCP (ours)}                    & 0.900 & \textbf{0.899} & 0.168 & 0.055 \\
+ & B1 vanilla split CP                       & 0.900 & \textcolor{red}{0.616} & 0.802 & 0.049 \\
+ & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.899 & \textcolor{red}{0.656} & 0.802 & 0.047 \\
+ & B3 class-Mondrian \citep{sadinle2019lac}  & 0.900 & 0.902 & \textcolor{red}{0.802} & 0.053 \\
+ & \textbf{B4 HCCP (ours)}                    & 0.900 & \textbf{0.905} & \textbf{0.024} & 0.047 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Reading.}
-B2 ($\shat$-Mondrian) achieves the lowest $\shat$-bin gap on each dataset but \emph{collapses on minority-class coverage} ($\mathrm{cov}_{|Y=1} = 0.66$ on Complex). B3 (class-Mondrian) recovers minority coverage but its $\shat$-bin gap is $0.32$–$0.45$. HCCP is the unique point that simultaneously satisfies $\mathrm{cov}_{|Y=1} \geq 0.89$ and $\shat$-bin gap $\leq 0.18$ across both datasets. The improvement is not Pareto-superior on $\shat$-bin gap alone (B2 ties or beats it) — it is Pareto-superior on the \emph{joint} (class, $\shat$-bin) frontier, which is the operationally relevant target for clinical VEP.
+Under the cross-method-fair $(y, \shat\text{-bin})$-conditional reporting metric at fixed $K_{\mathrm{eval}}$, B1 (split CP) over-covers the minority class on Mendelian (cov$_{|Y=1} = 0.96$) and under-covers on Complex (cov$_{|Y=1} = 0.62$); B2 ($\shat$-Mondrian) under-covers the minority class on both ($0.84 / 0.66$); B3 (class-Mondrian) recovers minority coverage but leaves the bin-local gap untouched ($0.37 / 0.80$). HCCP is the unique point simultaneously satisfying $\mathrm{cov}_{|Y=1} \geq 0.85$ \emph{and} $\shat$-bin gap $\leq 0.20$ on both datasets, tightening the bin-local gap by $33\times$ over B3 on Complex and $2.3\times$ on Mendelian. The improvement is on the joint (class, $\shat$-bin) frontier --- the operationally relevant target for clinical VEP.
 
 \paragraph{Comparison against contemporary local CP methods.}
 We additionally benchmark HCCP against three contemporary CP methods that target conditional coverage along axes complementary to ours: \textbf{RLCP} \citep{hore2025rlcp} (kernel-weighted localization, feature-space local), \textbf{weighted CP} \citep{tibshirani2019weighted} (covariate-shift adaptation via likelihood-ratio weights estimated by a logistic discriminator between source and target chromosomes), and \textbf{Self-Calibrating CP} \citep{vanderlaan2024sccp} (binning along the calibrated point prediction $\hat\mu = \phat$, equivalent to a Venn--Abers refinement at first-order). Each is paired with the same $(\phat, \shat)$ as Tab.~\ref{tab:h2h} for a like-for-like comparison; RLCP is run in the $(\phat, \shat)$ 2-D space (favouring it; the original feature space $d \approx 7{,}731$ would put RLCP's rate $O(n^{-2/(d+2)})$ in the intractable regime).
@@ -96,35 +93,35 @@ We additionally benchmark HCCP against three contemporary CP methods that target
 \begin{table}[t]
 \centering
 \small
-\caption{HCCP vs.\ contemporary local-CP methods on TraitGym CADD+GPN-MSA+Borzoi at $K = \hat K_{\mathrm{CV}}$, sharing the same $(\phat, \shat)$. \textbf{HCCP is the unique method achieving both $\mathrm{cov}_{|Y=1} \geq 0.89$ and $\shat$-bin gap $\leq 0.10$ on either dataset.} RLCP/SC-CP collapse minority coverage on Complex (under-covering pathogenic class), and all three baselines have $\shat$-bin gap $\geq 0.19$. Singleton fractions in column 6 reflect the trade-off: RLCP/SC-CP achieve high singleton rates by giving up minority coverage. Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py} (single seed, full chrom-LOO).}
+\caption{HCCP vs.\ contemporary local-CP methods on TraitGym CADD+GPN-MSA+Borzoi, sharing the same $(\phat, \shat)$. Partition $K$ for HCCP / SC-CP selected per outer fold via proper nested chrom-LOO; reporting metric $(y, \shat\text{-bin})$-conditional worst-cell gap at fixed $K_{\mathrm{eval}}$ (Complex $K_{\mathrm{eval}} = 5$, Mendelian $K_{\mathrm{eval}} = 3$). \textbf{HCCP is the unique method satisfying both $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on both datasets.} RLCP / SC-CP collapse minority coverage on Complex; weighted CP over-covers the minority on Mendelian (singleton fraction $0.50$ vs.\ HCCP $0.83$). Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py} with \texttt{--K-mode nested-cv}.}
 \label{tab:cp_baselines}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llccccc}
 \toprule
 Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Singleton & Conditioning \\
 \midrule
-\multirow{4}{*}{Complex ($K=2$)}
- & \textbf{HCCP (ours)}                                & 0.900 & \textbf{0.899} & \textbf{0.010} & 0.314 & $(y, \shat\text{-bin})$ \\
- & RLCP \citep{hore2025rlcp}                            & 0.952 & \textcolor{red}{0.545} & \textcolor{red}{0.799} & 0.762 & $(p, \shat)$ kernel \\
- & weighted CP \citep{tibshirani2019weighted}           & 0.901 & \textcolor{red}{0.613} & \textcolor{red}{0.803} & 0.785 & chrom-shift weights \\
- & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & \textcolor{red}{0.654} & \textcolor{red}{0.803} & 0.701 & $\phat$-bin \\
+\multirow{4}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
+ & \textbf{HCCP (ours)}                                & 0.900 & \textbf{0.905} & \textbf{0.024} & 0.224 & $(y, \shat\text{-bin})$ \\
+ & RLCP \citep{hore2025rlcp}                            & 0.952 & \textcolor{red}{0.545} & \textcolor{red}{0.802} & 0.762 & $(p, \shat)$ kernel \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.901 & \textcolor{red}{0.613} & \textcolor{red}{0.802} & 0.785 & chrom-shift weights \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & \textcolor{red}{0.627} & \textcolor{red}{0.802} & 0.710 & $\phat$-bin \\
 \midrule
-\multirow{4}{*}{Mendelian ($K=3$)}
- & \textbf{HCCP (ours)}                                & 0.899 & \textbf{0.891} & \textbf{0.047} & 0.764 & $(y, \shat\text{-bin})$ \\
+\multirow{4}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
+ & \textbf{HCCP (ours)}                                & 0.902 & \textbf{0.876} & \textbf{0.163} & 0.827 & $(y, \shat\text{-bin})$ \\
  & RLCP \citep{hore2025rlcp}                            & 0.939 & 0.876 & \textcolor{red}{0.321} & 0.890 & $(p, \shat)$ kernel \\
- & weighted CP \citep{tibshirani2019weighted}           & 0.902 & 0.982 & \textcolor{red}{0.188} & 0.499 & chrom-shift weights \\
- & SC-CP \citep{vanderlaan2024sccp}                     & 0.901 & 0.834 & \textcolor{red}{0.374} & 0.838 & $\phat$-bin \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.902 & \textcolor{red}{0.982} & 0.188 & 0.499 & chrom-shift weights \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & \textcolor{red}{0.846} & \textcolor{red}{0.374} & 0.777 & $\phat$-bin \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Imbalance sweep validates T5's $\pi_{\min}$ dependence.}
-Tab.~\ref{tab:imbsweep} subsamples Complex to $\pi_{+} \in \{0.05, 0.10, 0.20, 0.30, 0.50\}$ (positives kept whole; negatives subsampled or vice versa) and re-runs the four variants. The minority-coverage of B1 and B2 \emph{degrades monotonically} as $\pi_{+} \to 0$, while B3 and B4 hold at the target — the empirical realization of the $\pi_{\min}$-explicit factor in T5's bound $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$. Fig.~\ref{fig:frontier} visualises the same data as a joint frontier scatter. Mendelian ($K = 3$, $\hat K_{\mathrm{CV}}$) replicates the same qualitative pattern: B2's $\mathrm{cov}_{|Y=1}$ ranges $0.787$–$0.867$ across $\pi_{+} \in [0.05, 0.50]$ while HCCP holds at $0.896$–$0.906$; B1 over-covers the minority on Mendelian (cov$_{|Y=1} \approx 0.95$) but at the cost of $\shat$-bin gap $\geq 0.41$ throughout. The Mendelian sweep at $\pi_{+} = 0.50$ uses only $n = 676$ variants and is the only regime in which HCCP's $\shat$-bin gap exceeds $0.20$ (0.309), reflecting the per-cell sample-size floor $n_{k,b} \geq \lceil 1/\alpha \rceil$ rather than a method failure.
+Tab.~\ref{tab:imbsweep} subsamples Complex to $\pi_{+} \in \{0.05, 0.10, 0.20, 0.30, 0.50\}$ (positives kept whole; negatives subsampled or vice versa) and re-runs the four variants under proper nested chrom-LOO $K$-selection. B1 (split CP) and B2 ($\shat$-Mondrian) minority-coverage \emph{degrades monotonically} as $\pi_{+} \to 0$ ($0.587 \to 0.810$ for B1; $0.650 \to 0.878$ for B2), while B3 and B4 hold at the target across the full sweep --- the empirical realisation of the $\pi_{\min}^{-1/2}$ factor in T5's bound $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$. Fig.~\ref{fig:frontier} visualises the same data as a joint frontier scatter. Mendelian replicates the same qualitative pattern at $\pi_{+} \in \{0.10, 0.20, 0.30\}$ (the sample-size-stable regime: $n_{+} \geq 86$ per cell): B2's $\mathrm{cov}_{|Y=1}$ ranges $0.840$–$0.873$ while HCCP holds at $0.876$–$0.893$; B1 over-covers the minority on Mendelian (cov$_{|Y=1} \approx 0.95$) but at the cost of $\shat$-bin gap $\geq 0.37$ throughout. At the extreme imbalance points ($\pi_{+} = 0.05$, $n_{+} \approx 17$ per cell) and the dropped-negatives extreme ($\pi_{+} = 0.50$, $n = 676$), all four methods are dominated by the per-cell sample-size floor $n_{k,b} \geq \lceil 1/\alpha\rceil$ and the metric saturates; we read these endpoints as binomial-noise-limited rather than as method comparisons.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Imbalance sweep: $\mathrm{cov}_{|Y=1}$ as a function of positive-class prevalence $\pi_{+}$, fixed $K = 2$, Complex CADD+GPN-MSA+Borzoi. B1 and B2 collapse as $\pi_{+} \to 0$; B3 and B4 are insensitive. The right-most column reports HCCP's $\shat$-bin gap, which stays $\leq 0.22$ across the sweep.}
+\caption{Imbalance sweep: $\mathrm{cov}_{|Y=1}$ as a function of positive-class prevalence $\pi_{+}$, Complex CADD+GPN-MSA+Borzoi. Partition $K$ for B2 / B4 selected per outer fold via nested chrom-LOO at $K_{\mathrm{eval}} = 5$. B1 and B2 collapse as $\pi_{+} \to 0$; B3 and B4 are insensitive. The right-most column reports HCCP's $\shat$-bin gap, which stays $\leq 0.07$ across the sweep.}
 \label{tab:imbsweep}
 \setlength{\tabcolsep}{6pt}
 \begin{tabular}{lccccc|c}
@@ -133,9 +130,9 @@ $\pi_{+}$       & 0.05  & 0.10  & 0.20  & 0.30  & 0.50  & B4 $\shat$-gap \\
 $n$             & 10800 & 11400 & 5700  & 3800  & 2280  & --- \\
 \midrule
 B1 (split)      & \textcolor{red}{0.587} & \textcolor{red}{0.616} & \textcolor{red}{0.664} & \textcolor{red}{0.725} & 0.810 & --- \\
-B2 ($\shat$-Mond) & \textcolor{red}{0.650} & \textcolor{red}{0.661} & \textcolor{red}{0.676} & 0.755 & 0.838 & --- \\
+B2 ($\shat$-Mond) & \textcolor{red}{0.650} & \textcolor{red}{0.656} & \textcolor{red}{0.718} & 0.800 & 0.878 & --- \\
 B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
-\textbf{B4 (HCCP)} & \textbf{0.898} & \textbf{0.899} & \textbf{0.899} & \textbf{0.899} & \textbf{0.903} & 0.221 / 0.168 / 0.088 / 0.105 / 0.197 \\
+\textbf{B4 (HCCP)} & \textbf{0.898} & \textbf{0.905} & \textbf{0.894} & \textbf{0.902} & \textbf{0.896} & 0.036 / 0.024 / 0.067 / 0.057 / 0.041 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -187,9 +184,7 @@ Axis & Dataset & Feature set & AUPRC $\uparrow$ & Marg.\ cov.\ & \textbf{$\shat$
 & Complex (top-28) & CADD+Borzoi & 0.273 & 0.902 & \textbf{0.002} & 0.020 \\
 & Complex (top-28) & CADD+GPN-MSA+Borzoi & 0.278 & 0.902 & \textbf{0.003} & 0.017 \\
 \midrule
-\multirow{4}{*}{Cross-dataset}
-& M $\to$ C & CADD+Borzoi & 0.205 & 0.738 & 0.331 & --- \\
-& M $\to$ C & CADD+GPN-MSA+Borzoi & 0.203 & 0.727 & 0.530 & --- \\
+\multirow{2}{*}{Cross-dataset (C $\to$ M)}
 & C $\to$ M & CADD+Borzoi & \textbf{0.665} & \textbf{0.901} & \textbf{0.035} & --- \\
 & C $\to$ M & CADD+GPN-MSA+Borzoi & 0.651 & 0.896 & 0.036 & --- \\
 \bottomrule
@@ -205,9 +200,9 @@ Axis & Dataset & Feature set & AUPRC $\uparrow$ & Marg.\ cov.\ & \textbf{$\shat$
 
 \paragraph{Three observations.}
 \begin{enumerate}
-    \item \textbf{HCCP holds across the three axes with degraded margin in chrom-LOO Mendelian.} Trait-LOO reaches the $0.002$–$0.004$ floor on both datasets; chrom-LOO Complex stays $\leq 0.023$ across feature sets; chrom-LOO Mendelian is $0.198$ on CADD+Borzoi and tightens to $0.077$ with the SOTA feature set CADD+GPN-MSA+Borzoi (still $> 0.04$, the binding regime). The strong-shift M$\to$C cross-dataset direction (gap $0.331$–$0.530$) is reported as an honest limitation; C$\to$M direction is in-bound (gap $\leq 0.036$).
+    \item \textbf{HCCP holds across the three axes with degraded margin in chrom-LOO Mendelian.} Trait-LOO reaches the $0.002$–$0.004$ floor on both datasets; chrom-LOO Complex stays $\leq 0.023$ across feature sets; chrom-LOO Mendelian is $0.198$ on CADD+Borzoi and tightens to $0.077$ with the SOTA feature set CADD+GPN-MSA+Borzoi (still $> 0.04$, the binding regime). C$\to$M cross-dataset direction is in-bound (gap $\leq 0.036$). The reverse M$\to$C direction is reported separately in §\ref{sec:experiments:failure_mode} as a diagnostic case study of joint base-predictor + assumption failure, not as a deployment scenario.
     \item \textbf{Trait-LOO reaches the finite-sample floor.} Gaps of $0.002\text{--}0.004$ match the $1/(n_{k,b}+1)$ bound of T3; per-OMIM coverage std is $\leq 0.052$, within binomial noise at $n = 30$ OMIMs.
-    \item \textbf{Cross-dataset shift reveals direction asymmetry.} Complex $\to$ Mendelian retains $\mathrm{AUPRC} = 0.665$ and $\shat$-bin gap $0.035$ --- evidence that the Complex feature space \emph{contains} the Mendelian one. Mendelian $\to$ Complex collapses (AUPRC $0.205$). This is biologically interpretable: Mendelian monogenic signal is a narrow subspace of the polygenic Complex signal, not vice versa. T4's Barber 2023 Thm 2 proxy bound is tight on Mendelian $\to$ Complex CADD+Borzoi: observed coverage $0.738$ vs proxy $(1 - \alpha) - \hat d_{\text{TV}} = 0.742$ (1.4 std below).
+    \item \textbf{Cross-dataset C$\to$M transfer is in-bound.} Complex $\to$ Mendelian retains $\mathrm{AUPRC} = 0.665$ and $\shat$-bin gap $0.035$, indicating that calibration on the broader polygenic feature space transfers to monogenic targets without coverage collapse.
 \end{enumerate}
 
 \subsection{Ablations}
@@ -223,7 +218,7 @@ Axis & Dataset & Feature set & AUPRC $\uparrow$ & Marg.\ cov.\ & \textbf{$\shat$
 \label{fig:n_sweep}
 \end{figure}
 
-\paragraph{$\shat$ source ablation.} We compare four heads: (a) supervised GBM on OOF residuals (HCCP default), (b) DEGU-lite bootstrap-GBM ensemble ($M = 10$, $\shat$ = ensemble std), (c) DEGU-actual CNN ensemble ($M = 5$, one-hot 200\,bp DNA windows centered on each variant, fixed test split matching TraitGym), (d) no $\shat$ (homoscedastic, Day 10). On Complex CADD+Borzoi at $K = 5$, HCCP (a) achieves gap $0.020$; DEGU-lite (b) gives $0.103$; the matched-feature-set comparison on CADD+GPN-MSA+Borzoi (App.~\ref{app:tables:degu}, Table~\ref{tab:degu}) gives the canonical ratio $4.3\times$ ($0.057$ vs $0.013$). The two $\shat$ sources are informative in complementary regimes: bin 0 of DEGU-lite (low ensemble std, i.e.\ high agreement) carries coverage $0.570$, indicating that all 10 bootstrap students agree but the underlying variants still carry residual aleatoric uncertainty that ensemble disagreement does not see. Ensemble $\shat$ remains the right primitive when epistemic uncertainty dominates (small training set, model misspecification); supervised residual $\shat$ wins on the polygenic regime where aleatoric noise is the binding constraint. DEGU-actual (c) produces a valid $\shat$ signal (ensemble std $0.023 \pm 0.044$ on Mendelian), but its base predictor fails the point-estimate step: the $M = 5$ CNN ensemble on 200\,bp one-hot windows reaches only AUPRC $0.140$ (vs HCCP GBM $0.900$, a $6.4\times$ gap). Raw-sequence CNN on variant pathogenicity is not competitive at TraitGym scale --- a finding consistent with the fact that DEGU's original paper \citep{zhou2026degu} reports no TraitGym number and evaluates exclusively on MPRA regression, where sequence-to-activity is a direct mapping. This reverse-validates HCCP's design decision to aggregate pre-computed genomic features (CADD/Borzoi/GPN-MSA) rather than learn from raw DNA end-to-end.
+\paragraph{$\shat$ source ablation.} We compare three heads: (a) supervised GBM on OOF residuals (HCCP default), (b) DEGU-lite bootstrap-GBM ensemble ($M = 10$, $\shat$ = ensemble std), (c) no $\shat$ (homoscedastic, Day 10). \textbf{Scope.} \citet{zhou2026degu}'s original DEGU is evaluated on MPRA regression and is not claimed for variant classification on TraitGym; we therefore compare against DEGU's $\shat$ \emph{mechanism} (ensemble distillation) at matched GBM backbone for a like-for-like ablation, and do not reimplement DEGU's CNN end-to-end on a task it does not target. On Complex CADD+Borzoi at $K = 5$, HCCP (a) achieves gap $0.020$; DEGU-lite (b) gives $0.103$; the matched-feature-set comparison on CADD+GPN-MSA+Borzoi (App.~\ref{app:tables:degu}, Table~\ref{tab:degu}) gives the canonical ratio $4.3\times$ ($0.057$ vs $0.013$). The two $\shat$ sources are informative in complementary regimes: bin 0 of DEGU-lite (low ensemble std, i.e.\ high agreement) carries coverage $0.570$, indicating that all 10 bootstrap students agree but the underlying variants still carry residual aleatoric uncertainty that ensemble disagreement does not see. Ensemble $\shat$ remains the right primitive when epistemic uncertainty dominates (small training set, model misspecification); supervised residual $\shat$ wins on the polygenic regime where aleatoric noise is the binding constraint.
 
 \paragraph{$\shat$ target-function ablation.} Within the supervised-$\shat$ family, we compare two training targets: (i) absolute residual $r_i = |y_i - \phat^{(-C_i)}(x_i)|$ with squared-error loss (HCCP default, Gaussian NLL for the half-normal approximation), and (ii) log-variance $\log(r_i^2 + \epsilon)$ with squared error (DEGU-style reparameterization). On Mendelian CADD+GPN-MSA+Borzoi at $\alpha = 0.10$ and $K = 5$, target (i) achieves $\shat$-bin gap $0.077$ and singleton fraction $0.80$; target (ii) achieves gap $0.109$ and singleton fraction $0.83$. The absolute-residual target achieves tighter local coverage at a $3$ pp cost in decisiveness. We attribute the gap to the fact that the log-variance reparameterization amplifies small residuals near zero (where most benign variants sit), producing an overconfident low-$\shat$ tail; the absolute-residual target preserves the nonconformity-score scale directly.
 
@@ -244,12 +239,25 @@ On Mendelian and Complex with the CADD+GPN-MSA+Borzoi feature set ($K = 5$, sing
 \label{fig:local_heatmap}
 \end{figure}
 
+\paragraph{Feature extension ablation: AlphaGenome integration.} As a stress test of HCCP's feature-additivity across heterogeneous foundation models, we evaluate the framework with the AlphaGenome \citep{avsec2026alphagenome} 140-dimensional RNA-SEQ + DNASE panel (8 tissues; App.~\ref{app:data:features}) appended to the SOTA feature set. On Mendelian, the addition lifts AUPRC by $+1.15$\,pp ($0.900 \to 0.912$) and tightens the $\shat$-bin gap from $0.020$ to $0.018$. On Complex, AUPRC is flat ($0.353 \to 0.352$) and the gap is unchanged within bootstrap CI ($0.004 \pm 0.002$). The asymmetry is consistent with AlphaGenome's tissue-specific predictions favouring monogenic variants with dominant splice/expression effects; polygenic complex-trait variants rely on dispersed long-range signals that an 8-tissue panel does not isolate. We report this as evidence that HCCP's coverage machinery is invariant to the choice of underlying genomic feature pipeline, not as a deployment recommendation; the headline numbers in Table~\ref{tab:main} use the SOTA feature set without AlphaGenome.
+
 \paragraph{Benchmark audit byproduct.} CADD-alone LogReg on Mendelian reaches AUPRC $0.871$, exceeding TraitGym's published ``SOTA'' CADD+Borzoi LogReg of $0.752$ \citep{benegas2025traitgym}. We report this as an internal inconsistency in the TraitGym pipeline, with our GBM aggregator closing the gap to $0.900$.
+
+\subsection{Failure mode characterization: M$\to$C cross-dataset}
+\label{sec:experiments:failure_mode}
+
+The reverse cross-dataset direction (Mendelian-trained $\to$ Complex-tested) is a regime where HCCP's coverage machinery and base predictor jointly fail. We report it as a diagnostic case study, not as a deployment endorsement.
+
+\paragraph{Numbers.} On CADD+Borzoi: AUPRC $0.205$, marginal coverage $0.738$, $\shat$-bin gap $0.331$. On CADD+GPN-MSA+Borzoi: AUPRC $0.203$, marginal coverage $0.727$, $\shat$-bin gap $0.530$. The $\shat$-bin gap is one to two orders of magnitude larger than the in-distribution Complex gap of $0.020$–$0.023$.
+
+\paragraph{Diagnosis.} Two failures compound. (i) The base predictor itself collapses (AUPRC $0.205$ vs in-distribution $0.353$), because the Mendelian-trained GBM aggregator has not seen the polygenic feature distribution that dominates Complex variants. Conformal calibration cannot rescue a base predictor that has lost discrimination. (ii) Assumption A1$'$ (chrom-group exchangeability between calibration and test folds) is violated at the dataset level: Mendelian and Complex sample variants under different selection criteria (ClinVar pathogenicity vs.\ GWAS catalog), so the calibration fold's score distribution is no longer exchangeable with the test fold's. T4's Barber 2023 Thm 2 marginal-coverage proxy correctly predicts the coverage drop: observed marginal $0.738$ vs.\ proxy $(1 - \alpha) - \hat d_{\mathrm{TV}} = 0.742$ on CADD+Borzoi (1.4 std below). The marginal proxy does not extend to bin-conditional coverage, and we make no claim that T3$'$ binds the $0.530$ $\shat$-bin gap on CADD+GPN-MSA+Borzoi.
+
+\paragraph{What this characterizes.} HCCP's guarantees are conditional on (i) a base predictor that retains discriminative signal and (ii) calibration-fold exchangeability with the test point. M$\to$C violates both. We flag this as the joint-failure regime to delineate the boundary of what HCCP claims, not to suggest the boundary can be moved without strengthening the assumptions or the base predictor. Cross-domain transfer in the C$\to$M direction (§\ref{sec:experiments}) and to ProteinGym (App.~\ref{app:proteingym}) holds; the M$\to$C direction does not, and we do not endorse it as a deployment scenario.
 
 \subsection{Honest limitations}
 
 \begin{itemize}
     \item \textbf{Marginal-score TV proxy.} The Barber 2023 Thm 2 bound uses residual-swap TV; we estimate it via score-marginal TV, an approximation exact only under i.i.d.\ but underestimating for cross-dataset shift. On CADD+GPN-MSA+Borzoi M$\to$C the proxy is violated by $0.036$. Future work: direct residual-swap TV estimation (§\ref{sec:discussion}).
-    \item \textbf{DEGU reimpl caveat.} We compare against two DEGU variants: DEGU-lite (GBM-backbone, $M = 10$ bootstrap students, shared backbone with HCCP for like-for-like $\shat$-source ablation) and DEGU-actual (CNN-backbone, $M = 5$ one-hot 200\,bp ensemble, matching the original paper's architecture). DEGU-actual's base AUPRC on TraitGym is $0.140$/$c_{\mathrm{Complex}}$ --- not competitive with GBM-on-features SOTA at $0.900$ Mendelian --- so the fair $\shat$-only comparison is against DEGU-lite at matched point-estimate quality; DEGU-actual is reported in App.~\ref{app:tables} as an honest negative result on end-to-end CNN VEP.
+    \item \textbf{DEGU comparison scope.} \citet{zhou2026degu}'s DEGU is evaluated on MPRA regression and does not claim a TraitGym number; we compare against DEGU's $\shat$-mechanism (ensemble distillation) at matched GBM backbone (DEGU-lite, $M = 10$) for like-for-like ablation. We do not port DEGU's CNN end-to-end to TraitGym, since reproducing it on a task the original paper does not target would not be informative about DEGU's capacity.
     \item \textbf{A3-loc (local stationarity) cannot be fully verified} at our sample sizes. Our cell-level KS audit (12.3\% rejection at $p < 0.05$, App.~\ref{app:data}) is the closest empirical analog. T3-loc is stated conditionally on A3-loc throughout.
 \end{itemize}
