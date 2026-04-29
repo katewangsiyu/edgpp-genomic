@@ -1,0 +1,53 @@
+{
+  "dataset": "mendelian",
+  "n_variants": 3380,
+  "n_bins_per_class": 30,
+  "min_per_bin": 20,
+  "n_pairs": 325,
+  "ratio_percentiles_raw": {
+    "max": 182.98446995762862,
+    "p99": 55.86973140174504,
+    "p95": 32.84850176004652,
+    "median": 4.16040956232863,
+    "iqr_lo": 2.7484898506166098,
+    "iqr_hi": 9.255845952355255,
+    "n": 325
+  },
+  "ratio_percentiles_noise_adjusted": {
+    "max": 153.45756242500676,
+    "p99": 45.91945318249892,
+    "p95": 13.77735056308497,
+    "median": 0.40521288481382745,
+    "iqr_lo": 0.0,
+    "iqr_hi": 1.694918665479058,
+    "n": 325
+  },
+  "lcls_violation_diagnostic": {
+    "n_pairs": 325,
+    "n_violations": 50,
+    "violation_rate": 0.15384615384615385,
+    "alpha_noise": 0.05,
+    "beta_lcls": 2.97,
+    "median_noise_floor": 0.19062814252002974
+  },
+  "bootstrap_robust_ci_95": {
+    "B_used": 500,
+    "p99_ci_lo": 58.228009761695084,
+    "p99_ci_hi": 87.22259690712805,
+    "p99_median": 70.23622443133091,
+    "median_ci_lo": 4.470635927358057,
+    "median_ci_hi": 5.416583576812384,
+    "median_median": 4.947200656134374
+  },
+  "L_F_upper_envelopes": {
+    "L_F_p95_noise_adjusted": 13.77735056308497,
+    "L_F_p99_noise_adjusted": 45.91945318249892,
+    "lcls_to_p95_ratio": 0.21557120045691638
+  },
+  "acceptance_criterion": {
+    "rule": "L_F upper envelope (p95 noise-adjusted) is finite and bounded",
+    "value": 13.77735056308497,
+    "passes": true
+  },
+  "lcls_lf_overlay": 2.97
+}

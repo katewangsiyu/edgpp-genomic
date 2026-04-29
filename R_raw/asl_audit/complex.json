@@ -1,0 +1,53 @@
+{
+  "dataset": "complex",
+  "n_variants": 11400,
+  "n_bins_per_class": 30,
+  "min_per_bin": 20,
+  "n_pairs": 870,
+  "ratio_percentiles_raw": {
+    "max": 53.32805674210756,
+    "p99": 37.30504713941542,
+    "p95": 19.548772995589097,
+    "median": 5.354848341342478,
+    "iqr_lo": 3.0425048680619406,
+    "iqr_hi": 9.87229956569301,
+    "n": 870
+  },
+  "ratio_percentiles_noise_adjusted": {
+    "max": 13.641192024895686,
+    "p99": 9.88215023039687,
+    "p95": 8.0620806206967,
+    "median": 2.4949656321393583,
+    "iqr_lo": 1.329246021496404,
+    "iqr_hi": 4.687078314736143,
+    "n": 870
+  },
+  "lcls_violation_diagnostic": {
+    "n_pairs": 870,
+    "n_violations": 231,
+    "violation_rate": 0.2655172413793103,
+    "alpha_noise": 0.05,
+    "beta_lcls": 4.51,
+    "median_noise_floor": 0.2076977110641486
+  },
+  "bootstrap_robust_ci_95": {
+    "B_used": 500,
+    "p99_ci_lo": 35.45944040545329,
+    "p99_ci_hi": 48.953831219800655,
+    "p99_median": 41.39647328086505,
+    "median_ci_lo": 5.409103596562734,
+    "median_ci_hi": 5.858307399527905,
+    "median_median": 5.627456630070861
+  },
+  "L_F_upper_envelopes": {
+    "L_F_p95_noise_adjusted": 8.0620806206967,
+    "L_F_p99_noise_adjusted": 9.88215023039687,
+    "lcls_to_p95_ratio": 0.5594089431978739
+  },
+  "acceptance_criterion": {
+    "rule": "L_F upper envelope (p95 noise-adjusted) is finite and bounded",
+    "value": 8.0620806206967,
+    "passes": true
+  },
+  "lcls_lf_overlay": 4.51
+}
