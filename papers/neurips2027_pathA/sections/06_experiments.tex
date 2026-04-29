@@ -62,7 +62,7 @@ The four predictors share their $\phat$ and $\shat$; they differ only in the par
 \begin{table}[t]
 \centering
 \small
-\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring; reporting metric is the $(y, \shat\text{-bin})$-conditional worst-cell coverage gap on a fixed $K_{\mathrm{eval}}$ partition (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$, set per dataset to ensure $\geq 30$ minority-class samples per cell, §\ref{sec:theory:t5}). Single-seed point estimates. \textbf{No single-axis CP simultaneously satisfies $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on either dataset.} HCCP is the unique frontier point on both.}
+\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring; reporting metric is the $(y, \shat\text{-bin})$-conditional worst-cell coverage gap on a fixed $K_{\mathrm{eval}}$ partition (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$, set per dataset to ensure $\geq 30$ minority-class samples per cell, §\ref{sec:theory:t5}). Single-seed point estimates. \textbf{No single-axis CP simultaneously satisfies $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on either dataset.} Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets.}
 \label{tab:h2h}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcccc}

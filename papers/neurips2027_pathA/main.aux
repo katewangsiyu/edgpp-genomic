@@ -59,9 +59,6 @@
 \citation{angelopoulos2022gentle}
 \citation{barber2020limits}
 \@writefile{toc}{\contentsline {paragraph}{Contributions.}{3}{section*.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{3}{section.2}\protected@file@percent }
-\newlabel{sec:related}{{2}{3}{Related work}{section.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Conformal prediction and conditional coverage.}{3}{section*.5}\protected@file@percent }
 \citation{papadopoulos2008normalized}
 \citation{lei2018distribution}
 \citation{bostrom2020mondrian}
@@ -84,8 +81,10 @@
 \citation{angelopoulos2022gentle}
 \citation{laufer2023paretotest}
 \citation{elyaniv2010selective,geifman2017selective}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{4}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{4}{Related work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Conformal prediction and conditional coverage.}{4}{section*.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Class-conditional and imbalanced conformal classification.}{4}{section*.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Multi-objective coverage and selective classification.}{4}{section*.7}\protected@file@percent }
 \citation{nix1994nll}
 \citation{lakshminarayanan2017simple}
 \citation{zhou2026degu}
@@ -98,6 +97,7 @@
 \citation{papangelou2025cpgenomics}
 \citation{wang2025cqrprs}
 \citation{benegas2025traitgym}
+\@writefile{toc}{\contentsline {paragraph}{Multi-objective coverage and selective classification.}{5}{section*.7}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Heteroscedastic uncertainty quantification.}{5}{section*.8}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Variant effect prediction and benchmarks.}{5}{section*.9}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Problem formulation}{5}{section.3}\protected@file@percent }
@@ -233,8 +233,8 @@
 \citation{hore2025rlcp}
 \citation{tibshirani2019weighted}
 \citation{vanderlaan2024sccp}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\hat  {p}, \hat  {\sigma })$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm  {eval}}$-fair scoring; reporting metric is the $(y, \hat  {\sigma }\text  {-bin})$-conditional worst-cell coverage gap on a fixed $K_{\mathrm  {eval}}$ partition (Mendelian $K_{\mathrm  {eval}} = 3$, Complex $K_{\mathrm  {eval}} = 5$, set per dataset to ensure $\geq 30$ minority-class samples per cell, §\ref  {sec:theory:t5}). Single-seed point estimates. \textbf  {No single-axis CP simultaneously satisfies $\mathrm  {cov}_{|Y=1} \geq 0.85$ and $\hat  {\sigma }$-bin gap $\leq 0.20$ on either dataset.} HCCP is the unique frontier point on both.}}{15}{table.4}\protected@file@percent }
-\newlabel{tab:h2h}{{4}{15}{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat , \shat )$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm {eval}}$-fair scoring; reporting metric is the $(y, \shat \text {-bin})$-conditional worst-cell coverage gap on a fixed $K_{\mathrm {eval}}$ partition (Mendelian $K_{\mathrm {eval}} = 3$, Complex $K_{\mathrm {eval}} = 5$, set per dataset to ensure $\geq 30$ minority-class samples per cell, §\ref {sec:theory:t5}). Single-seed point estimates. \textbf {No single-axis CP simultaneously satisfies $\mathrm {cov}_{|Y=1} \geq 0.85$ and $\shat $-bin gap $\leq 0.20$ on either dataset.} HCCP is the unique frontier point on both}{table.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\hat  {p}, \hat  {\sigma })$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm  {eval}}$-fair scoring; reporting metric is the $(y, \hat  {\sigma }\text  {-bin})$-conditional worst-cell coverage gap on a fixed $K_{\mathrm  {eval}}$ partition (Mendelian $K_{\mathrm  {eval}} = 3$, Complex $K_{\mathrm  {eval}} = 5$, set per dataset to ensure $\geq 30$ minority-class samples per cell, §\ref  {sec:theory:t5}). Single-seed point estimates. \textbf  {No single-axis CP simultaneously satisfies $\mathrm  {cov}_{|Y=1} \geq 0.85$ and $\hat  {\sigma }$-bin gap $\leq 0.20$ on either dataset.} Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets.}}{15}{table.4}\protected@file@percent }
+\newlabel{tab:h2h}{{4}{15}{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat , \shat )$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm {eval}}$-fair scoring; reporting metric is the $(y, \shat \text {-bin})$-conditional worst-cell coverage gap on a fixed $K_{\mathrm {eval}}$ partition (Mendelian $K_{\mathrm {eval}} = 3$, Complex $K_{\mathrm {eval}} = 5$, set per dataset to ensure $\geq 30$ minority-class samples per cell, §\ref {sec:theory:t5}). Single-seed point estimates. \textbf {No single-axis CP simultaneously satisfies $\mathrm {cov}_{|Y=1} \geq 0.85$ and $\shat $-bin gap $\leq 0.20$ on either dataset.} Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets}{table.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Joint frontier: head-to-head with off-the-shelf normalized + Mondrian CP}{15}{subsection.6.3}\protected@file@percent }
 \newlabel{sec:experiments:h2h}{{6.3}{15}{Joint frontier: head-to-head with off-the-shelf normalized + Mondrian CP}{subsection.6.3}{}}
 \@writefile{toc}{\contentsline {paragraph}{Reading.}{15}{section*.36}\protected@file@percent }
@@ -306,13 +306,13 @@
 \bibcite{pcos2025conformal}{{1}{2025}{{Adegoke et~al.}}{{Adegoke, Babalola, and Odesola}}}
 \bibcite{angelopoulos2022gentle}{{2}{2022}{{Angelopoulos and Bates}}{{}}}
 \bibcite{angelopoulos2021raps}{{3}{2021}{{Angelopoulos et~al.}}{{Angelopoulos, Bates, Malik, and Jordan}}}
-\bibcite{avsec2026alphagenome}{{4}{2026}{{Avsec et~al.}}{{}}}
+\bibcite{avsec2026alphagenome}{{4}{2026}{{Avsec et~al.}}{{Avsec, Latysheva, Cheng, Novati, Taylor, Ward, Bycroft, Nicolaisen, Arvaniti, Pan, Hassabis, and Kohli}}}
 \bibcite{barber2020limits}{{5}{2020}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
-\bibcite{barber2021jackknife}{{6}{2021}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
 \@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{24}{section.8}\protected@file@percent }
 \newlabel{sec:conclusion}{{8}{24}{Conclusion}{section.8}{}}
+\bibcite{barber2021jackknife}{{6}{2021}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
 \bibcite{barber2023exchangeability}{{7}{2023}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
-\bibcite{benegas2023gpnmsa}{{8}{2023}{{Benegas et~al.}}{{Benegas, Albors, et~al.}}}
+\bibcite{benegas2023gpnmsa}{{8}{2023}{{Benegas et~al.}}{{Benegas, Albors, Aw, Ye, and Song}}}
 \bibcite{benegas2025traitgym}{{9}{2025}{{Benegas et~al.}}{{Benegas, Eraslan, and Song}}}
 \bibcite{bostrom2022crepes}{{10}{2022}{{Bostr{\"o}m}}{{}}}
 \bibcite{bostrom2020mondrian}{{11}{2020}{{Bostr{\"o}m and Johansson}}{{}}}
@@ -324,25 +324,25 @@
 \bibcite{gibbs2021adaptive}{{17}{2021}{{Gibbs and Cand{\`e}s}}{{}}}
 \bibcite{hore2025rlcp}{{18}{2025}{{Hore and Barber}}{{}}}
 \bibcite{lcls2024lipschitz}{{19}{2024}{{Huang et~al.}}{{Huang, Roberts, and Calliess}}}
-\bibcite{kircher2014cadd}{{20}{2014}{{Kircher et~al.}}{{Kircher, Witten, et~al.}}}
+\bibcite{kircher2014cadd}{{20}{2014}{{Kircher et~al.}}{{Kircher, Witten, Jain, O'Roak, Cooper, and Shendure}}}
 \bibcite{lakshminarayanan2017simple}{{21}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
 \bibcite{laufer2023paretotest}{{22}{2023}{{Laufer-Goldshtein et~al.}}{{Laufer-Goldshtein, Fisch, Barzilay, and Jaakkola}}}
 \bibcite{lei2018distribution}{{23}{2018}{{Lei et~al.}}{{Lei, G'Sell, Rinaldo, Tibshirani, and Wasserman}}}
-\bibcite{linder2025borzoi}{{24}{2025}{{Linder et~al.}}{{}}}
+\bibcite{linder2025borzoi}{{24}{2025}{{Linder et~al.}}{{Linder, Srivastava, Yuan, Agarwal, and Kelley}}}
 \bibcite{nix1994nll}{{25}{1994}{{Nix and Weigend}}{{}}}
-\bibcite{notin2023proteingym}{{26}{2023}{{Notin et~al.}}{{}}}
+\bibcite{notin2023proteingym}{{26}{2023}{{Notin et~al.}}{{Notin, Kollasch, Ritter, van Niekerk, Paul, Spinner, Rollins, Shaw, Orenbuch, Weitzman, Frazer, Dias, Franceschi, Gal, and Marks}}}
 \bibcite{papadopoulos2008normalized}{{27}{2008}{{Papadopoulos et~al.}}{{Papadopoulos, Gammerman, and Vovk}}}
-\bibcite{papangelou2025cpgenomics}{{28}{2025}{{Papangelou et~al.}}{{}}}
+\bibcite{papangelou2025cpgenomics}{{28}{2025}{{Papangelou et~al.}}{{Papangelou, Kyriakidis, Natsiavas, Chouvarda, and Malousi}}}
 \bibcite{richards2015acmg}{{29}{2015}{{Richards et~al.}}{{Richards, Aziz, Bale, Bick, Das, Gastier-Foster, Grody, Hegde, Lyon, Spector, Voelkerding, and Rehm}}}
 \bibcite{romano2019cqr}{{30}{2019}{{Romano et~al.}}{{Romano, Patterson, and Cand{\`e}s}}}
 \bibcite{sadinle2019lac}{{31}{2019}{{Sadinle et~al.}}{{Sadinle, Lei, and Wasserman}}}
-\bibcite{shi2024augmentedrank}{{32}{2024}{{Shi et~al.}}{{}}}
+\bibcite{shi2024augmentedrank}{{32}{2024}{{Shi et~al.}}{{Shi, Ghosh, Belkhouja, Doppa, and Yan}}}
 \bibcite{tibshirani2019weighted}{{33}{2019}{{Tibshirani et~al.}}{{Tibshirani, Barber, Cand{\`e}s, and Ramdas}}}
 \bibcite{crps_binning2026}{{34}{2026}{{Toccaceli}}{{}}}
 \bibcite{vanderlaan2024sccp}{{35}{2024}{{van~der Laan}}{{}}}
 \bibcite{vovk2003mondrian}{{36}{2003}{{Vovk et~al.}}{{Vovk, Lindsay, Nouretdinov, and Gammerman}}}
 \bibcite{vovk2005algorithmic}{{37}{2005}{{Vovk et~al.}}{{Vovk, Gammerman, and Shafer}}}
-\bibcite{wang2025cqrprs}{{38}{2025}{{Wang et~al.}}{{}}}
+\bibcite{wang2025cqrprs}{{38}{2025}{{Wang et~al.}}{{Wang, Wang, Bogdan, Masala, Fiorillo, Devoto, Cucca, Belsky, and Ionita-Laza}}}
 \bibcite{xie2025imbalancedcp}{{39}{2025}{{Xie et~al.}}{{Xie, Zhou, Liang, Favaro, and Sesia}}}
 \bibcite{zhou2026degu}{{40}{2026}{{Zhou et~al.}}{{Zhou, Rizzo, Christensen, Tang, and Koo}}}
 \@writefile{toc}{\contentsline {section}{\numberline {A}Full proofs of T1--T5}{26}{appendix.A}\protected@file@percent }
@@ -354,15 +354,15 @@
 \newlabel{app:proofs:lemmas}{{A.2}{27}{Auxiliary lemmas}{subsection.A.2}{}}
 \newlabel{lem:rank}{{1}{27}{Rank uniformity for exchangeable sequences}{lemma.1}{}}
 \newlabel{lem:cp_quantile}{{2}{27}{Exchangeable CP quantile bound}{lemma.2}{}}
-\newlabel{lem:rescaling}{{3}{27}{Monotone score-rescaling invariance}{lemma.3}{}}
+\newlabel{lem:rescaling}{{3}{28}{Monotone score-rescaling invariance}{lemma.3}{}}
 \newlabel{lem:bin_boundary}{{4}{28}{Bin-boundary mass bound}{lemma.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Lemma\nobreakspace  {}\ref  {thm:t1}: T1 marginal coverage}{28}{subsection.A.3}\protected@file@percent }
 \newlabel{app:proofs:t1}{{A.3}{28}{Lemma~\ref {thm:t1}: T1 marginal coverage}{subsection.A.3}{}}
 \newlabel{thm:t1}{{5}{28}{T1 marginal coverage --- standard split-CP at the marginal partition level}{lemma.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Lemma\nobreakspace  {}\ref  {thm:t2}: T2 class-conditional coverage}{28}{subsection.A.4}\protected@file@percent }
-\newlabel{app:proofs:t2}{{A.4}{28}{Lemma~\ref {thm:t2}: T2 class-conditional coverage}{subsection.A.4}{}}
-\newlabel{thm:t2}{{6}{28}{T2 class-conditional coverage --- standard split-CP at the class partition level}{lemma.6}{}}
 \citation{barber2023exchangeability}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Lemma\nobreakspace  {}\ref  {thm:t2}: T2 class-conditional coverage}{29}{subsection.A.4}\protected@file@percent }
+\newlabel{app:proofs:t2}{{A.4}{29}{Lemma~\ref {thm:t2}: T2 class-conditional coverage}{subsection.A.4}{}}
+\newlabel{thm:t2}{{6}{29}{T2 class-conditional coverage --- standard split-CP at the class partition level}{lemma.6}{}}
 \@writefile{toc}{\contentsline {paragraph}{Remark.}{29}{section*.62}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.5}Robust fallback: T1$'$ and T2$'$}{29}{subsection.A.5}\protected@file@percent }
 \newlabel{app:proofs:t1prime_t2prime}{{A.5}{29}{Robust fallback: T1$'$ and T2$'$}{subsection.A.5}{}}
@@ -375,11 +375,11 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.7}Lemma\nobreakspace  {}\ref  {thm:t3prime}: T3$'$ bin-conditional coverage, robust}{30}{subsection.A.7}\protected@file@percent }
 \newlabel{app:proofs:t3prime}{{A.7}{30}{Lemma~\ref {thm:t3prime}: T3$'$ bin-conditional coverage, robust}{subsection.A.7}{}}
 \newlabel{thm:t3prime}{{7}{30}{T3$'$ bin-conditional coverage, robust}{lemma.7}{}}
-\citation{barber2020limits}
 \@writefile{toc}{\contentsline {paragraph}{Relation to T3.}{31}{section*.66}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.8}Lemma\nobreakspace  {}\ref  {thm:t3loc}: T3-loc feature-ball coverage}{31}{subsection.A.8}\protected@file@percent }
 \newlabel{app:proofs:t3loc}{{A.8}{31}{Lemma~\ref {thm:t3loc}: T3-loc feature-ball coverage}{subsection.A.8}{}}
 \newlabel{thm:t3loc}{{8}{31}{T3-loc feature-ball coverage}{lemma.8}{}}
+\citation{barber2020limits}
 \citation{barber2023exchangeability}
 \citation{barber2023exchangeability}
 \citation{barber2023exchangeability}
