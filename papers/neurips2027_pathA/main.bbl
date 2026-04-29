@@ -1,4 +1,4 @@
-\begin{thebibliography}{40}
+\begin{thebibliography}{41}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -278,6 +278,12 @@ Chen Wang, Fan Wang, Malgorzata Bogdan, Marco Masala, Edoardo Fiorillo,
 Tianmin Xie, Yixuan Zhou, Tengyuan Liang, Stefano Favaro, and Matteo Sesia.
 \newblock Conformal inference for open-set and imbalanced classification.
 \newblock \emph{arXiv preprint arXiv:2510.13037}, 2025.
+
+\bibitem[Zhang and Zhou(2025)]{zhang2025lwtmcps}
+Ruiyao Zhang and Ping Zhou.
+\newblock A mondrian conformal predictive system with improved decision trees
+  for uncertainty quantification under heteroscedasticity.
+\newblock \emph{Pattern Recognition}, 2025.
 
 \bibitem[Zhou et~al.(2026)Zhou, Rizzo, Christensen, Tang, and
   Koo]{zhou2026degu}
