@@ -101,14 +101,23 @@
 
 **Phase 4 — nested CV + theory rewrite（commits 3a02917→529c33f, 2026-04-29）**:
 - **K-selection 修复**：旧 K_cv = argmin chrom-LOO test-set worst-cell gap **是 invalid CP exchangeability violation**（test-set tuning leak）。新方案 nested chrom-LOO inner CV with K_eval-fair scoring（`T_tools/nested_kcv_helpers.py`）
-- **K_eval 新指标**：K_eval = floor(n × π_min / 30) clamp [2, 10] dataset-adaptive metric（Mendelian K_eval=3, Complex K_eval=5）
-- **诚实数字替换**：旧 80× HCCP advantage **作废** → 新 33× (Complex K_eval=5) / 2.3× (Mendelian K_eval=3)
-- **theory framing 重构**：T3' 升 hero（KS rejection 46% on Mendelian, K-invariant），T5.2 弱化为 "tight rate within equi-bin Mondrian-K class"（不是 matching minimax）
-- **§6 外科手术**：DEGU-actual MPRA→TraitGym port 删除（strawman）；M→C 从 OOD 行降级为 §6.6 "Failure mode characterization" 独立 subsection；AlphaGenome 从主表移到 §6.5 ablation 段；ProteinGym 升主文 §6.5（marginal cov 0.887, 27/50 within ±0.02, 44/50 within ±0.05）
-- **Phase 5 部分**：KS audit K-sweep on Mendelian（commit 1da8ce2）— rejection rate K-invariant 强化 T3' hero
-- PDF 45 页
+- **诚实数字替换**：旧 80× HCCP advantage **作废** → 新 33× (Complex) / 2.3× (Mendelian) over class-Mondrian
+- **theory framing 重构**：T3' 升 hero（KS rejection 46% on Mendelian, K-invariant），T5.2 弱化为 "tight rate within equi-bin Mondrian-K class"
+- **§6 外科手术**：DEGU-actual MPRA→TraitGym port 删除（strawman）；M→C 从 OOD 行降级为 §6.6 失败模式；AlphaGenome 移 §6.5 ablation；ProteinGym 升主文 §6.5
+- **Phase 5 部分**：KS audit K-sweep on Mendelian（commit 1da8ce2）+ A_SL audit（commit 27da463, B 阶段）
 
-**目标**: NeurIPS 2027 main. **Hero T3' (operational binding guarantee on Mendelian) + T5.1 (K\* 上界 dimension-free)**, T5.2 弱化对手 class. Instantiated as HCCP, validated empirically on TraitGym (3-axis OOD) + ProteinGym (cross-domain) + synthetic n-sweep (rate validation)。
+**Phase 6 — audit-driven fixes（commits 4537cf2 + 08d2bf9, 2026-04-29 evening）**:
+- **Phase 4 surgery 真完结**：3 audit agent (logic + self-review + citation) 揭示 memory 说删了实际还在的 §C.4 + 4 章 K_CV ∈ {2,3} / 6-7× 残留语句，全部清理
+- **T3' 框架软化**：从 "binding/load-bearing guarantee" 改为 "operative certificate; non-vacuous lower bound"，明确 "loose by construction; bounds worst case, does not predict empirical gap"
+- **T5.2 框架加 qualifier**：abstract / §1 / §5 / §8 / SC-CP 比较段全部加 "within the equi-bin Mondrian-K family / class"
+- **K_eval formula 修正**：旧 paper 说 K_eval = floor(n·π_min/30) clamp [2,10] 数学上给 K=10/10，与实际值 K=3/5 不符；新 justification "保持 ≥100 minority/cell"
+- **K_eval sensitivity sweep**（review HIGH-3 防御）：跑 K_eval ∈ {2,3,5,8,10} 加 §C.1 sensitivity table。**重大诚实 finding**：Mendelian 仅在 K_eval=3 推荐区赢 wCP 1.15×, K_eval ≥ 5 输 wCP/RLCP（per-cell minority < 70 让 hetero head 失效）；Complex robust win 3-34× 跨 K_eval [2,10]
+- **数字一致性**：KS audit (Mendelian 46.2% / Complex 10.4% / 177 tests / max 0.434) 替换 stale "12.3% / 155 tests / max 0.24"; M→C 主文 vs Tab 不一致修复; δ_TV canonical 0.31; Skeletal 子簇 cov_{|Y=1}=0.745 在 §6.3 obs 2 诚实声明
+- **3 citation placeholder 修复**：pcos2025conformal (Adegoke et al), lcls2024lipschitz (Huang/Roberts/Calliess TMLR), crps_binning2026 (Toccaceli)
+- **AlphaGenome 防御 justification**：§6.5 加 "Why we keep CADD+GPN-MSA+Borzoi as headline" 段，conformal claim 与 base predictor 解耦
+- PDF 46 页, 0 undefined ref, 0 stale Phase 4 残留
+
+**目标**: NeurIPS 2027 main. **Theory: T5.1 oracle (dimension-free O(n^{-1/2})) + T5.2 matching lower bound on equi-bin Mondrian-K class + T3' robustness corollary**. Instantiated as HCCP, validated empirically on TraitGym (3-axis OOD) + ProteinGym (cross-domain) + synthetic n-sweep + K_eval sensitivity (Mendelian honest fragility flagged at K_eval ≥ 5)。
 
 ## 仓库操作
 
