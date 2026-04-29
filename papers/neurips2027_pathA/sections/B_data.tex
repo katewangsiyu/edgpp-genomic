@@ -78,6 +78,26 @@ Complex   & 125 & 10.4\% (13/125) & 0.315 & 0.113 & 0.102 \\
 
 \paragraph{Interpretation.} A2-cell is approximately satisfied on Complex (10.4\% vs 5\% null, max KS $0.315$) but noticeably violated on Mendelian (46.2\%, max KS $0.434$). The violation concentrates in the highest-$\shat$ positive-class cell $(y{=}1, b{=}4)$ --- chromosomes chr9, chr7, chr3, chr19, and chrX each show KS $\geq 0.40$ at this cell, consistent with chromosome-specific pathogenic variant concentration. The robust form T3$'$ absorbs this violation via the chrom-TV term: our observed per-chrom max coverage gap of $0.073$ (chr19, Table~\ref{tab:perchrom}) is within the $\bar\delta_{\mathrm{TV}}^{(k,b)}$ bound consistent with max KS $\leq 0.44 \Rightarrow d_{\mathrm{TV}} \leq 0.22$. Full per-chromosome breakdowns: \texttt{outputs/ks\_audit/*\_ks\_per\_chrom\_n20.json}.
 
+\paragraph{$K$-invariance of the rejection rate.} To confirm that the 46.2\% rejection on Mendelian is a dataset-intrinsic chrom-TV signal rather than a binning artefact at the legacy default $K = 5$, we re-run the per-chromosome KS audit on Mendelian at $K_{\mathrm{eval}} \in \{2, 3, 5, 8, 10\}$ with the same min-per-chrom-cell threshold of $20$ (Table~\ref{tab:ks_kinvariance}). The rejection rate stays in the $40$--$46\%$ band across all five $K$ values, and the maximum cell-by-chrom KS statistic stays in $[0.434, 0.565]$. T3$'$ is therefore the binding operational guarantee on Mendelian regardless of partition granularity. Source: \texttt{outputs/ks\_audit\_kcv/mendelian\_K\{2,3,5,8,10\}\_n20.json}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Mendelian per-chromosome A2-cell KS audit $K$-sweep at min-per-chrom-cell$=20$. Rejection rate is the fraction of (cell, chromosome) pairs at which $p < 0.05$.}
+\label{tab:ks_kinvariance}
+\begin{tabular}{lrrr}
+\toprule
+$K_{\mathrm{eval}}$ & $n_{\text{tests}}$ & Reject @ $p{<}0.05$ & KS max \\
+\midrule
+2 & 37 & 45.9\% (17/37) & 0.565 \\
+3 & 45 & 40.0\% (18/45) & 0.524 \\
+5 & 52 & \textbf{46.2\% (24/52)} & 0.434 \\
+8 & 58 & 43.1\% (25/58) & 0.492 \\
+10 & 60 & 45.0\% (27/60) & 0.558 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Leakage sanity audit}
 \label{app:data:leakage}
 
