@@ -1,4 +1,4 @@
-\begin{thebibliography}{41}
+\begin{thebibliography}{36}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -19,13 +19,6 @@ Anastasios~N. Angelopoulos and Stephen Bates.
   uncertainty quantification.
 \newblock \emph{Foundations and Trends in Machine Learning}, 16\penalty0 (4),
   2022.
-
-\bibitem[Angelopoulos et~al.(2021)Angelopoulos, Bates, Malik, and
-  Jordan]{angelopoulos2021raps}
-Anastasios~N. Angelopoulos, Stephen Bates, Jitendra Malik, and Michael~I.
-  Jordan.
-\newblock Uncertainty sets for image classifiers using conformal prediction.
-\newblock In \emph{ICLR}, 2021.
 
 \bibitem[Avsec et~al.(2026)Avsec, Latysheva, Cheng, Novati, Taylor, Ward,
   Bycroft, Nicolaisen, Arvaniti, Pan, Hassabis, and
@@ -107,17 +100,6 @@ Tiffany Ding, Anastasios~N. Angelopoulos, Stephen Bates, Michael~I. Jordan, and
 \newblock Class-conditional conformal prediction with many classes.
 \newblock In \emph{NeurIPS}, 2023.
 
-\bibitem[El-Yaniv and Wiener(2010)]{elyaniv2010selective}
-Ran El-Yaniv and Yair Wiener.
-\newblock On the foundations of noise-free selective classification.
-\newblock \emph{Journal of Machine Learning Research}, 11:\penalty0 1605--1641,
-  2010.
-
-\bibitem[Geifman and El-Yaniv(2017)]{geifman2017selective}
-Yonatan Geifman and Ran El-Yaniv.
-\newblock Selective classification for deep neural networks.
-\newblock In \emph{NeurIPS}, 2017.
-
 \bibitem[Gibbs and Cand{\`e}s(2021)]{gibbs2021adaptive}
 Isaac Gibbs and Emmanuel~J. Cand{\`e}s.
 \newblock Adaptive conformal inference under distribution shift.
@@ -150,12 +132,6 @@ Balaji Lakshminarayanan, Alexander Pritzel, and Charles Blundell.
 \newblock Simple and scalable predictive uncertainty estimation using deep
   ensembles.
 \newblock In \emph{NeurIPS}, 2017.
-
-\bibitem[Laufer-Goldshtein et~al.(2023)Laufer-Goldshtein, Fisch, Barzilay, and
-  Jaakkola]{laufer2023paretotest}
-Bracha Laufer-Goldshtein, Adam Fisch, Regina Barzilay, and Tommi Jaakkola.
-\newblock Efficiently controlling multiple risks with {P}areto testing.
-\newblock In \emph{ICLR}, 2023.
 
 \bibitem[Lei et~al.(2018)Lei, G'Sell, Rinaldo, Tibshirani, and
   Wasserman]{lei2018distribution}
@@ -278,12 +254,6 @@ Chen Wang, Fan Wang, Malgorzata Bogdan, Marco Masala, Edoardo Fiorillo,
 Tianmin Xie, Yixuan Zhou, Tengyuan Liang, Stefano Favaro, and Matteo Sesia.
 \newblock Conformal inference for open-set and imbalanced classification.
 \newblock \emph{arXiv preprint arXiv:2510.13037}, 2025.
-
-\bibitem[Zhang and Zhou(2025)]{zhang2025lwtmcps}
-Ruiyao Zhang and Ping Zhou.
-\newblock A mondrian conformal predictive system with improved decision trees
-  for uncertainty quantification under heteroscedasticity.
-\newblock \emph{Pattern Recognition}, 2025.
 
 \bibitem[Zhou et~al.(2026)Zhou, Rizzo, Christensen, Tang, and
   Koo]{zhou2026degu}

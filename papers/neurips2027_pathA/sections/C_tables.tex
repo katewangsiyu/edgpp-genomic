@@ -188,7 +188,7 @@ legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_bootstrap_density.pdf}
-\caption{Bootstrap distribution of HCCP $\shat$-bin gap across $B = 200$ chromosome-level resamples. Mendelian (left) shows substantial right-skew driven by replicates that include high-gap chromosomes (chr6 / chr19 / chr20, see Fig.~\ref{fig:per_chrom}); the all-chrom point estimate $0.077$ in Table~\ref{tab:threeaxis} sits on the right tail of the distribution, while the bootstrap mean $0.020$ is closer to the centre. Complex (right) is much tighter (point estimate and bootstrap mean both $\approx 0.02$). The skew on Mendelian explains the apparent disagreement between Tab.~\ref{tab:main} and Tab.~\ref{tab:threeaxis}.}
+\caption{Bootstrap distribution of HCCP $\shat$-bin gap across $B = 200$ chromosome-level resamples. Mendelian (left) shows substantial right-skew driven by replicates that include high-gap chromosomes (chr6 / chr19 / chr20, see Tab.~\ref{tab:perchrom}); the all-chrom point estimate $0.077$ sits on the right tail of the distribution, while the bootstrap mean $0.020$ is closer to the centre. Complex (right) is much tighter (point and bootstrap mean both $\approx 0.02$).}
 \label{fig:bootstrap_density}
 \end{figure}
 
@@ -238,3 +238,88 @@ C$\to$M & 0.665 & 0.901 & $+0.001$ & 0.158 & 0.742 \\
 
 \paragraph{Directional asymmetry.}
 C$\to$M transfer preserves coverage (0.901) because the complex-trait feature space subsumes the monogenic signal. M$\to$C collapses (0.738) because monogenic variants occupy a narrow subspace and the base predictor itself loses discriminative signal (§\ref{sec:experiments:failure_mode}). The Barber T4 proxy bound (0.742) is tight for M$\to$C (observed 0.738, within 0.004) and conservative for C$\to$M.
+
+\subsection{Single-axis CP head-to-head and contemporary CP comparison (deferred from \S\ref{sec:experiments:h2h})}
+\label{app:tables:h2h}
+
+Table~\ref{tab:h2h} reports the four single-axis Mondrian variants (split CP, $\shat$-Mondrian, class-Mondrian, HCCP) on TraitGym; Table~\ref{tab:cp_baselines} compares HCCP against contemporary local-CP methods (RLCP, weighted CP, SC-CP) with $B = 200$ chrom-level bootstrap CIs. Table~\ref{tab:imbsweep} reports the imbalance sweep on Complex.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$). Single-seed point estimates. \textbf{Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets.}}
+\label{tab:h2h}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccc}
+\toprule
+Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Per-chrom gap \\
+\midrule
+\multirow{4}{*}{Mendelian ($\pi_{+} = 0.10$)}
+ & B1 vanilla split CP                       & 0.899 & \textcolor{red}{0.956} & 0.374 & 0.170 \\
+ & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.903 & \textcolor{red}{0.840} & 0.374 & 0.129 \\
+ & B3 class-Mondrian \citep{sadinle2019lac}  & 0.898 & 0.894 & \textcolor{red}{0.374} & 0.161 \\
+ & \textbf{B4 HCCP (ours)}                    & 0.902 & \textbf{0.876} & \textbf{0.163} & 0.158 \\
+\midrule
+\multirow{4}{*}{Complex ($\pi_{+} = 0.10$)}
+ & B1 vanilla split CP                       & 0.900 & \textcolor{red}{0.616} & 0.802 & 0.049 \\
+ & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.899 & \textcolor{red}{0.656} & 0.802 & 0.047 \\
+ & B3 class-Mondrian \citep{sadinle2019lac}  & 0.900 & 0.902 & \textcolor{red}{0.802} & 0.053 \\
+ & \textbf{B4 HCCP (ours)}                    & 0.900 & \textbf{0.905} & \textbf{0.024} & 0.047 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{HCCP vs.\ contemporary local-CP methods, sharing $(\phat, \shat)$. $\shat$-bin gap and $\mathrm{Cov}_{|Y=1}$ subscripts are $\pm$ one std from $B = 200$ chrom-level bootstrap resamples. Complex CI: HCCP $[0.019, 0.119]$ vs.\ baselines $[0.770, 0.879]$ (disjoint).}
+\label{tab:cp_baselines}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcccc}
+\toprule
+Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Singleton \\
+\midrule
+\multirow{4}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
+ & \textbf{HCCP (ours)}                                & 0.900 & $\mathbf{0.905_{\pm 0.010}}$ & $\mathbf{0.060_{\pm 0.031}}$ & 0.224 \\
+ & RLCP \citep{hore2025rlcp}                            & 0.952 & $\textcolor{red}{0.543_{\pm 0.019}}$ & $\textcolor{red}{0.820_{\pm 0.029}}$ & 0.762 \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.901 & $\textcolor{red}{0.611_{\pm 0.020}}$ & $\textcolor{red}{0.821_{\pm 0.030}}$ & 0.785 \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & $\textcolor{red}{0.625_{\pm 0.018}}$ & $\textcolor{red}{0.817_{\pm 0.034}}$ & 0.710 \\
+\midrule
+\multirow{4}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
+ & \textbf{HCCP (ours)}                                & 0.902 & $\mathbf{0.875_{\pm 0.040}}$ & $\mathbf{0.173_{\pm 0.192}}$ & 0.827 \\
+ & RLCP \citep{hore2025rlcp}                            & 0.939 & $0.878_{\pm 0.034}$ & $\textcolor{red}{0.360_{\pm 0.171}}$ & 0.890 \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.902 & $\textcolor{red}{0.982_{\pm 0.006}}$ & $0.252_{\pm 0.153}$ & 0.499 \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & $\textcolor{red}{0.859_{\pm 0.044}}$ & $\textcolor{red}{0.404_{\pm 0.182}}$ & 0.777 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Imbalance sweep: $\mathrm{cov}_{|Y=1}$ as a function of $\pi_{+}$, Complex CADD+GPN-MSA+Borzoi. Partition $K$ for B2 / B4 selected per outer fold via nested chrom-LOO at $K_{\mathrm{eval}} = 5$. B1 and B2 collapse as $\pi_{+} \to 0$; B3 and B4 are insensitive.}
+\label{tab:imbsweep}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lccccc|c}
+\toprule
+$\pi_{+}$       & 0.05  & 0.10  & 0.20  & 0.30  & 0.50  & B4 $\shat$-gap \\
+$n$             & 10800 & 11400 & 5700  & 3800  & 2280  & --- \\
+\midrule
+B1 (split)      & \textcolor{red}{0.587} & \textcolor{red}{0.616} & \textcolor{red}{0.664} & \textcolor{red}{0.725} & 0.810 & --- \\
+B2 ($\shat$-Mond) & \textcolor{red}{0.650} & \textcolor{red}{0.656} & \textcolor{red}{0.718} & 0.800 & 0.878 & --- \\
+B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
+\textbf{B4 (HCCP)} & \textbf{0.898} & \textbf{0.905} & \textbf{0.894} & \textbf{0.902} & \textbf{0.896} & 0.036 / 0.024 / 0.067 / 0.057 / 0.041 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A-SL audit (deferred from \S\ref{sec:formulation:setup})}
+\label{app:tables:asl_audit}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.49\linewidth]{figures/fig_asl_audit_mendelian.pdf}\hfill
+\includegraphics[width=0.49\linewidth]{figures/fig_asl_audit_complex.pdf}
+\caption{\textbf{A-SL audit.} Per-pair Lipschitz ratio $\rho_{k,a,b} = \mathrm{KS}(\hat F_{k,a}, \hat F_{k,b}) / |\bar\sigma_a - \bar\sigma_b|$ on $\shat$-bin pairs. Noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian) / $8.1$ (Complex). LCLS estimator $\hat L_F \approx 3$/$4.5$ measures the typical local slope and underestimates the upper envelope by $\sim$3--5$\times$.}
+\label{fig:asl_audit}
+\end{figure}

@@ -1,0 +1,85 @@
+\section*{NeurIPS Paper Checklist}
+
+\begin{enumerate}
+
+\item {\bf Claims}
+    \item[] Question: Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The abstract states the three contributions (T5.1/T5.2 finite-sample rate within the equi-bin Mondrian-$K$ class with $\pi_{\min}^{-1/2}$ explicit; HCCP framework with T3 / T3$'$ guarantees; empirical validation on TraitGym + ProteinGym + synthetic), and §\ref{sec:intro} expands these with explicit scope qualifiers (``of the methods we evaluated'', ``to our knowledge first'', ``within the equi-bin Mondrian-$K$ class''). The Mendelian $K_{\mathrm{eval}} \geq 5$ regime where HCCP loses to weighted CP is disclosed in the abstract.
+
+\item {\bf Limitations}
+    \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: §\ref{sec:discussion} ``Assumption discussion'' enumerates four limitations (TV proxy approximation, large-sample $K^\star$ versus finite-sample binding, DEGU CNN end-to-end out of scope, ProteinGym 6/50 outliers); §\ref{sec:experiments:failure_mode} reports the M$\to$C cross-dataset failure mode case study; §\ref{sec:experiments:ood} reports the Skeletal/connective OMIM cluster ($\mathrm{cov}_{|Y=1} = 0.745$) as the worst-cell exception; the K$_{\mathrm{eval}}$ sensitivity sweep (App.~\ref{app:tables:keval_sensitivity}) reverses the H2H story on Mendelian at $K_{\mathrm{eval}} \geq 5$ and is reported transparently.
+
+\item {\bf Theory assumptions and proofs}
+    \item[] Question: For each theoretical result, does the paper provide the full set of assumptions and a complete (and correct) proof?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: All four theorems (T3, T3$'$, T5.1, T5.2) state assumptions explicitly via the labeled \ref{ass:A1}/\ref{ass:A1prime}/\ref{ass:A2}/\ref{ass:ASL} hierarchy. Proofs are in App.~\ref{app:proofs}, and the main paper §\ref{sec:theory} contains proof sketches. Auxiliary lemmas (T1, T2, T1$'$, T2$'$, T3-loc, T3.b, T4) and their full proofs are also in App.~\ref{app:proofs}.
+
+\item {\bf Experimental result reproducibility}
+    \item[] Question: Does the paper fully disclose all the information needed to reproduce the main experimental results of the paper to the extent that it affects the main claims and/or conclusions of the paper (regardless of whether the code and data are provided or not)?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: Datasets (TraitGym matched\_9 \citep{benegas2025traitgym}, ProteinGym \citep{notin2023proteingym}) are public; chrom-LOO splits ($\{17{-}22, X\}$) are TraitGym-canonical; aggregator (HistGradientBoostingClassifier depth $2$, 100 iterations, class-balanced), $\shat$ head (same backbone, Gaussian NLL on chrom-LOO OOF residuals), nested chrom-LOO $K$-selection protocol ($K_{\mathrm{eval}} = 3$/$5$ keeping $\geq 100$ minority per cell), and bootstrap protocol ($B = 200$ chrom-resamples) are all specified in §\ref{sec:method}, §\ref{sec:experiments}, and App.~\ref{app:data}.
+
+\item {\bf Open access to data and code}
+    \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: TraitGym matched\_9 and ProteinGym are publicly distributed by their creators. Code (aggregator training, HCCP calibration, nested-CV $K$-selection, bootstrap) is provided as anonymized supplementary material at submission time and will be released under a permissive licence on acceptance; pipeline scripts (\texttt{T\_tools/cp\_baselines\_h2h.py}, \texttt{T\_tools/bootstrap\_cp\_baselines.py}, \texttt{T\_tools/asl\_audit.py}) are referenced in App.~\ref{app:data}.
+
+\item {\bf Experimental setting/details}
+    \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer) necessary to understand the results?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: §\ref{sec:experiments} setup paragraph specifies splits, features, AUPRC weighting, $\alpha = 0.10$, and $K$-selection protocol; App.~\ref{app:data} provides the full HistGB hyperparameters (depth, iterations, class-balanced, default subsample/max\_features, random\_state inactive at the configuration used), $\shat$-bin edge construction (calibration-fold quantiles), and the small-cell fallback ($n_{k,b} < \lceil 1/\alpha\rceil$ triggers pooled T2 threshold).
+
+\item {\bf Experiment statistical significance}
+    \item[] Question: Does the paper report error bars suitably and correctly defined or other appropriate information about the statistical significance of the experiments?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: Tab.~\ref{tab:main} HCCP rows report $\pm$ one std from $B = 200$ chromosome-level bootstrap resamples; Tab.~\ref{tab:cp_baselines} reports per-method bootstrap mean $\pm$ std plus $95\%$ CIs; Tab.~\ref{tab:keval_sensitivity} reports point estimates across $K_{\mathrm{eval}}$ for sensitivity. Bootstrap captures calibration-set variability (chrom-resample with replacement); single-seed point estimates are flagged as such in Tab.~\ref{tab:h2h} caption.
+
+\item {\bf Experiments compute resources}
+    \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: App.~\ref{app:data} (compute table) reports: HCCP pipeline (aggregator + $\shat$ head + Mondrian calibration) runs entirely on CPU $16$-core; total $\leq 4$ CPU-hour per feature set per dataset; $B = 200$ chrom-bootstrap adds $\sim 30$ CPU-min total. ProteinGym 50-assay LOO runs on CPU 16-core in $< 10$ CPU-hour. No GPU is required for the headline pipeline.
+
+\item {\bf Code of ethics}
+    \item[] Question: Does the research conducted in the paper conform, in every respect, with the NeurIPS Code of Ethics?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: We have read the NeurIPS Code of Ethics. The paper uses publicly available variant-effect benchmark datasets (TraitGym, ProteinGym) under their respective open licences; no human-subject data collection or crowdsourcing was performed. Clinical-deployment risks of variant prediction are discussed in §\ref{sec:discussion}.
+
+\item {\bf Broader impacts}
+    \item[] Question: Does the paper discuss both potential positive societal impacts and negative societal impacts of the work performed?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: §\ref{sec:discussion} broader-impact paragraph discusses (i) clinical deployment risks of variant prediction and the need to integrate HCCP singletons into ACMG/AMP multi-evidence frameworks rather than as stand-alone diagnostics; (ii) population representativeness limitations of TraitGym (over-represents European-ancestry individuals from ClinVar / GWAS catalog); (iii) ancestry-stratified Mondrian as a future-work direction for equitable deployment.
+
+\item {\bf Safeguards}
+    \item[] Question: Does the paper describe safeguards that have been put in place for responsible release of data or models that have a high risk for misuse (e.g., pre-trained language models, image generators, or scraped datasets)?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: HCCP is a post-hoc conformal-calibration framework consuming an arbitrary classifier $\phat$ and variance head $\shat$. It is not a pre-trained generative model, language model, or scraped dataset, and we do not release any high-risk asset. All datasets used (TraitGym, ProteinGym) are already public and were created by their original authors with their own release decisions.
+
+\item {\bf Licenses for existing assets}
+    \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: TraitGym \citep{benegas2025traitgym}, ProteinGym \citep{notin2023proteingym}, CADD \citep{kircher2014cadd}, Borzoi \citep{linder2025borzoi}, GPN-MSA \citep{benegas2023gpnmsa}, AlphaGenome \citep{avsec2026alphagenome} are all cited; the \texttt{crepes} package \citep{bostrom2022crepes} is used for the H2H baselines and acknowledged. We use each asset in accordance with its public licence; full licence inventory in App.~\ref{app:data}.
+
+\item {\bf New assets}
+    \item[] Question: Are new assets introduced in the paper well documented and is the documentation provided alongside the assets?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: New assets (HCCP calibration code, A-SL audit utility, bootstrap CP baseline runner) are anonymized and supplied as supplementary material; App.~\ref{app:data} documents the script entry-points, expected inputs / outputs, and runtime estimates. Final release on acceptance will follow standard open-source documentation templates.
+
+\item {\bf Crowdsourcing and research with human subjects}
+    \item[] Question: For crowdsourcing experiments and research with human subjects, does the paper include the full text of instructions given to participants and screenshots, if applicable, as well as details about compensation (if any)?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: The paper does not involve crowdsourcing or research with human subjects. All datasets used are publicly distributed variant-effect benchmarks (TraitGym derived from ClinVar / GWAS catalog; ProteinGym from published deep-mutational-scanning assays).
+
+\item {\bf Institutional review board (IRB) approvals or equivalent for research with human subjects}
+    \item[] Question: Does the paper describe potential risks incurred by study participants, whether such risks were disclosed to the subjects, and whether Institutional Review Board (IRB) approvals (or an equivalent approval/review based on the requirements of your country or institution) were obtained?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: The paper does not conduct human-subjects research. Datasets are public benchmarks created and released by their original authors under ethics frameworks of the originating institutions; we use the released aggregate variant labels and do not access any individual-level data.
+
+\item {\bf Declaration of LLM usage}
+    \item[] Question: Does the paper describe the usage of LLMs if it is an important, original, or non-standard component of the core methods in this research? Note that if the LLM is used only for writing, editing, or formatting purposes and does \emph{not} impact the core methodology, scientific rigor, or originality of the research, declaration is not required.
+    \item[] Answer: \answerNA{}
+    \item[] Justification: LLMs were not used as any component of the core methodology. The aggregator $\phat$ is a gradient-boosted classifier and the variance head $\shat$ is a gradient-boosted regressor; both consume pre-computed numeric features (CADD, Borzoi, GPN-MSA scores) rather than language. LLM use was confined to writing assistance.
+
+\end{enumerate}

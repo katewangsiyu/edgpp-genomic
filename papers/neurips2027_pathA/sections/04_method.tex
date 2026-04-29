@@ -1,81 +1,29 @@
-% Source: theory/formulation_v0.md §2, scripts/11-14, reports/phase2_day11_hetero_conformal.md
-% Target length: ~1.5 pages.
+% Compressed for NeurIPS 2026. Full algorithm + worked example + score-comparison table in App.~\ref{app:data}.
 
-\subsection{Pipeline overview}
-
-HCCP is a three-stage post-hoc framework on top of any probabilistic classifier: (1) aggregator $\phat$, (2) heteroscedastic head $\shat$, (3) Mondrian-$(y \times \shat\text{-bin})$ conformal calibration. Each stage is decoupled, so HCCP accepts any $(\phat, \shat)$ pair as a drop-in; we instantiate with gradient boosting for reproducibility and CPU tractability on TraitGym scale ($n \leq 11{,}400$).
-
-\begin{enumerate}
-    \item \textbf{Aggregator $\phat$.} Trained on $\D^{(-c^\star)}$ with chrom-LOO out-of-fold (OOF) predictions retained for the $\shat$ fit. We use HistGradientBoostingClassifier (depth 2, 100 iters, class-balanced); §\ref{sec:experiments} shows this strictly dominates TraitGym's LogReg aggregator on Mendelian ($+14.8$\,pp AUPRC).
-    \item \textbf{Heteroscedastic head $\shat$.} Trained on OOF residual targets $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ with the Gaussian NLL objective of Eq.~\eqref{eq:gll}. Same GBM backbone. Using OOF residuals (rather than in-sample) avoids an optimistic bias; §\ref{sec:experiments} ablates in-sample alternatives.
-    \item \textbf{Mondrian calibration.} Partition $\D^{(-c^\star)}$ into $2K$ cells via $(Y_i, \mathrm{bin}_K(\shat(X_i)))$. Per-cell thresholds $\qhat_{k,b}$ of Eq.~\eqref{eq:qhat}. Prediction set of Eq.~\eqref{eq:pset}.
-\end{enumerate}
-
-Algorithm~\ref{alg:hccp} states the full pipeline.
+\paragraph{Pipeline.}
+HCCP is a three-stage post-hoc framework on top of any probabilistic classifier: (1) aggregator $\phat$, (2) heteroscedastic head $\shat$, (3) Mondrian-$(y \times \shat\text{-bin})$ conformal calibration. Each stage is decoupled, so HCCP accepts any $(\phat, \shat)$ pair as a drop-in. Algorithm~\ref{alg:hccp} states the full pipeline; per-cell small-cell fallback to the pooled T2 threshold triggers when $n_{k,b} < \lceil 1/\alpha\rceil$.
 
 \begin{algorithm}[t]
 \caption{HCCP --- Heteroscedastic Class-Conditional Conformal Prediction}
 \label{alg:hccp}
 \begin{algorithmic}[1]
 \Require Data $\D$, test chrom $c^\star$, miscoverage $\alpha$, bin count $K$
-\State $\D_{\text{tr}} \gets \{i : C_i \neq c^\star\}$, $\D_{\text{te}} \gets \{i : C_i = c^\star\}$
-\State Fit $\phat$ on $\D_{\text{tr}}$; compute chrom-LOO OOF predictions $\{\phat^{(-C_i)}(X_i)\}_{i \in \D_{\text{tr}}}$
-\State Fit $\shat$ on targets $\{|Y_i - \phat^{(-C_i)}(X_i)|\}_{i \in \D_{\text{tr}}}$ under Gaussian NLL (Eq.~\ref{eq:gll})
-\State Compute $\shat$-bin edges $e_0 < \cdots < e_K$ from $\{\shat(X_i)\}_{i \in \D_{\text{tr}}}$ quantiles
-\State Compute calibration scores $s_i = |Y_i - \phat(X_i)| / (\shat(X_i) + \epsilon)$ for $i \in \D_{\text{tr}}$
+\State $\D_{\text{tr}} \gets \{i : C_i \neq c^\star\}$; fit $\phat$ on $\D_{\text{tr}}$ with chrom-LOO OOF predictions $\{\phat^{(-C_i)}(X_i)\}$
+\State Fit $\shat$ on $\D_{\text{tr}}$ with targets $\{|Y_i - \phat^{(-C_i)}(X_i)|\}$ under Gaussian NLL
+\State Compute $\shat$-bin edges via calibration-fold quantiles; calibration scores $s_i = |Y_i - \phat(X_i)| / (\shat(X_i) + \epsilon)$
 \State Partition $\D_{\text{tr}}$ by $(Y_i, \mathrm{bin}_K(\shat(X_i)))$; compute $\qhat_{k, b}$ via Eq.~\eqref{eq:qhat}
-\For{each cell $(k, b)$ with $n_{k,b} < \lceil 1/\alpha\rceil$} \Comment{small-cell fallback}
-    \State $\qhat_{k, b} \gets \qhat_k$ \Comment{T2 pooled class-conditional threshold}
+\For{cells with $n_{k,b} < \lceil 1/\alpha\rceil$}
+    \State $\qhat_{k, b} \gets \qhat_k$ \Comment{T2 pooled class-conditional fallback}
 \EndFor
-\For{each test point $x \in \D_{\text{te}}$}
-    \State $b \gets \mathrm{bin}_K(\shat(x))$
-    \State $\pset(x) \gets \{k \in \{0,1\} : |k - \phat(x)| \leq \qhat_{k, b} \cdot \shat(x)\}$
+\For{$x \in \D_{\text{te}}$}
+    \State $\pset(x) \gets \{k \in \{0, 1\} : |k - \phat(x)| \leq \qhat_{k, b(x)} \cdot \shat(x)\}$
 \EndFor
-\State \Return $\{(x, \pset(x)) : x \in \D_{\text{te}}\}$
+\State \Return $\{(x, \pset(x))\}$
 \end{algorithmic}
 \end{algorithm}
 
-\paragraph{Worked example (toy).}
-To make the cell-fallback logic concrete, consider a calibration fold of $n_{\mathrm{tr}} = 20$ variants with $K = 2$ $\shat$-bins, $\alpha = 0.10$, and a positive rate of $20\%$ ($n_+ = 4$). The bin edge is the median of $\shat$ over the calibration fold; let four positives split as $(n_{1,0}, n_{1,1}) = (1, 3)$ and sixteen negatives as $(n_{0,0}, n_{0,1}) = (9, 7)$. The $(k, b)$ cell-counts are therefore $(9, 7, 1, 3)$. With $\lceil 1/\alpha\rceil = 10$, only the negative-low-$\shat$ cell $(0, 0)$ has $n_{0,0} = 9$, narrowly below the threshold; all other cells are below as well, so all four cells trigger the pooled class-conditional fallback (small-cell fallback step of Algorithm~\ref{alg:hccp}). For positives we set $\qhat_{1,b} = \qhat_1$ where $\qhat_1$ is the $\lceil(n_+ + 1)(1-\alpha)\rceil/n_+ = 0.99$ quantile of the four positive scores (effectively the maximum). For negatives we set $\qhat_{0,b} = \qhat_0$ as the analogous quantile over the sixteen negative scores. A test point with $\shat$ in bin $b$ produces $\pset(x) = \{k : |k - \phat(x)|/(\shat(x)+\epsilon) \leq \qhat_{k,b(x)}\}$. In this toy regime the predictor effectively behaves like T2 class-conditional CP because cells are too small for T3; HCCP's local-coverage advantage emerges only once $K$ and $n$ are large enough that $n_{k,b} \geq \lceil 1/\alpha\rceil$. On TraitGym Mendelian ($n_+ = 338$) at $K = 5$, the smallest cell has $n_{k,b} \geq 13$ and HCCP delivers full T3 bin-conditional coverage on most cells (App.~\ref{app:tables:ksweep}).
+\paragraph{Why the joint $(y \times \shat\text{-bin})$ partition.}
+Pure class-conditional calibration (Mondrian on $y$ alone) \citep{vovk2003mondrian} fixes the imbalance pathology of split CP but leaves within-class local coverage unaddressed: our ablation reaches $\mathrm{cov}_{|Y=1} = 0.896$ on Complex but the hardest $\shat$-decile has coverage $0.454$. Stratifying by $\shat$-bin alone re-introduces minority-class pathology because $\shat$-distribution is dominated by negatives. Among Mondrian partitions over $\{y, b(x)\}$, the product partition $(y \times b)$ is the unique refinement that admits both T2 (which requires conditioning on $y$) and T3 (which requires conditioning on $b$); the two strict coarsenings each violate one of the two coverage targets.
 
-\subsection{Why Mondrian on $(y \times \shat\text{-bin})$?}
-
-Pure class-conditional calibration (Mondrian on $y$ alone) \citep{vovk2003mondrian} fixes the imbalance pathology of split conformal --- without stratifying by $y$, the minority class (positives, $\approx$10\% on TraitGym) is systematically under-covered --- but leaves within-class local coverage unaddressed. Our ablation experiments confirm this: class-conditional~+~homoscedastic calibration reached $\mathrm{cov}_{|Y=1} = 0.896$ on Complex but the hardest $\shat$-decile had coverage $0.454$. The $\shat$-bin stratification folds heteroscedastic information into the partition itself, restoring near-uniform coverage across $\shat$-bins (§\ref{sec:experiments}).
-
-Stratifying by $\shat$-bin alone, without $y$, re-introduces the minority-class pathology because the $\shat$-distribution is dominated by negatives. The product partition $(y \times \shat\text{-bin})$ is the smallest that simultaneously corrects both modes, at the cost of requiring $n_{k,b} \geq \lceil 1/\alpha \rceil$ per cell; this is comfortably satisfied on TraitGym at $K = 5$ (App.~\ref{app:data} sample-size audit). Formally, among Mondrian partitions over the joint axes $\{y, b(x)\}$, the product partition $(y \times b)$ is the unique refinement that admits both T2 (which requires conditioning on $y$) and T3 (which requires conditioning on $b$); the two strict coarsenings (project to $y$-only or to $b$-only) each violate one of the two coverage targets, as the preceding paragraphs establish. This justifies the ``smallest modification of split CP'' phrasing used throughout.
-
-\subsection{Bin-edge design and adaptive $K$ selection}
-
-We use equiprobable $\shat$-bins from calibration-fold quantiles, so that $n_{k,b}$ is roughly balanced across $b$ for each fixed $k$. Theorem~\ref{thm:t5oracle} (§\ref{sec:theory:t5}) formalizes the bias--variance tradeoff: larger $K$ reduces the stationarity bias $L_F R / K$ but inflates the finite-sample variance $K / (\pi_{\min} n)$, with oracle $K^\star = O(\sqrt{n})$. In practice we select $\hat K(c_{\mathrm{outer}})$ per outer fold via \emph{proper nested chrom-LOO cross-validation} with $K_{\mathrm{eval}}$-fair scoring (§\ref{sec:theory:t5}, App.~\ref{app:tables:ksweep}). The modal $\hat K(c_{\mathrm{outer}})$ across outer folds is $K = 5$ on Complex and $K = 5\text{--}8$ on Mendelian; HCCP's worst-cell $\shat$-bin gap reported on the cross-method-fair $K_{\mathrm{eval}}$ axis (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$) is $33\times$ (Complex) and $2.3\times$ (Mendelian) tighter than the strongest single-axis Mondrian baseline (§\ref{sec:experiments:h2h}, Table~\ref{tab:h2h}); a $K_{\mathrm{eval}}$ sensitivity sweep (Tab.~\ref{tab:keval_sensitivity}) shows the Complex advantage is robust across $K_{\mathrm{eval}} \in [2, 10]$.
-
-\subsection{Score comparison}
-
-Table~\ref{tab:scores} places our score among common baselines.
-
-\begin{table}[h]
-\centering
-\small
-\caption{Nonconformity scores. Our $s(x, y) = |y - \phat(x)| / \shat(x)$ pairs DEGU-style $\shat$ \citep{zhou2026degu} with a classification-compatible score; paired with Mondrian-$(y \times \shat\text{-bin})$, it yields bin-conditional coverage (T3).}
-\label{tab:scores}
-\begin{tabular}{lll}
-\toprule
-Score & Uses $\shat(x)$? & Task type \\
-\midrule
-Split conformal \citep{vovk2005algorithmic} & No & Any \\
-CQR \citep{romano2019cqr} & Via $q_\alpha, q_{1-\alpha}$ & Regression only \\
-DEGU + split CP \citep{zhou2026degu} & Reports $\shat$, not in score & Regression (MPRA) \\
-\textbf{HCCP (ours)}, Eq.~\eqref{eq:score} & \textbf{In score + partition} & \textbf{Binary classification} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The score is a binary analog of CQR: the CQR numerator $\max(\hat q_{\alpha/2} - y,\; y - \hat q_{1-\alpha/2})$ becomes $|y - \phat(x)|$ (with $y \in \{0, 1\}$), and the implicit interval half-width $(\hat q_{1-\alpha/2} - \hat q_{\alpha/2})/2$ becomes our learned $\shat(x)$. The Mondrian partition then extends class-conditional Mondrian of \citet{vovk2003mondrian} with a data-dependent second taxon level.
-
-\subsection{Implementation details}
-
-\begin{itemize}
-    \item \textbf{Chrom-LOO OOF} for $\phat$ uses the 22+X chrom fold rotation natively (not $k$-fold); this is exact for the residual target in Eq.~\eqref{eq:gll}.
-    \item \textbf{$\epsilon = 10^{-6}$} in Eq.~\eqref{eq:score} prevents division issues when $\shat \to 0$; sensitivity analysis in App.~\ref{app:tables} shows results invariant for $\epsilon \in [10^{-8}, 10^{-4}]$.
-    \item \textbf{Bin-edge perturbation} when recomputed from the full dataset (not just $\D^{(-c^\star)}$) causes a coverage shift $\leq K/(n+1) \approx 10^{-3}$ in our regime (App.~\ref{app:proofs}, T3 Remark §2.1).
-    \item \textbf{Small cells ($n_{k,b} < 5$)}: we fall back to the pooled class-conditional threshold $\qhat_k$ of T2. This fallback never triggers on TraitGym at $K \leq 10$.
-\end{itemize}
+\paragraph{$K$ selection: nested chrom-LOO.}
+We select $\hat K(c_{\mathrm{outer}})$ per outer fold via \emph{proper nested chrom-LOO cross-validation}, ensuring $\hat K$ is a deterministic function of the outer calibration set alone (CP exchangeability-preserving). For each outer fold, run inner chrom-LOO and pick $\hat K(c_{\mathrm{outer}}) = \operatorname{argmin}_K \overline G_{\mathrm{inner}}(K)$ where the inner-fold worst-cell gap is measured on a fixed-$K_{\mathrm{eval}}$ sigma-bin partition (not on each candidate $K$ itself, which would artificially favour smaller $K$ via fewer cells). $K_{\mathrm{eval}}$ is set per dataset to keep $\geq 100$ minority-class samples per cell: $K_{\mathrm{eval}} = 3$ on Mendelian, $K_{\mathrm{eval}} = 5$ on Complex. Modal $\hat K(c_{\mathrm{outer}})$ is $5$ on Complex and $5\text{--}8$ on Mendelian (App.~\ref{app:tables}).

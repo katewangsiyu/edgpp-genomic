@@ -43,7 +43,14 @@ $n$ & $d{=}8$ & $d{=}32$ & $d{=}128$ & $d{=}8$ & $d{=}32$ & $d{=}128$ \\
 \end{tabular}
 \end{table}
 
-The log-log slope of $G(\hat K_{\mathrm{CV}})$ versus $n$, fit across $n \geq 1{,}000$ to avoid the small-sample fallback regime, is $-0.50 \pm 0.05$ (averaged over $d \in \{8, 32, 128\}$ and $\pi_{\min} \in \{0.1, 0.5\}$), within bootstrap CI of the predicted $-1/2$. Figure~\ref{fig:n_sweep} (§\ref{sec:experiments}) visualises the result.
+The log-log slope of $G(\hat K_{\mathrm{CV}})$ versus $n$, fit across $n \geq 1{,}000$ to avoid the small-sample fallback regime, is $-0.50 \pm 0.05$ (averaged over $d \in \{8, 32, 128\}$ and $\pi_{\min} \in \{0.1, 0.5\}$), within bootstrap CI of the predicted $-1/2$. Figure~\ref{fig:n_sweep} visualises the result.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_n_sweep.pdf}
+\caption{Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem~\ref{thm:t5oracle}. Each panel: empirical worst-cell gap $G(\hat K_{\mathrm{CV}})$ vs calibration size $n$, with $\pm 1$ SE error bars over 5 replicates. Three coloured curves: feature dimensions $d \in \{8, 32, 128\}$. Black dashed: theoretical $O(n^{-1/2})$ slope anchored at $n = 4{,}000, d = 32$. The three dimension curves overlap inside each panel (dimension-free rate); the right panel sits below the left by a factor of $\approx 2$ at matched $n$ (the $\pi_{\min}^{-1/2}$ constant of T5.1).}
+\label{fig:n_sweep}
+\end{figure}
 
 \subsection{T3.b ($\shat$-perturbation) ground-truth validation}
 \label{app:synthetic:t3b}

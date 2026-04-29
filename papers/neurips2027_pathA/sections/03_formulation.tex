@@ -1,103 +1,47 @@
-% Source: theory/formulation_v0.md §1-2, theory/t1_t2_formal_proofs.md §1-3
-% Target length: ~1 page main text.
+% Compressed for NeurIPS 2026. Full assumption discussion + A-SL audit fig moved to App.~\ref{app:proofs}, \ref{app:data}.
 
-\subsection{Setup}
+\subsection{Setup and assumptions}
 \label{sec:formulation:setup}
 
-Let $X \in \X \subseteq \mathbb{R}^d$ denote a variant feature vector, $Y \in \{0, 1\}$ its pathogenic label, and $C \in \mathcal{C} = \{1, \ldots, 22, X\}$ its chromosome. We observe $\D = \{(X_i, Y_i, C_i)\}_{i=1}^n$. We adopt TraitGym's \citep{benegas2025traitgym} chrom-LOO evaluation: for each test chromosome $c^\star \in \mathcal{C}$, set $\D^{(-c^\star)} = \{i : C_i \neq c^\star\}$ for train~+~calibration and $\D^{(c^\star)} = \{i : C_i = c^\star\}$ for test. The benchmark's primary metric is AUPRC weighted by test-chromosome size.
+Let $\D = \{(X_i, Y_i, C_i)\}_{i=1}^n$ with $X_i \in \X$, $Y_i \in \{0, 1\}$, and chromosome label $C_i \in \C$. We use the chrom-LOO protocol of \citet{benegas2025traitgym}: a test chromosome $c^\star \in \C$ is held out and the calibration fold $\D^{(-c^\star)} := \{i : C_i \neq c^\star\}$ is used for both the aggregator $\phat$ and the heteroscedastic head $\shat$. Test point $(X, Y) \sim P_{c^\star}$.
 
-\paragraph{Exchangeability.} We anchor our analysis on a triple of structured exchangeability assumptions, of increasing strength:
-
-\begin{assumption}[A1 Chrom-group exchangeability]
+\begin{assumption}[A1 chrom-group exchangeability]
 \label{ass:A1}
-Conditional on $C = c$, $\{(X_i, Y_i) : C_i = c\}$ are exchangeable with chrom-specific law $P_c$. Different chromosomes are mutually independent.
+Variants from the same chromosome are exchangeable: $\{(X_i, Y_i) : C_i = c\} \overset{d}{=} \{(X_{\pi(i)}, Y_{\pi(i)}) : C_i = c\}$ for any permutation $\pi$ within chromosome $c$.
 \end{assumption}
 
-\begin{assumption}[A1' Chrom-wise i.i.d.]
+\begin{assumption}[A1$'$ chrom-wise i.i.d.]
 \label{ass:A1prime}
-Conditional on $C = c$, $\{(X_i, Y_i) : C_i = c\}$ are i.i.d.\ $P_c$. Strict strengthening of \ref{ass:A1}.
+$\{(X_i, Y_i) : C_i = c\} \overset{i.i.d.}{\sim} P_c$.
 \end{assumption}
 
-\begin{assumption}[A2 Score stationarity across chromosomes]
+\begin{assumption}[A2 score stationarity across chromosomes]
 \label{ass:A2}
-The score law is chrom-invariant at some granularity: A2-marginal, A2-class (conditional on $Y=k$), or A2-cell (conditional on $Y=k$ and $\hat\sigma$-bin membership $b(X) = b$). Hierarchy: $\text{A2-cell} \Rightarrow \text{A2-class} \Rightarrow \text{A2-marginal}$.
+A2-marginal: score law is chrom-invariant. A2-class: invariant conditional on $Y = k$. A2-cell: invariant conditional on $Y = k$ and $\shat$-bin. Hierarchy: A2-cell $\Rightarrow$ A2-class $\Rightarrow$ A2-marginal.
 \end{assumption}
 
-\ref{ass:A1} is load-bearing (empirical chrom-LOO protocol). \ref{ass:A1prime} and \ref{ass:A2} enable finite-sample \emph{exact} coverage; under \ref{ass:A1} alone we obtain \emph{robust} coverage with a chromosome total-variation gap (§\ref{sec:theory}). Empirically, the within-cell KS audit (App.~\ref{app:data}, Table~\ref{tab:ks_audit}) finds approximate stationarity on Complex ($10.4\%$ rejection across $125$ tests, near the $5\%$ null) and pronounced cell-level violations on Mendelian ($46.2\%$ rejection across $52$ tests, max KS $0.434$); T3$'$ is the operational certificate on Mendelian (§\ref{sec:theory:t3prime}), T3 exact suffices on Complex.
+Empirically, the cell-level KS audit (App.~\ref{app:data}, Tab.~\ref{tab:ks_audit}) finds approximate stationarity on Complex ($10.4\%$ rejection across $125$ tests, near the $5\%$ null) and pronounced cell-level violations on Mendelian ($46.2\%$ rejection across $52$ tests, max KS $0.434$); T3$'$ is the operational certificate on Mendelian (§\ref{sec:theory:t3prime}), T3 exact suffices on Complex.
 
 \begin{assumption}[A-SL Score-Lipschitz regularity]
 \label{ass:ASL}
-The conditional score CDF varies smoothly with the $\shat$ value: for each class $k \in \{0,1\}$,
-\[
-\sup_{s \in \mathbb{R}} \bigl| F_{k,\sigma_1}(s) - F_{k,\sigma_2}(s) \bigr| \;\leq\; L_F \cdot |\sigma_1 - \sigma_2|, \qquad \forall\, \sigma_1, \sigma_2 \in [\shat_{\min}, \shat_{\max}],
-\]
-where $F_{k,\sigma}(s) := P(S \leq s \mid Y = k,\, \shat(X) = \sigma)$ and $L_F$ is the score-Lipschitz constant.
+For each class $k$, $\sup_{s} |F_{k,\sigma_1}(s) - F_{k,\sigma_2}(s)| \leq L_F |\sigma_1 - \sigma_2|$ for all $\sigma_1, \sigma_2 \in [\shat_{\min}, \shat_{\max}]$.
 \end{assumption}
 
-\ref{ass:ASL} controls how the score distribution shifts across $\shat$-bins. Since $s(x,k) = |k - \phat(x)| / (\shat(x) + \epsilon)$, a change $\delta$ in $\shat$ rescales the score by $O(\delta / \shat^2)$, so \ref{ass:ASL} holds when $\phat$ and $\shat$ are bounded. This assumption is used only by T5 (§\ref{sec:theory:t5}) to derive the optimal bin count $K^\star$; T3 is valid for any fixed $K$ without \ref{ass:ASL}.
+\ref{ass:ASL} is used only by T5 (§\ref{sec:theory:t5}) to derive the optimal bin count $K^\star$. Empirical audit of \ref{ass:ASL} via per-pair Lipschitz ratios on $\shat$-bin pairs (App.~\ref{app:data}, Fig.~\ref{fig:asl_audit}) gives noise-adjusted upper envelope $L_F^{(95\%)} = 13.8$ (Mendelian) and $8.1$ (Complex); LCLS estimator \citep{lcls2024lipschitz} gives a tighter typical-slope estimate $\hat L_F = 2.97$ / $4.51$.
 
-\paragraph{Empirical audit of \ref{ass:ASL}.}
-We probe \ref{ass:ASL} by computing per-pair Lipschitz ratios $\rho_{k,a,b} = \mathrm{KS}(\hat F_{k,a}, \hat F_{k,b}) / |\bar\sigma_a - \bar\sigma_b|$ across all $(k, a < b)$ within-class $\shat$-bin pairs (Fig.~\ref{fig:asl_audit}, $K=30$ bins, $\geq 20$ variants per bin). The naive maximum saturates at the KS sample-noise floor on small bins. After subtracting the per-pair noise floor $c_{0.05}\sqrt{(n_a + n_b)/(n_a n_b)}$, the noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian, $n_{\mathrm{pairs}}=325$) and $L_F^{(95\%)} = 8.1$ (Complex, $n_{\mathrm{pairs}}=870$). The LCLS least-squares estimator $\hat L_F \approx 3$--$4.5$ (App.~\ref{app:proofs}, Table~\ref{tab:LF_estimators}) measures the \emph{typical} local slope and underestimates the upper envelope by $\sim$3--5$\times$, as expected for a least-squares slope vs.\ a sup-Lipschitz constant. Plugging $L_F^{(95\%)}$ into T5.1 leaves $K^\star = O(\sqrt{n})$ well above the modal nested-CV $\hat K \in \{5, 8\}$ (Mendelian) and $\hat K = 5$ (Complex), so the finite-sample variance term remains the binding constraint regardless of which envelope is used.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.49\linewidth]{figures/fig_asl_audit_mendelian.pdf}\hfill
-\includegraphics[width=0.49\linewidth]{figures/fig_asl_audit_complex.pdf}
-\caption{\textbf{A-SL audit.} Each subfigure shows (a) per-pair Lipschitz ratio histogram with median, p95, p99, max, and the LCLS least-squares slope $\hat L_F$ overlay; (b) raw KS vs $\sigma$-gap scatter, LCLS slope (green), and noise-adjusted p95 upper envelope $L_F^{(95\%)}$ (purple). On Mendelian (left, $n=3380$) the upper envelope is wider because KS sampling noise dominates small bins; on Complex (right, $n=11400$) noise contracts, exposing a tighter envelope $L_F^{(95\%)}=8.1$. In both cases the noise-adjusted distribution has finite, bounded support, supporting \ref{ass:ASL}.}
-\label{fig:asl_audit}
-\end{figure}
-
-\subsection{Base aggregator and heteroscedastic head}
-\label{sec:formulation:heads}
-
-\paragraph{Aggregator $\phat$.}
-A probabilistic classifier $\phat : \X \to [0, 1]$ fit on $\D^{(-c^\star)}$. In experiments we use \textit{HistGradientBoostingClassifier} (depth 2, 100 iters, class-balanced), which is both an ablation variant of TraitGym's LogReg baseline and the current SOTA aggregator on Mendelian (§\ref{sec:experiments}).
-
-\paragraph{Heteroscedastic reliability head $\shat$.}
-A second regressor $\shat : \X \to \mathbb{R}_{+}$ predicting the expected chrom-LOO residual magnitude:
-\begin{equation}
-\label{eq:sigma_target}
-\shat(x) \;\approx\; \sqrt{\mathbb{E}\bigl[(Y - \phat^{(-C)}(X))^2 \,\big|\, X = x\bigr]}.
-\end{equation}
-We train $\shat$ on residual targets $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ with a Gaussian negative log-likelihood objective:
-\begin{equation}
-\label{eq:gll}
-\mathcal{L}_{\text{GLL}}(\shat) = \sum_{i \in \D^{(-c^\star)}} \left[ \frac{r_i^2}{2 \shat(X_i)^2} + \log \shat(X_i) \right] + \lambda \|\theta\|^2,
-\end{equation}
-matching DEGU's heteroscedastic baseline \citep{zhou2026degu} so that the $\shat$ head is apples-to-apples with prior art. We use the same GBM backbone for $\shat$ and $\phat$.
-
-\subsection{Nonconformity score and Mondrian prediction set}
+\subsection{Score and prediction set}
 \label{sec:formulation:score}
 
-The \emph{feature-dependent} nonconformity score is
-\begin{equation}
-\label{eq:score}
-s(x, y) \;:=\; \frac{|y - \phat(x)|}{\shat(x) + \epsilon}, \qquad \epsilon = 10^{-6}.
-\end{equation}
-This is a binary-classification analog of CQR \citep{romano2019cqr}: large $\shat(x)$ yields a more permissive threshold, shrinking the effective radius in high-confidence regions.
-
-\paragraph{Mondrian-$(y \times \shat\text{-bin})$ calibration.}
-Fix $K \in \mathbb{N}$ and define $K$ $\shat$-bins by the calibration-fold quantile edges $e_0 < \cdots < e_K$ with $B_b = (e_{b-1}, e_b]$. Let $b(x)$ be the bin index of $x$. For each cell $(k, b)$ collect $\mathcal{I}_{kb}^{(-c^\star)} = \{i \in \D^{(-c^\star)} : Y_i = k,\ \shat(X_i) \in B_b\}$ of size $n_{kb}$, compute the per-cell threshold
+\textbf{Aggregator $\phat$} (HistGradientBoosting depth 2, class-balanced) and \textbf{heteroscedastic head $\shat$} (same backbone, Gaussian NLL on chrom-LOO OOF residuals $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$).
+\textbf{Nonconformity score} $s(x, y) := |y - \phat(x)| / (\shat(x) + \epsilon)$, $\epsilon = 10^{-6}$.
+\textbf{Mondrian prediction set}: partition $\D^{(-c^\star)}$ into $2K$ cells via $(Y_i, \mathrm{bin}_K(\shat(X_i)))$ where $\mathrm{bin}_K$ uses calibration-fold $\shat$-quantiles. Per-cell threshold:
 \begin{equation}
 \label{eq:qhat}
-\qhat_{k, b} \;=\; \mathrm{Quantile}\!\left(\{s(X_i, k) : i \in \mathcal{I}_{kb}^{(-c^\star)}\},\; \frac{\lceil (n_{kb}+1)(1-\alpha) \rceil}{n_{kb}}\right),
+\qhat_{k, b} := \mathrm{Quantile}\bigl(\{s(X_i, Y_i) : Y_i = k, \mathrm{bin}_K(\shat(X_i)) = b\}, \, \lceil(n_{k,b} + 1)(1 - \alpha)\rceil / n_{k,b}\bigr).
 \end{equation}
-and predict
+The Mondrian prediction set:
 \begin{equation}
 \label{eq:pset}
-\pset(x) \;=\; \bigl\{k \in \{0, 1\} : s(x, k) \leq \qhat_{k, b(x)}\bigr\}.
+\pset(x) := \{k \in \{0, 1\} : |k - \phat(x)| \leq \qhat_{k, \mathrm{bin}_K(\shat(x))} \cdot (\shat(x) + \epsilon)\}.
 \end{equation}
-Equivalently, $k \in \pset(x)$ iff $|k - \phat(x)| \leq \qhat_{k, b(x)} \cdot \shat(x)$, so the decision radius scales with local heteroscedasticity.
-
-\paragraph{Comparison to prior scores.}
-Split conformal \citep{vovk2005algorithmic} uses $s = |y - \phat(x)|$, independent of $x$. CQR \citep{romano2019cqr} uses quantile regression, regression-only. DEGU \citep{zhou2026degu} learns $\shat$ but does not fold it into the score. Our score \eqref{eq:score} combines DEGU's $\shat$ machinery with the Mondrian partition of \citet{vovk2003mondrian} stratified by $(y, b(x))$, the unique product partition over $\{y, b(x)\}$ that admits both class-conditional (T2) and bin-conditional (T3) coverage simultaneously (§\ref{sec:method}, §\ref{sec:theory}).
-
-\paragraph{Coverage targets.}
-Given $\alpha \in (0, 1)$, we require:
-\begin{enumerate}
-    \item[(i)]  \emph{Marginal coverage} $P(Y \in \pset(X)) \geq 1 - \alpha$ (T1);
-    \item[(ii)] \emph{Class-conditional coverage} $P(Y \in \pset(X) \mid Y = k) \geq 1 - \alpha$ for each $k$ (T2);
-    \item[(iii)] \emph{$\shat$-bin local coverage} $P(Y \in \pset(X) \mid Y = k, b(X) = b) \approx 1 - \alpha$ for each $(k, b)$ (T3);
-    \item[(iv)] \emph{Chrom-shift robustness}: the (i)–(iii) gaps degrade gracefully under total-variation drift between $P_{c^\star}$ and the calibration mixture (T4).
-\end{enumerate}
-Pointwise conditional coverage $P(Y \in \pset(X) \mid X = x) \geq 1 - \alpha$ is ruled out in finite samples \citep{barber2020limits}; our (iii) is the coarsest practically useful strengthening.
+For cells with $n_{k,b} < \lceil 1/\alpha \rceil$ we fall back to the pooled class-conditional threshold $\qhat_k$ (T2).
