@@ -93,7 +93,7 @@ We additionally benchmark HCCP against three contemporary CP methods that target
 \begin{table}[t]
 \centering
 \small
-\caption{HCCP vs.\ contemporary local-CP methods on TraitGym CADD+GPN-MSA+Borzoi, sharing the same $(\phat, \shat)$. Partition $K$ for HCCP / SC-CP selected per outer fold via proper nested chrom-LOO; reporting metric $(y, \shat\text{-bin})$-conditional worst-cell gap at fixed $K_{\mathrm{eval}}$ (Complex $K_{\mathrm{eval}} = 5$, Mendelian $K_{\mathrm{eval}} = 3$). \textbf{HCCP is the unique method satisfying both $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on both datasets.} RLCP / SC-CP collapse minority coverage on Complex; weighted CP over-covers the minority on Mendelian (singleton fraction $0.50$ vs.\ HCCP $0.83$). Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py} with \texttt{--K-mode nested-cv}.}
+\caption{HCCP vs.\ contemporary local-CP methods on TraitGym CADD+GPN-MSA+Borzoi, sharing the same $(\phat, \shat)$. Partition $K$ for HCCP / SC-CP selected per outer fold via proper nested chrom-LOO; reporting metric $(y, \shat\text{-bin})$-conditional worst-cell gap at fixed $K_{\mathrm{eval}}$ (Complex $K_{\mathrm{eval}} = 5$, Mendelian $K_{\mathrm{eval}} = 3$). \textbf{Of the methods we evaluated, HCCP is the only one satisfying both $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on both datasets.} RLCP / SC-CP collapse minority coverage on Complex; weighted CP over-covers the minority on Mendelian (singleton fraction $0.50$ vs.\ HCCP $0.83$). Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py} with \texttt{--K-mode nested-cv}.}
 \label{tab:cp_baselines}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llccccc}
@@ -147,7 +147,7 @@ B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_frontier_mendelian.pdf}
-\caption{\textbf{Mendelian} companion to Fig.~\ref{fig:frontier}. (a) Joint frontier: HCCP (B4, red) is again the unique point at $\mathrm{cov}_{|Y=1} \approx 0.90$ \emph{and} low $\shat$-bin gap; B3 (class-Mondrian) holds class coverage but with higher gap; B2 ($\shat$-Mondrian) under-covers the minority class; B1 (vanilla split) over-covers the minority but at large gap. (b) Imbalance scaling: same qualitative pattern as Complex --- HCCP and B3 hold $\mathrm{cov}_{|Y=1} \approx 0.90$ across $\pi_{+} \in [0.05, 0.50]$, B2 collapses to $\sim 0.79$ at $\pi_{+} = 0.05$. The two datasets together establish the joint $(y \times \shat\text{-bin})$ Mondrian as the unique single-fold partition simultaneously satisfying class and bin-local coverage under imbalance.}
+\caption{\textbf{Mendelian} companion to Fig.~\ref{fig:frontier}. (a) Joint frontier: HCCP (B4, red) is again the unique point at $\mathrm{cov}_{|Y=1} \approx 0.90$ \emph{and} low $\shat$-bin gap; B3 (class-Mondrian) holds class coverage but with higher gap; B2 ($\shat$-Mondrian) under-covers the minority class; B1 (vanilla split) over-covers the minority but at large gap. (b) Imbalance scaling: same qualitative pattern as Complex --- HCCP and B3 hold $\mathrm{cov}_{|Y=1} \approx 0.90$ across $\pi_{+} \in [0.05, 0.50]$, B2 collapses to $\sim 0.79$ at $\pi_{+} = 0.05$. The two datasets together establish the joint $(y \times \shat\text{-bin})$ Mondrian as the only single-fold partition we evaluated that simultaneously satisfies class and bin-local coverage under imbalance.}
 \label{fig:frontier_mendelian}
 \end{figure}
 
