@@ -57,7 +57,7 @@ The three preceding rows of Tab.~\ref{tab:main} (split-CP, class-conditional, DE
     \item[B3] class-Mondrian \citep{sadinle2019lac}: bins along $y$ only;
     \item[B4] HCCP (ours): joint $(y \times \shat\text{-bin})$ Mondrian.
 \end{description}
-The four predictors share their $\phat$ and $\shat$; they differ only in the partitioning of the calibration fold. Tab.~\ref{tab:h2h} reports the resulting coverages on TraitGym CADD+GPN-MSA+Borzoi at $K = \hat K_{\mathrm{CV}}$.
+The four predictors share their $\phat$ and $\shat$; they differ only in the partitioning of the calibration fold. Tab.~\ref{tab:h2h} reports the resulting coverages on TraitGym CADD+GPN-MSA+Borzoi at $K = \hat K(c_{\mathrm{outer}})$ from proper nested chrom-LOO (§\ref{sec:theory:t5}).
 
 \begin{table}[t]
 \centering
@@ -93,24 +93,24 @@ We additionally benchmark HCCP against three contemporary CP methods that target
 \begin{table}[t]
 \centering
 \small
-\caption{HCCP vs.\ contemporary local-CP methods on TraitGym CADD+GPN-MSA+Borzoi, sharing the same $(\phat, \shat)$. Partition $K$ for HCCP / SC-CP selected per outer fold via proper nested chrom-LOO; reporting metric $(y, \shat\text{-bin})$-conditional worst-cell gap at fixed $K_{\mathrm{eval}}$ (Complex $K_{\mathrm{eval}} = 5$, Mendelian $K_{\mathrm{eval}} = 3$). \textbf{Of the methods we evaluated, HCCP is the only one satisfying both $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on both datasets.} RLCP / SC-CP collapse minority coverage on Complex; weighted CP over-covers the minority on Mendelian (singleton fraction $0.50$ vs.\ HCCP $0.83$). Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py} with \texttt{--K-mode nested-cv}.}
+\caption{HCCP vs.\ contemporary local-CP methods on TraitGym CADD+GPN-MSA+Borzoi, sharing the same $(\phat, \shat)$. Partition $K$ for HCCP / SC-CP selected per outer fold via proper nested chrom-LOO; reporting metric $(y, \shat\text{-bin})$-conditional worst-cell gap at fixed $K_{\mathrm{eval}}$ (Complex $K_{\mathrm{eval}} = 5$, Mendelian $K_{\mathrm{eval}} = 3$). $\shat$-bin gap and $\mathrm{Cov}_{|Y=1}$ subscripts are $\pm$ one std from $B = 200$ chromosome-level bootstrap resamples. \textbf{Of the methods we evaluated, HCCP is the only one satisfying both $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ on both datasets.} On Complex, HCCP's bootstrap CI for $\shat$-bin gap is $[0.019, 0.119]$, completely disjoint from baselines' $[0.770, 0.879]$. On Mendelian, the margin tightens: HCCP CI $[0.022, 0.733]$ overlaps with weighted-CP's $[0.141, 0.733]$ at the upper-bound (driven by chromosome-resampling tail), but HCCP's bootstrap mean is $1.5\times$ tighter than weighted CP. RLCP / SC-CP collapse minority coverage on Complex; weighted CP over-covers the minority on Mendelian. Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py} (point) and \texttt{T\_tools/bootstrap\_cp\_baselines.py} (bootstrap).}
 \label{tab:cp_baselines}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llccccc}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcccc}
 \toprule
-Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Singleton & Conditioning \\
+Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Singleton \\
 \midrule
 \multirow{4}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
- & \textbf{HCCP (ours)}                                & 0.900 & \textbf{0.905} & \textbf{0.024} & 0.224 & $(y, \shat\text{-bin})$ \\
- & RLCP \citep{hore2025rlcp}                            & 0.952 & \textcolor{red}{0.545} & \textcolor{red}{0.802} & 0.762 & $(p, \shat)$ kernel \\
- & weighted CP \citep{tibshirani2019weighted}           & 0.901 & \textcolor{red}{0.613} & \textcolor{red}{0.802} & 0.785 & chrom-shift weights \\
- & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & \textcolor{red}{0.627} & \textcolor{red}{0.802} & 0.710 & $\phat$-bin \\
+ & \textbf{HCCP (ours)}                                & 0.900 & $\mathbf{0.905_{\pm 0.010}}$ & $\mathbf{0.060_{\pm 0.031}}$ & 0.224 \\
+ & RLCP \citep{hore2025rlcp}                            & 0.952 & $\textcolor{red}{0.543_{\pm 0.019}}$ & $\textcolor{red}{0.820_{\pm 0.029}}$ & 0.762 \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.901 & $\textcolor{red}{0.611_{\pm 0.020}}$ & $\textcolor{red}{0.821_{\pm 0.030}}$ & 0.785 \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & $\textcolor{red}{0.625_{\pm 0.018}}$ & $\textcolor{red}{0.817_{\pm 0.034}}$ & 0.710 \\
 \midrule
 \multirow{4}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
- & \textbf{HCCP (ours)}                                & 0.902 & \textbf{0.876} & \textbf{0.163} & 0.827 & $(y, \shat\text{-bin})$ \\
- & RLCP \citep{hore2025rlcp}                            & 0.939 & 0.876 & \textcolor{red}{0.321} & 0.890 & $(p, \shat)$ kernel \\
- & weighted CP \citep{tibshirani2019weighted}           & 0.902 & \textcolor{red}{0.982} & 0.188 & 0.499 & chrom-shift weights \\
- & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & \textcolor{red}{0.846} & \textcolor{red}{0.374} & 0.777 & $\phat$-bin \\
+ & \textbf{HCCP (ours)}                                & 0.902 & $\mathbf{0.875_{\pm 0.040}}$ & $\mathbf{0.173_{\pm 0.192}}$ & 0.827 \\
+ & RLCP \citep{hore2025rlcp}                            & 0.939 & $0.878_{\pm 0.034}$ & $\textcolor{red}{0.360_{\pm 0.171}}$ & 0.890 \\
+ & weighted CP \citep{tibshirani2019weighted}           & 0.902 & $\textcolor{red}{0.982_{\pm 0.006}}$ & $0.252_{\pm 0.153}$ & 0.499 \\
+ & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & $\textcolor{red}{0.859_{\pm 0.044}}$ & $\textcolor{red}{0.404_{\pm 0.182}}$ & 0.777 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -201,7 +201,7 @@ Axis & Dataset & Feature set & AUPRC $\uparrow$ & Marg.\ cov.\ & \textbf{$\shat$
 \paragraph{Three observations.}
 \begin{enumerate}
     \item \textbf{HCCP holds across the three axes with degraded margin in chrom-LOO Mendelian.} Trait-LOO reaches the $0.002$–$0.004$ floor on both datasets; chrom-LOO Complex stays $\leq 0.023$ across feature sets; chrom-LOO Mendelian is $0.198$ on CADD+Borzoi and tightens to $0.077$ with the SOTA feature set CADD+GPN-MSA+Borzoi (still $> 0.04$, the binding regime). C$\to$M cross-dataset direction is in-bound (gap $\leq 0.036$). The reverse M$\to$C direction is reported separately in §\ref{sec:experiments:failure_mode} as a diagnostic case study of joint base-predictor + assumption failure, not as a deployment scenario.
-    \item \textbf{Trait-LOO reaches the finite-sample floor on aggregate.} Gaps of $0.002\text{--}0.004$ match the $1/(n_{k,b}+1)$ bound of T3; per-OMIM coverage std is $\leq 0.052$, within binomial noise at $n = 30$ OMIMs. The OMIM-cluster aggregation (Table~\ref{tab:omim_cluster}) exposes one exception: the Skeletal/connective cluster on Mendelian shows $\mathrm{cov}_{|Y=1} = 0.745$ at cluster size $n_{\mathrm{tot}} = 470$, the worst-cell exception we report honestly. This cluster carries low-AUPRC pathogenic variants whose $\shat$ scale is mis-estimated; we treat it as the boundary case for trait-LOO and discuss in §\ref{sec:discussion} (assumption discussion).
+    \item \textbf{Trait-LOO reaches the finite-sample floor on aggregate.} Gaps of $0.002\text{--}0.004$ match the $1/(n_{k,b}+1)$ bound of T3; per-OMIM coverage std is $\leq 0.052$, within binomial noise at $n = 30$ OMIMs. The OMIM-cluster aggregation (Table~\ref{tab:omim_cluster}) exposes one exception: of the three Mendelian OMIM clusters tested ($n_{\mathrm{traits}} = 8, 10, 12$ in Skeletal/connective, Neuromuscular/nervous, and Metabolic/hematologic respectively), the Skeletal/connective cluster shows $\mathrm{cov}_{|Y=1} = 0.745$ at cluster size $n_{\mathrm{tot}} = 470$ --- $1/3$ clusters fall below the $0.85$ minority-coverage target. The other two clusters meet target ($\mathrm{cov}_{|Y=1} = 1.000$ and $0.918$). This cluster carries low-AUPRC pathogenic variants whose $\shat$ scale is mis-estimated; we treat it as the boundary case for trait-LOO and discuss in §\ref{sec:discussion} (assumption discussion).
     \item \textbf{Cross-dataset C$\to$M transfer is in-bound.} Complex $\to$ Mendelian retains $\mathrm{AUPRC} = 0.665$ and $\shat$-bin gap $0.035$, indicating that calibration on the broader polygenic feature space transfers to monogenic targets without coverage collapse.
 \end{enumerate}
 

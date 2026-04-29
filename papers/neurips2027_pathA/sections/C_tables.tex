@@ -115,12 +115,12 @@ Metabolic / hematologic / other & 12 & 1340 & 0.909 & 0.918 & 0.100 \\
 \subsection{K-sweep ablation}
 \label{app:tables:ksweep}
 
-Table~\ref{tab:ksweep} validates Theorem~\ref{thm:t5oracle} (T5.1) empirically by sweeping $K \in \{2, 3, 5, 8, 10, 15, 20, 30\}$. For each dataset the plug-in Lipschitz estimate is $\hat L_F \approx 49.4$ (Mendelian) and $21.8$ (Complex) via 100-batch finite differences on $\shat(X)$; the resulting oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ is $88$ (Mendelian) and $110$ (Complex), neither of which is realizable because the finite-sample variance term $K/(\pi_{\min} n)$ dominates long before the stationarity bias term $L_F R / K$ crosses it; the cross-validated $\hat K_{\mathrm{CV}}$ picks the binding constraint instead, yielding $3$ (Mendelian) and $2$ (Complex). The fallback column reports the number of $(k,b)$ cells that triggered pooled class-conditional backoff ($n_{k,b} < 5$, §\ref{sec:method}).
+Table~\ref{tab:ksweep} validates Theorem~\ref{thm:t5oracle} (T5.1) empirically by sweeping $K \in \{2, 3, 5, 8, 10, 15, 20, 30\}$. For each dataset the plug-in Lipschitz estimate is $\hat L_F \approx 49.4$ (Mendelian) and $21.8$ (Complex) via 100-batch finite differences on $\shat(X)$; the resulting oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ is $88$ (Mendelian) and $110$ (Complex), neither of which is realizable because the finite-sample variance term $K/(\pi_{\min} n)$ dominates long before the stationarity bias term $L_F R / K$ crosses it. The bolded rows in Tab.~\ref{tab:ksweep} mark the $K$ that minimises the chrom-LOO test-fold worst-cell gap ($K = 3$ Mendelian, $K = 2$ Complex) under the \emph{legacy non-nested} K-selection protocol; the proper nested chrom-LOO selector (§\ref{sec:theory:t5}) instead picks the modal $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ on Mendelian and $\hat K(c_{\mathrm{outer}}) = 5$ on Complex, restoring CP exchangeability. The fallback column reports the number of $(k,b)$ cells that triggered pooled class-conditional backoff ($n_{k,b} < 5$, §\ref{sec:method}).
 
 \begin{table}[h]
 \centering
 \small
-\caption{$K$-sweep on Mendelian and Complex (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, single seed). Worst-cell gap = $\max_{k,b} |\mathrm{cov}_{k,b} - 0.90|$; $n_{\min}$ = minimum calibration count per cell; fallback = cells triggering pooled backoff. Bolded rows are $\hat K_{\mathrm{CV}}$.}
+\caption{$K$-sweep on Mendelian and Complex (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, single seed). Worst-cell gap = $\max_{k,b} |\mathrm{cov}_{k,b} - 0.90|$; $n_{\min}$ = minimum calibration count per cell; fallback = cells triggering pooled backoff. Bolded rows are the legacy non-nested K-selection minimum (test-fold leakage; see §\ref{sec:theory:t5} for the rectified nested-CV $\hat K(c_{\mathrm{outer}})$).}
 \label{tab:ksweep}
 \begin{tabular}{rrrrrrrrr}
 \toprule
@@ -147,17 +147,17 @@ $K$ & Worst gap & Mean gap & $n_{\min}$ & fallback & Worst gap & Mean gap & $n_{
 \end{table}
 
 \paragraph{Reading the table --- three regimes.} The K-sweep extended to $K = 200$ exposes \emph{three} regimes of HCCP behaviour, only the first two of which are predicted by Theorem~\ref{thm:t5oracle}.
-(i) \textbf{Bias-dominated} ($K \leq 3$ Mendelian, $K \leq 5$ Complex): worst-cell gap falls as $K$ increases because within-bin score heterogeneity decreases. Sweet spot is $K{=}3$ (Mendelian) and $K{=}2$ (Complex), matching $\hat K_{\mathrm{CV}}$.
+(i) \textbf{Bias-dominated} ($K \leq 3$ Mendelian, $K \leq 5$ Complex): worst-cell gap falls as $K$ increases because within-bin score heterogeneity decreases. Sweet spot under legacy chrom-LOO test-gap minimisation is $K{=}3$ (Mendelian) and $K{=}2$ (Complex); the rectified nested-CV $\hat K(c_{\mathrm{outer}})$ is larger ($\{5, 8\}$ Mendelian, $5$ Complex) because the inner-fold scoring is on a fixed $K_{\mathrm{eval}}$ axis (§\ref{sec:theory:t5}).
 (ii) \textbf{Variance-dominated} ($K \in [5, 30]$ Mendelian, $K \in [10, 30]$ Complex): worst-cell gap rises as cells drop toward the $n_{k,b} \geq \lceil 1/\alpha\rceil = 10$ floor. Mendelian saturates at gap $0.73$; Complex at $0.60$. This is the tradeoff captured by Eq.~\ref{eq:gap_decomp}.
-(iii) \textbf{Fallback-dominated} ($K \geq 50$, not modeled by T5): once the majority of cells trigger the pooled-fallback ($n_{k,b} < 5$), the predictor effectively reverts to T2 class-conditional calibration, which is uniform across $\shat$-bins. Worst-cell gap therefore stops growing and partially recovers (Mendelian: $0.73 \to 0.10$ as $K$ grows from 30 to 200; Complex: 0.90 plateau and $0.70$). This third regime is invisible in the asymptotic T5 bound but visible at the realistic $n \leq 11{,}400$ scale of TraitGym, and it explains why the cross-validated $\hat K_{\mathrm{CV}}$ does not approach the oracle $K^\star$ for any of the four $L_F$ estimators in Table~\ref{tab:LF_estimators}: the variance-dominated regime never ``wins'' before fallback takes over.
+(iii) \textbf{Fallback-dominated} ($K \geq 50$, not modeled by T5): once the majority of cells trigger the pooled-fallback ($n_{k,b} < 5$), the predictor effectively reverts to T2 class-conditional calibration, which is uniform across $\shat$-bins. Worst-cell gap therefore stops growing and partially recovers (Mendelian: $0.73 \to 0.10$ as $K$ grows from 30 to 200; Complex: 0.90 plateau and $0.70$). This third regime is invisible in the asymptotic T5 bound but visible at the realistic $n \leq 11{,}400$ scale of TraitGym, and it explains why both the legacy non-nested $K = 2,3$ and the nested-CV modal $\hat K = 5\text{--}8$ remain far below the oracle $K^\star$ derived from any $L_F$ estimator in Table~\ref{tab:LF_estimators}: the variance-dominated regime never ``wins'' before fallback takes over.
 
 \paragraph{$L_F$ estimator with concentration bound.}
-The oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ depends on the plug-in Lipschitz estimate $\hat L_F$. We adapt the Lipschitz-Constant Least-Squares estimator of \citet{lcls2024lipschitz} to our score-CDF Lipschitz problem: bin $\shat$ into 30 quantile bins per class with at least 20 variants per bin, compute pairwise Kolmogorov--Smirnov distances and $\shat$-gaps, then regress KS$_{ab} = \hat L_F \cdot \mathrm{gap}_{ab}$ via least squares through the origin. Bootstrap with $B = 500$ chrom-level resamples gives a 95\% CI. Table~\ref{tab:LF_estimators} shows that the LCLS estimator yields tight CIs ($\hat L_F = 2.97$ Mendelian, $4.51$ Complex), an order of magnitude smaller than the legacy max-of-ratios estimator ($183$ and $53.3$ respectively) which is biased high by KS-saturation noise on small $\shat$-gaps. Substituting LCLS $\hat L_F$ into Theorem~\ref{thm:t5oracle} gives $K^\star = 22$ (Mendelian) and $K^\star = 50$ (Complex), still above the cross-validated $\hat K_{\mathrm{CV}} \in \{2, 3\}$ but only by a factor of $7$--$25\times$ rather than the legacy $30$--$56\times$. The remaining gap is the finite-sample fallback effect (App.~\ref{app:tables:ksweep}, third regime).
+The oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ depends on the plug-in Lipschitz estimate $\hat L_F$. We adapt the Lipschitz-Constant Least-Squares estimator of \citet{lcls2024lipschitz} to our score-CDF Lipschitz problem: bin $\shat$ into 30 quantile bins per class with at least 20 variants per bin, compute pairwise Kolmogorov--Smirnov distances and $\shat$-gaps, then regress KS$_{ab} = \hat L_F \cdot \mathrm{gap}_{ab}$ via least squares through the origin. Bootstrap with $B = 500$ chrom-level resamples gives a 95\% CI. Table~\ref{tab:LF_estimators} shows that the LCLS estimator yields tight CIs ($\hat L_F = 2.97$ Mendelian, $4.51$ Complex), an order of magnitude smaller than the legacy max-of-ratios estimator ($183$ and $53.3$ respectively) which is biased high by KS-saturation noise on small $\shat$-gaps. Substituting LCLS $\hat L_F$ into Theorem~\ref{thm:t5oracle} gives $K^\star = 22$ (Mendelian) and $K^\star = 50$ (Complex), still above the modal nested-CV $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ on Mendelian and $\hat K(c_{\mathrm{outer}}) = 5$ on Complex, by a factor of $3$--$10\times$. The remaining gap is the finite-sample fallback effect (App.~\ref{app:tables:ksweep}, third regime).
 
 \begin{table}[h]
 \centering
 \small
-\caption{Four $L_F$ estimators and their oracle $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ and $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$ bounds. The cross-validated $\hat K_{\mathrm{CV}}$ is reported for comparison.}
+\caption{Four $L_F$ estimators and their oracle $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ and $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$ bounds. The modal nested-CV $\hat K(c_{\mathrm{outer}})$ (§\ref{sec:theory:t5}) is reported for comparison; the legacy non-nested $K_{\mathrm{CV}}$ (test-gap argmin) values $3$ Mendelian and $2$ Complex are deprecated.}
 \label{tab:LF_estimators}
 \begin{tabular}{llrcrr}
 \toprule
@@ -167,13 +167,13 @@ Estimator & Dataset & $\hat L_F$ & 95\% CI & $K^\star$ & $G(K^\star)$ bound \\
 isotonic envelope          & Mendelian & 26.9 & $[6.85, 93.2]$ & 61   & 0.388 \\
 legacy max-of-ratios       & Mendelian & 183  & --- & 169  & 1.011 \\
 \midrule
-\multicolumn{4}{l}{\emph{cross-validated} $\hat K_{\mathrm{CV}}$ (Mendelian)} & \textbf{3} & 0.047 (observed) \\
+\multicolumn{4}{l}{\emph{modal nested-CV} $\hat K(c_{\mathrm{outer}})$ (Mendelian)} & \textbf{5--8} & 0.077 (observed) \\
 \midrule
 \textbf{LCLS regression} \citep{lcls2024lipschitz} & \textbf{Complex}  & \textbf{4.51} & $[4.47, 4.69]$ & \textbf{50} & \textbf{0.088} \\
 isotonic envelope          & Complex   & 8.02 & $[4.48, 33.1]$ & 67  & 0.118 \\
 legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \midrule
-\multicolumn{4}{l}{\emph{cross-validated} $\hat K_{\mathrm{CV}}$ (Complex)}   & \textbf{2} & 0.006 (observed) \\
+\multicolumn{4}{l}{\emph{modal nested-CV} $\hat K(c_{\mathrm{outer}})$ (Complex)}   & \textbf{5} & 0.024 (observed) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -181,7 +181,7 @@ legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_lf_forest.pdf}
-\caption{$L_F$ estimator 95\% bootstrap CIs and resulting $K^\star$. LCLS gives a tight CI ($\hat L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star$ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star$ by an order of magnitude. The cross-validated $\hat K_{\mathrm{CV}} \in \{2, 3\}$ is the binding finite-sample constraint, well below all three asymptotic $K^\star$ predictions.}
+\caption{$L_F$ estimator 95\% bootstrap CIs and resulting $K^\star$. LCLS gives a tight CI ($\hat L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star$ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star$ by an order of magnitude. The modal nested-CV $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ (Mendelian) and $5$ (Complex) is the binding finite-sample constraint, well below all three asymptotic $K^\star$ predictions.}
 \label{fig:lf_forest}
 \end{figure}
 

@@ -51,7 +51,7 @@ We extract predictions from the AlphaGenome API \citep{avsec2026alphagenome} on 
 \texttt{HistGradientBoostingRegressor} with identical backbone parameters. Target: $r_i = |Y_i - \phat^{(-C_i)}(X_i)|$ (chrom-LOO OOF residuals). Loss: squared error (Gaussian NLL approximation). Floor: $\shat(x) = \max(\shat_{\mathrm{raw}}(x), \epsilon)$ with $\epsilon = 10^{-4}$.
 
 \paragraph{Conformal calibration.}
-Score: $s(x, y) = |y - \phat(x)| / (\shat(x) + \epsilon)$. Bin count: $K = \hat K_{\mathrm{CV}}$ (adaptive, §\ref{sec:theory:t5}); fallback $K = 5$ for fixed-K baselines. Cell minimum $n_{k,b} \geq 5$; fallback to class-pooled $\qhat_k$ otherwise. Miscoverage: $\alpha = 0.10$.
+Score: $s(x, y) = |y - \phat(x)| / (\shat(x) + \epsilon)$. Bin count: $K = \hat K(c_{\mathrm{outer}})$ via nested chrom-LOO (§\ref{sec:theory:t5}); fallback $K = 5$ for fixed-K baselines (Tab.~\ref{tab:main}). Cell minimum $n_{k,b} \geq 5$; fallback to class-pooled $\qhat_k$ otherwise. Miscoverage: $\alpha = 0.10$.
 
 \paragraph{DEGU-lite ensemble.}
 $M = 10$ GBM members, each with bootstrap resampling (resample with replacement) and unique \texttt{random\_state}. Ensemble uncertainty: $\shat_{\mathrm{DEGU}}(x) = \mathrm{std}_{m=1}^M \phat_m(x)$. Same backbone as aggregator.
