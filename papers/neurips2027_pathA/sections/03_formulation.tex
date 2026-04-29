@@ -23,7 +23,7 @@ Conditional on $C = c$, $\{(X_i, Y_i) : C_i = c\}$ are i.i.d.\ $P_c$. Strict str
 The score law is chrom-invariant at some granularity: A2-marginal, A2-class (conditional on $Y=k$), or A2-cell (conditional on $Y=k$ and $\hat\sigma$-bin membership $b(X) = b$). Hierarchy: $\text{A2-cell} \Rightarrow \text{A2-class} \Rightarrow \text{A2-marginal}$.
 \end{assumption}
 
-\ref{ass:A1} is load-bearing (empirical chrom-LOO protocol). \ref{ass:A1prime} and \ref{ass:A2} enable finite-sample \emph{exact} coverage; under \ref{ass:A1} alone we obtain \emph{robust} coverage with a chromosome total-variation gap (§\ref{sec:theory}). Empirically, \ref{ass:A2} holds approximately: our within-cell KS audit (155 tests, App.~\ref{app:data}) shows $12.3\%$ rejection at $p<0.05$, mildly elevated from the $5\%$ null.
+\ref{ass:A1} is load-bearing (empirical chrom-LOO protocol). \ref{ass:A1prime} and \ref{ass:A2} enable finite-sample \emph{exact} coverage; under \ref{ass:A1} alone we obtain \emph{robust} coverage with a chromosome total-variation gap (§\ref{sec:theory}). Empirically, the within-cell KS audit (App.~\ref{app:data}, Table~\ref{tab:ks_audit}) finds approximate stationarity on Complex ($10.4\%$ rejection across $125$ tests, near the $5\%$ null) and pronounced cell-level violations on Mendelian ($46.2\%$ rejection across $52$ tests, max KS $0.434$); T3$'$ is the operational certificate on Mendelian (§\ref{sec:theory:t3prime}), T3 exact suffices on Complex.
 
 \begin{assumption}[A-SL Score-Lipschitz regularity]
 \label{ass:ASL}

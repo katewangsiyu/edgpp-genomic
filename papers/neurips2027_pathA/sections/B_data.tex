@@ -134,7 +134,7 @@ Together, the three tests establish that the zero seed-variance observation in t
 \subsection{Compute}
 \label{app:data:compute}
 
-All experiments on a single machine with 4$\times$ NVIDIA T4 GPUs (SM 7.5, no BF16). The HCCP pipeline (aggregator + $\shat$ head + conformal calibration) runs entirely on CPU via scikit-learn; DEGU-actual CNN baseline uses one T4 GPU.
+All experiments on a single machine with 4$\times$ NVIDIA T4 GPUs (SM 7.5, no BF16). The HCCP pipeline (aggregator + $\shat$ head + conformal calibration) runs entirely on CPU via scikit-learn.
 
 \begin{table}[h]
 \centering
@@ -152,7 +152,6 @@ Mondrian conformal calibration & CPU single-thread & $< 5$ min & $< 5$ min & 1 G
 Total HCCP (single feature set, all chroms) & CPU 16-core & $< 4$ CPU-h & $< 4$ CPU-h & 4 GB & --- \\
 \midrule
 DEGU-lite ($M = 10$ bootstrap GBM) & CPU 16-core & $\approx 35$ min & $\approx 75$ min & 6 GB & shared $\phat$ backbone \\
-DEGU-actual ($M = 5$ CNN, 200\,bp) & 1$\times$ T4 GPU & $\approx 8$ h & $\approx 22$ h & 8 GB GPU & one-hot DNA windows \\
 \midrule
 $B = 200$ chrom-bootstrap & CPU single-thread & $\approx 12$ min & $\approx 18$ min & 1 GB & cached scores reused \\
 Multi-seed sweep ($\{42, 7, 2024\}$) & CPU 16-core & $\approx 12$ min & $\approx 18$ min & 4 GB & per Tab.~\ref{tab:main} \\

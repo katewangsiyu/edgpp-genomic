@@ -22,7 +22,7 @@ where each level is obtained from the stronger one by marginalizing over a parti
 \end{itemize}
 
 \paragraph{Empirical validation of A2.}
-Our Day~13 within-cell KS audit ran 155 cell-level two-sample KS tests ($K = 5$ bins $\times$ 2 classes $\times$ up to 22 calibration chromosomes where cells were non-empty). The rejection rate at nominal $p < 0.05$ was $12.3\%$ (mildly elevated from $5\%$ nominal), and the max KS statistic was $0.24$ with mean $0.06$. Since $d_{\mathrm{TV}} \leq d_{\mathrm{KS}}$ for univariate distributions, we have $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq 0.06$ on average and $\leq 0.24$ worst-case. A2-cell (and hence all weaker forms) holds approximately.
+The within-cell KS audit (Tab.~\ref{tab:ks_audit}) ran 177 cell-level two-sample KS tests across both datasets ($K_{\mathrm{eval}} = 5$ bins $\times$ 2 classes $\times$ test chromosomes with non-empty cells; 52 tests on Mendelian, 125 on Complex). The rejection rates at nominal $p < 0.05$ are $46.2\%$ (Mendelian, max KS $0.434$) and $10.4\%$ (Complex, max KS $0.315$). Since $d_{\mathrm{TV}} \leq d_{\mathrm{KS}} / \sqrt{2}$ does \emph{not} hold in general — only $d_{\mathrm{TV}} \leq d_{\mathrm{KS}}$ for univariate $F$, with the tighter $\sqrt{2}$ bound under additional regularity — we use the conservative envelope $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq d_{\mathrm{KS}}$, giving worst-case $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq 0.31$ on the binding Mendelian cell (chr9, chr7, chr3 pathogenic-rich at the highest-$\shat$ bin). A2-cell holds approximately on Complex; T3$'$ supplies the certificate on Mendelian.
 
 
 % ============================================================================
@@ -204,7 +204,7 @@ Both bounds carry no factor of~2 (weighted-swap Barber~2023, not jackknife+).
 \end{proof}
 
 \paragraph{Empirical TV estimates.}
-Day~13 KS empirical check (on cell-level A2, 155 tests, 12.3\% rejection at $p < 0.05$, max KS statistic $= 0.24$) shows $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq 0.05$ on worst chromosome pairs. At $\alpha = 0.10$, this bounds the coverage gap at $\leq 0.05$, consistent with the observed per-chromosome coverage gap of $\leq 0.08$ across methods.
+The cell-level KS audit (App.~\ref{app:data:ks}, 177 tests across both datasets) gives worst-cell $d_{\mathrm{KS}} = 0.434$ on Mendelian (chr9 / chr7 / chr3 highest-$\shat$ pathogenic-rich cell) and $0.315$ on Complex. Using $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq d_{\mathrm{KS}}$ as the conservative envelope, the cell-level coverage gap is bounded by $\leq 0.31$ on Mendelian and $\leq 0.05$ on Complex; observed per-chromosome coverage gaps remain $\leq 0.073$ throughout, well below the certificate.
 
 
 % ============================================================================

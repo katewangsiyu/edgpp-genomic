@@ -1,5 +1,37 @@
 % Appendix C: Detailed per-partition results
 
+\subsection{$K_{\mathrm{eval}}$ sensitivity sweep}
+\label{app:tables:keval_sensitivity}
+
+Table~\ref{tab:keval_sensitivity} reports HCCP $\shat$-bin gap against the strongest contemporary single-axis CP baseline (RLCP, weighted CP, or SC-CP, whichever is tightest at each row) for $K_{\mathrm{eval}} \in \{2, 3, 5, 8, 10\}$. HCCP partition $K$ is selected per outer fold by nested chrom-LOO; reporting metric is the worst-cell gap on a fixed $K_{\mathrm{eval}}$ partition.
+
+\begin{table}[h]
+\centering
+\small
+\caption{$K_{\mathrm{eval}}$ sensitivity. Numbers from \texttt{T\_tools/cp\_baselines\_h2h.py --K-mode nested-cv} on TraitGym CADD+GPN-MSA+Borzoi. The recommended $K_{\mathrm{eval}}$ (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$) keeps $\geq 100$ minority-class samples per cell. \textbf{Complex}: HCCP dominates by $25$–$34\times$ at $K_{\mathrm{eval}} \leq 5$ and by $3$–$4\times$ at $K_{\mathrm{eval}} \geq 8$, robustly across the sweep. \textbf{Mendelian}: HCCP wins by $1.15\times$ at the recommended $K_{\mathrm{eval}} = 3$ and ties at $K_{\mathrm{eval}} = 2$; at $K_{\mathrm{eval}} \geq 5$, the per-cell minority count drops below $\sim 70$ and weighted CP / RLCP catch up because the heteroscedastic head can no longer be reliably calibrated on the smaller per-cell partition. The Mendelian-specific narrowing of margin at high $K_{\mathrm{eval}}$ is consistent with the per-cell sample-size floor argument that motivates the recommended $K_{\mathrm{eval}}$ in the first place (§\ref{sec:theory:t5}).}
+\label{tab:keval_sensitivity}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Dataset & $K_{\mathrm{eval}}$ & HCCP gap & RLCP & wCP & SC-CP & ratio (best baseline / HCCP) \\
+\midrule
+\multirow{5}{*}{Mendelian}
+ & 2  & 0.233 & 0.233 & 0.233 & 0.233 & $1.00\times$ \\
+ & \textbf{3 (recommended)} & \textbf{0.163} & 0.321 & 0.188 & 0.374 & $\mathbf{1.15\times}$ \textbf{(vs wCP)} \\
+ & 5  & 0.567 & 0.483 & 0.379 & 0.567 & $0.67\times$ (HCCP loses to wCP) \\
+ & 8  & 0.700 & 0.600 & 0.613 & 0.700 & $0.86\times$ (HCCP loses to RLCP) \\
+ & 10 & 0.700 & 0.600 & 0.613 & 0.700 & $0.86\times$ (HCCP loses to RLCP) \\
+\midrule
+\multirow{5}{*}{Complex}
+ & 2  & 0.027 & 0.799 & 0.803 & 0.803 & $30.05\times$ \\
+ & 3  & 0.032 & 0.807 & 0.807 & 0.807 & $25.39\times$ \\
+ & \textbf{5 (recommended)} & \textbf{0.024} & 0.802 & 0.802 & 0.802 & $\mathbf{33.80\times}$ \\
+ & 8  & 0.268 & 0.831 & 0.831 & 0.831 & $3.10\times$ \\
+ & 10 & 0.208 & 0.847 & 0.847 & 0.847 & $4.08\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Per-chromosome coverage}
 \label{app:tables:perchrom}
 
@@ -160,34 +192,6 @@ legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \label{fig:bootstrap_density}
 \end{figure}
 
-\subsection{DEGU-actual (CNN on raw DNA) head-to-head}
-\label{app:tables:degu_actual}
-
-DEGU \citep{zhou2026degu} was originally designed for MPRA regression --- a task where 200\,bp windows are sufficient because the readout is direct sequence-to-activity. To test whether HCCP's design decision to aggregate pre-computed features (CADD, Borzoi 524\,kb context, GPN-MSA phylogenetic signal) is load-bearing for the binary VEP setting, we ported the DEGU architecture to TraitGym pathogenicity classification: a 1-D CNN consuming $200$\,bp one-hot DNA windows (ref and alt alleles concatenated as 8 channels), trained with BCE and a $9{:}1$ pos-weight to handle class imbalance. We trained $M = 5$ CNN teachers with random seeds and computed $\shat(x) = \mathrm{std}_m p_m(x)$. Fixed test chromosomes $\{17,18,19,20,21,22,X\}$ match TraitGym's convention.
-
-We report this experiment not as a critique of DEGU --- whose uncertainty machinery is well-validated on its native MPRA regime --- but as empirical support for the field convention of using pre-computed genomic features for variant pathogenicity. Table~\ref{tab:degu_actual} shows the resulting AUPRC gap.
-
-\begin{table}[h]
-\centering
-\small
-\caption{DEGU-actual (CNN on 200\,bp DNA) vs HCCP GBM (CADD+GPN-MSA+Borzoi). DEGU-actual is a faithful port of the architecture in \citet{zhou2026degu} to TraitGym pathogenicity classification. DEGU's original paper reports no TraitGym number, consistent with the architecture being designed for MPRA regression rather than variant pathogenicity. Same test-chromosome split for both models.}
-\label{tab:degu_actual}
-\begin{tabular}{llrrrr}
-\toprule
-Dataset & Model & AUPRC (chrom-wtd) & AUROC & $\shat$ mean & $\shat$ range \\
-\midrule
-Mendelian & DEGU-actual CNN ($M=5$) & 0.140  & 0.550 & 0.023 & $[0.000, 0.368]$ \\
-Mendelian & \textbf{HCCP GBM}       & \textbf{0.900} & \textbf{0.974} & --- & --- \\
-\midrule
-Complex   & DEGU-actual CNN ($M=5$) & 0.111  & \emph{0.480}\footnotemark[1] & 0.417 & $[0.331, 0.490]$ \\
-Complex   & \textbf{HCCP GBM}       & \textbf{0.353} & $\approx 0.78$ & --- & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
-\footnotetext[1]{AUROC below $0.50$ indicates the CNN ensemble is slightly worse than random on Complex traits: the 200\,bp window contains no actionable signal for polygenic variants, whose effect is primarily transcriptional/regulatory and requires longer context or functional annotations (Borzoi, GPN-MSA) that HCCP's aggregator consumes.}
-
-\paragraph{Interpretation.} DEGU-actual produces a valid uncertainty signal (non-degenerate $\shat$ range on both datasets) but its point-estimate AUPRC is $6.4\times$ (Mendelian) and $3.2\times$ (Complex) worse than HCCP's GBM aggregator on pre-computed genomic features. This is not a reflection of DEGU's uncertainty machinery --- which is sound and proxies well on tasks where the base predictor is strong (MPRA regression; see the original paper \citep{zhou2026degu}) --- but of the feature-space requirement: variant pathogenicity depends on gene annotation, protein structure, and long-range regulatory context, none of which fits in a 200\,bp window. HCCP's design choice to aggregate pre-computed features (CADD, Borzoi 524\,kb context, GPN-MSA phylogenetic score) is load-bearing; the conformal-partition contribution (§\ref{sec:method}) rides on top of a competent base predictor. A principled DEGU+HCCP hybrid would substitute $\shat_{\mathrm{HCCP}}$ with DEGU-style ensemble $\shat$ at matched feature inputs, which is exactly our DEGU-lite ablation (§\ref{sec:experiments}, Table~\ref{tab:degu}) --- and there DEGU-lite is $4.3\times$ worse on Complex worst-cell coverage, establishing that the supervised residual head captures aleatoric structure that ensemble disagreement does not.
-
 \subsection{DEGU-lite vs HCCP head-to-head}
 \label{app:tables:degu}
 
@@ -220,17 +224,17 @@ On Mendelian (monogenic, strong signal), ensemble disagreement is a reasonable u
 \begin{table}[h]
 \centering
 \small
-\caption{Cross-dataset transfer (CADD+Borzoi). M$\to$C: train on Mendelian, test on Complex. C$\to$M: reverse. T4 proxy bound = $1 - \alpha - d_{\mathrm{TV}}$.}
+\caption{Cross-dataset transfer (CADD+Borzoi). M$\to$C: train on Mendelian, test on Complex. C$\to$M: reverse. AUPRC chrom-weighted (TraitGym convention). Marginal-gap = marginal coverage minus target $0.90$ (signed). T4 proxy bound $= 1 - \alpha - d_{\mathrm{TV}}$.}
 \label{tab:crossdataset}
 \begin{tabular}{lrrrrr}
 \toprule
-Direction & AUPRC & Coverage & Gap & TV proxy & T4 bound \\
+Direction & AUPRC$_{\mathrm{chrom}}$ & Marg.\ cov.\ & Marg.\ gap & TV proxy & T4 bound \\
 \midrule
-M$\to$C & 0.187 & 0.738 & $-0.162$ & 0.158 & 0.742 \\
-C$\to$M & 0.654 & 0.901 & $+0.001$ & 0.158 & 0.742 \\
+M$\to$C & 0.205 & 0.738 & $-0.162$ & 0.158 & 0.742 \\
+C$\to$M & 0.665 & 0.901 & $+0.001$ & 0.158 & 0.742 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Directional asymmetry.}
-C$\to$M transfer preserves coverage (0.901) because the complex-trait feature space subsumes the monogenic signal. M$\to$C collapses (0.738) because monogenic variants occupy a narrow subspace. The Barber T4 proxy bound (0.742) is tight for M$\to$C (observed 0.738, within 0.004) and conservative for C$\to$M.
+C$\to$M transfer preserves coverage (0.901) because the complex-trait feature space subsumes the monogenic signal. M$\to$C collapses (0.738) because monogenic variants occupy a narrow subspace and the base predictor itself loses discriminative signal (§\ref{sec:experiments:failure_mode}). The Barber T4 proxy bound (0.742) is tight for M$\to$C (observed 0.738, within 0.004) and conservative for C$\to$M.

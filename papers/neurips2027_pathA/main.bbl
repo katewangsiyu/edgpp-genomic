@@ -5,6 +5,14 @@
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
+\bibitem[Adegoke et~al.(2025)Adegoke, Babalola, and Odesola]{pcos2025conformal}
+Adewale~Alex Adegoke, Idris Babalola, and Peter~Adebayo Odesola.
+\newblock A step toward the use of {AI} for polycystic ovary syndrome ({PCOS}):
+  Staged modelling with uncertainty-aware triage and conformal prediction with
+  cost-efficient risk.
+\newblock \emph{medRxiv}, 2025.
+\newblock \doi{10.1101/2025.10.27.25338898}.
+
 \bibitem[Angelopoulos and Bates(2022)]{angelopoulos2022gentle}
 Anastasios~N. Angelopoulos and Stephen Bates.
 \newblock A gentle introduction to conformal prediction and distribution-free
@@ -18,16 +26,6 @@ Anastasios~N. Angelopoulos, Stephen Bates, Jitendra Malik, and Michael~I.
   Jordan.
 \newblock Uncertainty sets for image classifiers using conformal prediction.
 \newblock In \emph{ICLR}, 2021.
-
-\bibitem[Anonymous(2026)]{crps_binning2026}
-Anonymous.
-\newblock {CRPS}-optimal binning for conformal regression.
-\newblock \emph{arXiv preprint arXiv:2603.22000}, 2026.
-
-\bibitem[authors(2024)]{lcls2024lipschitz}
-ICLR~2024 authors.
-\newblock On the sample complexity of lipschitz constant estimation.
-\newblock In \emph{ICLR}, 2024.
 
 \bibitem[Avsec et~al.(2026)]{avsec2026alphagenome}
 {\v{Z}}iga Avsec et~al.
@@ -126,6 +124,13 @@ Rohan Hore and Rina~Foygel Barber.
   guarantees.
 \newblock \emph{Journal of the Royal Statistical Society: Series B}, 2025.
 
+\bibitem[Huang et~al.(2024)Huang, Roberts, and Calliess]{lcls2024lipschitz}
+Julien~Walden Huang, Stephen~J. Roberts, and Jan-Peter Calliess.
+\newblock On the sample complexity of lipschitz constant estimation.
+\newblock \emph{Transactions on Machine Learning Research}, 2024.
+\newblock URL \url{https://openreview.net/forum?id=UIalYAHdBH}.
+\newblock ICLR 2024 Journal Track.
+
 \bibitem[Kircher et~al.(2014)Kircher, Witten, et~al.]{kircher2014cadd}
 Martin Kircher, Daniela~M. Witten, et~al.
 \newblock A general framework for estimating the relative pathogenicity of
@@ -158,14 +163,6 @@ Johannes Linder et~al.
 \newblock Predicting {RNA}-seq coverage from {DNA} sequence as a unifying model
   of gene regulation.
 \newblock \emph{Nature Genetics}, 2025.
-
-\bibitem[medRxiv~preprint authors(2025)]{pcos2025conformal}
-medRxiv~preprint authors.
-\newblock Enhancing clinical utility of {AI} models in polycystic ovary
-  syndrome ({PCOS}): Integrating staged modelling with uncertainty-aware triage
-  and conformal prediction.
-\newblock \emph{medRxiv}, 2025.
-\newblock \doi{10.1101/2025.10.27.25338898}.
 
 \bibitem[Nix and Weigend(1994)]{nix1994nll}
 David~A. Nix and Andreas~S. Weigend.
@@ -226,6 +223,11 @@ Ryan~J. Tibshirani, Rina~Foygel Barber, Emmanuel~J. Cand{\`e}s, and Aaditya
   Ramdas.
 \newblock Conformal prediction under covariate shift.
 \newblock In \emph{NeurIPS}, 2019.
+
+\bibitem[Toccaceli(2026)]{crps_binning2026}
+Paolo Toccaceli.
+\newblock {CRPS}-optimal binning for univariate conformal regression.
+\newblock \emph{arXiv preprint arXiv:2603.22000}, 2026.
 
 \bibitem[van~der Laan(2024)]{vanderlaan2024sccp}
 Lars van~der Laan.

@@ -5,37 +5,37 @@ The style file: plainnat.bst
 Database file #1: refs.bib
 You've used 40 entries,
             2773 wiz_defined-function locations,
-            775 strings with 11443 characters,
-and the built_in function-call counts, 17990 in all, are:
-= -- 1505
-> -- 1191
-< -- 21
-+ -- 403
-- -- 363
-* -- 1384
-:= -- 2816
-add.period$ -- 123
+            778 strings with 11664 characters,
+and the built_in function-call counts, 18213 in all, are:
+= -- 1526
+> -- 1231
+< -- 19
++ -- 415
+- -- 375
+* -- 1423
+:= -- 2857
+add.period$ -- 125
 call.type$ -- 40
-change.case$ -- 233
+change.case$ -- 237
 chr.to.int$ -- 40
 cite$ -- 80
-duplicate$ -- 873
-empty$ -- 1475
-format.name$ -- 423
-if$ -- 3760
+duplicate$ -- 871
+empty$ -- 1467
+format.name$ -- 435
+if$ -- 3799
 int.to.chr$ -- 1
 int.to.str$ -- 1
 missing$ -- 40
-newline$ -- 210
+newline$ -- 212
 num.names$ -- 160
 pop$ -- 522
 preamble$ -- 1
-purify$ -- 193
+purify$ -- 197
 quote$ -- 0
-skip$ -- 651
+skip$ -- 655
 stack$ -- 0
 substring$ -- 322
-swap$ -- 77
+swap$ -- 76
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
@@ -43,4 +43,4 @@ type$ -- 435
 warning$ -- 0
 while$ -- 141
 width$ -- 0
-write$ -- 503
+write$ -- 507
