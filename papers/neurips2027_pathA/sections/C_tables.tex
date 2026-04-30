@@ -247,24 +247,24 @@ Table~\ref{tab:h2h} reports the four single-axis Mondrian variants (split CP, $\
 \begin{table}[h]
 \centering
 \small
-\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$). Single-seed point estimates. \textbf{Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets.}}
+\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$). \textbf{All four rows on $B = 200$ chromosome-level bootstrap (mean $\pm$ std).} Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets. Note that the on-axis baseline B2 $\shat$-Mondrian still loses on $\shat$-bin gap because $\shat$-only stratification does not preserve $\mathrm{cov}_{|Y=1}$ at $\pi_{\min}=0.10$; the $(y \times \shat)$ product is necessary, not just the $\shat$ axis.}
 \label{tab:h2h}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llcccc}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llccc}
 \toprule
-Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Per-chrom gap \\
+Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ \\
 \midrule
 \multirow{4}{*}{Mendelian ($\pi_{+} = 0.10$)}
- & B1 vanilla split CP                       & 0.899 & \textcolor{red}{0.956} & 0.374 & 0.170 \\
- & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.903 & \textcolor{red}{0.840} & 0.374 & 0.129 \\
- & B3 class-Mondrian \citep{sadinle2019lac}  & 0.898 & 0.894 & \textcolor{red}{0.374} & 0.161 \\
- & \textbf{B4 HCCP (ours)}                    & 0.902 & \textbf{0.876} & \textbf{0.163} & 0.158 \\
+ & B1 vanilla split CP                       & $0.899_{\pm 0.009}$ & $\textcolor{red}{0.982_{\pm 0.008}}$ & $0.265_{\pm 0.153}$ \\
+ & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & $0.901_{\pm 0.013}$ & $\textcolor{red}{0.821_{\pm 0.049}}$ & $\textcolor{red}{0.401_{\pm 0.187}}$ \\
+ & B3 class-Mondrian \citep{sadinle2019lac}  & $0.898_{\pm 0.008}$ & $0.895_{\pm 0.032}$ & $\textcolor{red}{0.410_{\pm 0.172}}$ \\
+ & \textbf{B4 HCCP (ours)}                    & $0.900_{\pm 0.012}$ & $\mathbf{0.875_{\pm 0.040}}$ & $\mathbf{0.173_{\pm 0.192}}$ \\
 \midrule
 \multirow{4}{*}{Complex ($\pi_{+} = 0.10$)}
- & B1 vanilla split CP                       & 0.900 & \textcolor{red}{0.616} & 0.802 & 0.049 \\
- & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & 0.899 & \textcolor{red}{0.656} & 0.802 & 0.047 \\
- & B3 class-Mondrian \citep{sadinle2019lac}  & 0.900 & 0.902 & \textcolor{red}{0.802} & 0.053 \\
- & \textbf{B4 HCCP (ours)}                    & 0.900 & \textbf{0.905} & \textbf{0.024} & 0.047 \\
+ & B1 vanilla split CP                       & $0.900_{\pm 0.003}$ & $\textcolor{red}{0.614_{\pm 0.018}}$ & $\textcolor{red}{0.822_{\pm 0.028}}$ \\
+ & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & $0.900_{\pm 0.003}$ & $\textcolor{red}{0.624_{\pm 0.018}}$ & $\textcolor{red}{0.827_{\pm 0.025}}$ \\
+ & B3 class-Mondrian \citep{sadinle2019lac}  & $0.900_{\pm 0.004}$ & $0.900_{\pm 0.016}$ & $\textcolor{red}{0.805_{\pm 0.051}}$ \\
+ & \textbf{B4 HCCP (ours)}                    & $0.900_{\pm 0.003}$ & $\mathbf{0.905_{\pm 0.010}}$ & $\mathbf{0.060_{\pm 0.031}}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -312,6 +312,34 @@ B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{HCCP decoupled from the GBM aggregator (deferred from \S\ref{sec:experiments:h2h})}
+\label{app:tables:hccp_logreg}
+
+To rule out ``HCCP's coverage advantage rides on the GBM aggregator's $+14.8$\,pp AUPRC improvement'', we apply the same HCCP calibration on top of the published TraitGym LogReg aggregator (Mendelian feature set CADD+GPN-MSA+Borzoi, AUPRC $0.752$; Complex feature set CADD+Borzoi, AUPRC $0.332$) instead of our GBM. The variance head $\shat(x)$ is reused unchanged, since it is fit on features $X$ rather than on $\phat_{\mathrm{GBM}}$ (a per-$x$ aleatoric estimator, base-predictor agnostic). Table~\ref{tab:hccp_logreg} reports $B=200$ chrom-bootstrap CIs.
+
+\begin{table}[h]
+\centering
+\small
+\caption{HCCP applied on $(\phat_{\mathrm{LogReg}}, \shat)$ vs.\ on $(\phat_{\mathrm{GBM}}, \shat)$. The $\shat$-bin gap and minority-class coverage are essentially unchanged across the base-predictor swap, confirming the conformal-side gain is decoupled from the AUPRC gain.}
+\label{tab:hccp_logreg}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llccc}
+\toprule
+Dataset & Aggregator & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ \\
+\midrule
+\multirow{2}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
+ & GBM (ours)            & $0.900_{\pm 0.012}$ & $0.875_{\pm 0.040}$ & $0.173_{\pm 0.192}$ \\
+ & LogReg (TraitGym)     & $0.897_{\pm 0.018}$ & $0.897_{\pm 0.022}$ & $0.133_{\pm 0.197}$ \\
+\midrule
+\multirow{2}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
+ & GBM (ours)            & $0.900_{\pm 0.003}$ & $0.905_{\pm 0.010}$ & $0.060_{\pm 0.031}$ \\
+ & LogReg (TraitGym)     & $0.900_{\pm 0.004}$ & $0.901_{\pm 0.010}$ & $0.059_{\pm 0.034}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Complex row is essentially identical across the swap (gap $0.060$ vs $0.059$, $\mathrm{cov}_{|Y=1}$ $0.905$ vs $0.901$). On Mendelian, HCCP-on-LogReg even gives a slightly tighter gap ($0.133$ vs $0.173$) because the LogReg point predictor is smoother and aligns more directly with the residual-trained $\shat$. Both still clear the recommended $(\mathrm{cov}_{|Y=1} \geq 0.85, \shat\text{-bin gap} \leq 0.20)$ corner.
 
 \subsection{A-SL audit (deferred from \S\ref{sec:formulation:setup})}
 \label{app:tables:asl_audit}
