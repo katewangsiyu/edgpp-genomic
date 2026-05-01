@@ -21,6 +21,12 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
+# --- Unified NeurIPS-classic style ---
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from T_tools.paper_style import apply_paper_style  # noqa: E402
+apply_paper_style()
+
 # ── NeurIPS style ──
 NEURIPS_COL = 3.25    # single column inches
 NEURIPS_DCOL = 6.75   # double column inches
@@ -537,32 +543,20 @@ def fig8_pareto():
         color = COLORS["hccp"] if is_hccp else (COLORS["degu"] if "DEGU" in label else COLORS["homosc"])
         facecolor = color if is_mendelian else "white"
 
+        flat_label = label.replace("\n", " ")
         ax.scatter(singleton, worst_gap, s=70, marker=marker,
                    facecolors=facecolor, edgecolors=color, linewidths=1.5,
-                   zorder=5)
-        # Store for labeling
-        all_points.append((singleton, worst_gap, label.replace("\n", " "),
-                           color, is_hccp))
+                   label=flat_label, zorder=5)
+        all_points.append((singleton, worst_gap, flat_label, color, is_hccp))
 
-    # Smart label placement — offset based on position
-    label_offsets = {
-        "HCCP (Mendelian)": (0.03, 0.005),
-        "DEGU (Mendelian)": (-0.03, 0.005),
-        "HCCP (Complex)": (0.04, 0.003),
-        "DEGU (Complex)": (0.04, 0.003),
-    }
-    for sx, sy, label, color, is_hccp in all_points:
-        off = label_offsets.get(label, (0.03, 0.003))
-        ha = "left"
-        ax.annotate(label, xy=(sx, sy),
-                    xytext=(sx + off[0], sy + off[1]),
-                    fontsize=6.5, ha=ha, va="bottom", color=color, weight="bold",
-                    arrowprops=dict(arrowstyle="-", color=color, lw=0.6, alpha=0.5))
+    # Use legend instead of inline labels (avoids overlap)
+    ax.legend(loc="upper left", fontsize=7, ncol=2, frameon=True,
+              framealpha=0.9, edgecolor="0.7")
 
     # Ideal region
-    ax.axhspan(0, 0.03, color="#2ca02c", alpha=0.06, zorder=0)
-    ax.text(0.62, 0.015, "ideal zone", fontsize=6.5, color="#2ca02c",
-            alpha=0.6, style="italic")
+    ax.axhspan(0, 0.03, color="#2ca02c", alpha=0.08, zorder=0)
+    ax.text(0.78, 0.0015, "ideal zone", fontsize=7, color="#2ca02c",
+            alpha=0.85, style="italic", ha="right")
 
     ax.set_xlabel("Singleton fraction (efficiency →)")
     ax.set_ylabel("Worst $\\hat\\sigma$-bin gap (← coverage)")
@@ -613,17 +607,27 @@ def fig9_per_chrom():
         norm_bar = mcolors.TwoSlopeNorm(vmin=-0.10, vcenter=0, vmax=0.10)
         colors = [cmap_bar(norm_bar(c - 0.9)) for c in covs]
 
-        ax.bar(x, covs, color=colors, edgecolor="white", lw=0.3, width=0.7)
-        ax.axhline(0.9, color="black", ls="--", lw=0.8, alpha=0.4)
-        ax.axhspan(0.87, 0.93, color=COLORS["hccp"], alpha=0.05, zorder=0)
+        bars = ax.bar(x, covs, color=colors, edgecolor="white", lw=0.3, width=0.7)
+        ax.axhline(0.9, color="black", ls="--", lw=0.9, alpha=0.6,
+                   label=r"target $1{-}\alpha = 0.90$")
+        ax.axhspan(0.87, 0.93, color=COLORS["hccp"], alpha=0.08, zorder=0,
+                   label=r"$\pm 0.03$ band")
         ax.set_xticks(x)
         ax.set_xticklabels([f"chr{c}" for c in chroms], rotation=45,
-                           ha="right", fontsize=5.5)
+                           ha="right", fontsize=6)
         ax.set_title(title)
         ax.set_ylim(0.75, 1.0)
+        ax.legend(loc="lower right", fontsize=6.5, framealpha=0.9)
 
     axes[0].set_ylabel("Mondrian coverage")
-    fig.tight_layout(w_pad=1.5)
+
+    # Shared colorbar for the deviation-from-target encoding
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.RdYlBu, norm=norm_bar)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=axes, orientation="horizontal",
+                        shrink=0.4, pad=0.18, aspect=30)
+    cbar.set_label(r"coverage $-$ target", fontsize=7)
+    cbar.ax.tick_params(labelsize=6)
     fig.savefig(OUT / "fig9_per_chrom.pdf")
     fig.savefig(OUT / "fig9_per_chrom.png")
     plt.close(fig)

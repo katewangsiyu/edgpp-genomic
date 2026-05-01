@@ -1,0 +1,161 @@
+% Concurrent-work survey for HCCP @ NeurIPS 2027
+% Generated: 2026-04-30 by /deep-research pipeline
+% Topic: heteroscedastic conformal prediction × variant effect prediction
+
+@inproceedings{Bairaktari2025,
+  title     = {Kandinsky Conformal Prediction: Beyond Class- and Covariate-Conditional Coverage},
+  author    = {Bairaktari, Konstantina and Wu, Jiayun and Wu, Steven},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning (ICML)},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=IHAnkPkoiX},
+  note      = {Static-group framework; subsumes class-cond + Mondrian as special cases; dim-dependent O(sqrt(d/n)); no lower bound.}
+}
+
+@inproceedings{Yao2026,
+  title     = {Non-Asymptotic Analysis of Efficiency in Conformalized Regression},
+  author    = {Yao, Yunzhen and He, Lie and Gastpar, Michael},
+  booktitle = {Proceedings of the 14th International Conference on Learning Representations (ICLR)},
+  year      = {2026},
+  archivePrefix = {arXiv},
+  eprint    = {2510.07093},
+  url       = {https://arxiv.org/abs/2510.07093},
+  note      = {Split-CP linear quantile regression; dim-free O(n^{-1/2}) but no Mondrian, no class imbalance, no lower bound.}
+}
+
+@inproceedings{Plassier2025,
+  title     = {Probabilistic Conformal Prediction with Approximate Conditional Validity},
+  author    = {Plassier, Vincent and others},
+  booktitle = {Proceedings of the 13th International Conference on Learning Representations (ICLR)},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=Nfd7z9d6Bb},
+  note      = {Soft density-ratio reweighting via Mixture Density Network; rate O_s(sqrt(n^{-1} log n + r_n)); critique of partition-based CP.}
+}
+
+@article{Zhou2026,
+  title   = {Uncertainty-aware genomic deep learning with knowledge distillation},
+  author  = {Zhou, Jessica and Rizzo, Steven and Christensen, Daniel and Tang, Andre and Koo, Peter K.},
+  journal = {npj Artificial Intelligence},
+  volume  = {2},
+  number  = {3},
+  year    = {2026},
+  url     = {https://www.nature.com/articles/s44387-025-00053-3},
+  note    = {DEGU --- Distilling Ensembles for Genomic Uncertainty. Originally bioRxiv 2024-11; published npj AI Feb 2026. Mentions conformal prediction conceptually.}
+}
+
+@inproceedings{Gauthier2025,
+  title     = {Backward Conformal Prediction},
+  author    = {Gauthier, Etienne and Bach, Francis and Jordan, Michael I.},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2025},
+  archivePrefix = {arXiv},
+  eprint    = {2505.13732},
+  url       = {https://arxiv.org/abs/2505.13732},
+  note      = {Fixes set-size rule, lets coverage adapt; LOO estimator; O_P(1/sqrt(n)) concentration. Complement to forward HCCP.}
+}
+
+@inproceedings{Kiyani2024,
+  title     = {Length Optimization in Conformal Prediction},
+  author    = {Kiyani, Shayan and Pappas, George J. and Hassani, Hamed},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2024},
+  url       = {https://openreview.net/forum?id=E4ILjwzdEA},
+  note      = {Minimax over score + hypothesis class; PAC O(1/sqrt(n)) rate matching T5.1. No explicit Mondrian discussion.}
+}
+
+@inproceedings{RC3P2024,
+  title     = {Conformal Prediction for Class-wise Coverage via Augmented Label Rank Calibration},
+  author    = {Shi, Yuanjie and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2024},
+  url       = {https://openreview.net/forum?id=T7dS1Ghwwu},
+  note      = {Class-conditional coverage via APS/RAPS/HPS + label-rank filtering; finite-sample distribution-free; sigma-hat-agnostic.}
+}
+
+@article{Gibbs2025,
+  title   = {Conformal Prediction with Conditional Guarantees},
+  author  = {Gibbs, Isaac and Cherian, John J. and Cand{\`e}s, Emmanuel J.},
+  journal = {Journal of Machine Learning Research},
+  year    = {2025},
+  archivePrefix = {arXiv},
+  eprint  = {2305.12616},
+  url     = {https://arxiv.org/abs/2305.12616},
+  note    = {Foundational quantile-based conditional coverage bounds.}
+}
+
+@inproceedings{Amin2025,
+  title     = {Training Flexible Models of Genetic Variant Effects from Functional Annotations using Accelerated Linear Algebra},
+  author    = {Amin, Alan Nawzad and Potapczynski, Andres and Wilson, Andrew Gordon},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning (ICML)},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=oOtdWiLb1e},
+  note      = {DeepWAS: population-scale variant effect estimation; UK Biobank; no uncertainty quantification; orthogonal to TraitGym + AUPRC framework.}
+}
+
+@inproceedings{OTCP2025,
+  title     = {Optimal Transport-based Conformal Prediction},
+  author    = {Klein, Michael and others},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning (ICML)},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=kEAyffH3tn},
+  note      = {Multivariate CP via Monge-Kantorovich rank maps; marginal coverage; O(n^{-1}) excess from ties; computational cost O(n^3) baseline.}
+}
+
+@inproceedings{LevyProkhorov2025,
+  title     = {Conformal Prediction under L\'evy-Prokhorov Distribution Shifts: Robustness to Local and Global Distortions},
+  author    = {Anonymous and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2025},
+  note      = {Robustness extension. (preprint at survey time)}
+}
+
+@inproceedings{KernelSOS2025,
+  title     = {Scalable and adaptive prediction bands with kernel sum-of-squares},
+  author    = {Anonymous and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2025},
+  note      = {Adaptive prediction band width via kernel SOS.}
+}
+
+@inproceedings{MoEGating2026,
+  title     = {Adaptive Conformal Prediction via Mixture-of-Experts Gating Similarity},
+  author    = {Anonymous and others},
+  booktitle = {Proceedings of the 14th International Conference on Learning Representations (ICLR)},
+  year      = {2026},
+  note      = {Adaptive bin partitioning rival to fixed-K Mondrian.}
+}
+
+@article{HQRWACI2024,
+  title   = {Enhancing reliability in prediction intervals using point forecasters: Heteroscedastic Quantile Regression and Width-Adaptive Conformal Inference},
+  author  = {Anonymous and others},
+  journal = {arXiv preprint},
+  year    = {2024},
+  archivePrefix = {arXiv},
+  eprint  = {2406.14904},
+  note    = {(preprint) HQR + WACI for heteroscedastic intervals.}
+}
+
+@article{MultivariateCGS2025,
+  title   = {Multivariate Conformal Prediction via Conformalized Gaussian Scoring},
+  author  = {Anonymous and others},
+  journal = {arXiv preprint},
+  year    = {2025},
+  archivePrefix = {arXiv},
+  eprint  = {2507.20941},
+  note    = {(preprint) Whitening residuals to standardize local variance.}
+}
+
+@inproceedings{LikelihoodFitness2025,
+  title     = {From Likelihood to Fitness: Improving Variant Effect Prediction in Protein and Genome Language Models},
+  author    = {Anonymous and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2025},
+  note      = {Protein-LM VEP improvement.}
+}
+
+@inproceedings{PRSformer2025,
+  title     = {{PRSformer}: Disease Prediction from Million-Scale Individual Genotypes},
+  author    = {Anonymous and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2025},
+  note      = {Population-scale transformer for disease prediction.}
+}

@@ -6,6 +6,12 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+# --- Unified NeurIPS-classic style ---
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from T_tools.paper_style import apply_paper_style  # noqa: E402
+apply_paper_style()
+
 
 def main() -> None:
     results = json.load(open("outputs/proteingym_hccp_n50/per_assay_results.json"))
@@ -33,12 +39,23 @@ def main() -> None:
     ax.set_xlim(0.15, 1.0)
     ax.set_ylim(0.75, 0.97)
 
-    # Highlight the outlier (CD19 with AUPRC 0.24)
-    outlier_idx = int(np.argmin(auprcs))
-    ax.annotate(names[outlier_idx].split("_")[0],
-                 (auprcs[outlier_idx], covs[outlier_idx]),
-                 xytext=(10, 10), textcoords="offset points",
-                 fontsize=8, color="#555")
+    # Highlight outliers (cov < 0.85, the §6.5 6-outlier set) — alternate up/down offsets
+    outlier_idxs = [i for i, c in enumerate(covs) if c < 0.85]
+    # Sort by AUPRC so we can alternate placement
+    outlier_idxs.sort(key=lambda i: auprcs[i])
+    for rank, i in enumerate(outlier_idxs):
+        short = names[i].split("_")[0][:8]
+        # Alternate offsets: even=upper-right, odd=lower-left
+        if rank % 2 == 0:
+            xytext, ha, va = (10, 8), "left", "bottom"
+        else:
+            xytext, ha, va = (-10, -8), "right", "top"
+        ax.annotate(short,
+                    (auprcs[i], covs[i]),
+                    xytext=xytext, textcoords="offset points",
+                    fontsize=6.5, color="#882200", ha=ha, va=va,
+                    arrowprops=dict(arrowstyle="-", color="#882200",
+                                    lw=0.5, alpha=0.6))
 
     # Panel B: distribution of σ̂-bin gap
     ax2 = axes[1]
@@ -48,10 +65,10 @@ def main() -> None:
                 label=f"mean = {gaps.mean():.3f}")
     ax2.axvline(np.median(gaps), color="#006000", ls="--", lw=1.5,
                 label=f"median = {np.median(gaps):.3f}")
-    # TraitGym benchmarks
-    ax2.axvline(0.004, color="#aa7700", ls=":", lw=1,
+    # TraitGym benchmarks (thicker dotted lines so they're visible)
+    ax2.axvline(0.004, color="#aa7700", ls=":", lw=1.8,
                 label="TraitGym trait-LOO floor (0.004)")
-    ax2.axvline(0.077, color="#550055", ls=":", lw=1,
+    ax2.axvline(0.077, color="#550055", ls=":", lw=1.8,
                 label="TraitGym chrom-LOO (0.077)")
     ax2.set_xlabel(r"$\hat\sigma$-bin coverage gap")
     ax2.set_ylabel("number of assays")

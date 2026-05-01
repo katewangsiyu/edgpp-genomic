@@ -71,6 +71,13 @@ X  & 250 & 0.958 & 0.058 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/fig9_per_chrom.pdf}
+\caption{Per-chromosome HCCP marginal coverage on chrom-LOO ($\alpha = 0.10$, $K = 5$, target $= 0.90$). \textbf{Mendelian (left)} shows substantial cross-chromosome variability driven by clustering of pathogenic variants: chr6, chr19, and chr20 under-cover (worst chr19 at $0.828$); chrX, chr3, chr11 over-cover. The variability is consistent with the high cell-level KS rejection rate on Mendelian (App.~\ref{app:proofs}) and motivates T3$'$'s robust certificate (Thm.~\ref{thm:t3prime_main}) over T3's exact bin-conditional bound. \textbf{Complex (right)} is tighter — all chromosomes within $\pm 0.04$ of target — reflecting Complex's lower cross-chromosome heterogeneity.}
+\label{fig:per_chrom}
+\end{figure}
+
 \subsection{Per-trait clinical clustering (Complex traits)}
 \label{app:tables:trait_cluster}
 
@@ -217,6 +224,13 @@ DEGU (ensemble)   & Complex   & 0.901 & 0.907 & 0.057 & 0.028 \\
 
 \paragraph{Interpretation.}
 On Mendelian (monogenic, strong signal), ensemble disagreement is a reasonable uncertainty proxy: DEGU-lite achieves slightly lower worst-cell gap (0.033 vs.\ 0.041). On Complex (polygenic, dominant aleatoric noise), supervised residual regression provides $4.3\times$ better worst-cell coverage (0.013 vs.\ 0.057). This confirms the epistemic--aleatoric decomposition discussed in §\ref{sec:discussion}: where model disagreement and data noise contribute equally, both $\shat$ sources suffice; where data noise dominates (Complex traits), the supervised head captures what ensembles cannot.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/fig8_pareto.pdf}
+\caption{HCCP vs DEGU-lite on the (efficiency, $\shat$-bin coverage gap) Pareto plane. X-axis: singleton fraction (variants receiving a confident $\{0\}$ or $\{1\}$ set rather than the abstention $\{0,1\}$); higher is more efficient. Y-axis: worst $\shat$-bin coverage gap (lower is better). The shaded \emph{ideal zone} marks the top-right corner of the plane (high efficiency + low gap). On \textbf{Complex}, HCCP sits in the ideal zone with $\sim 4\times$ smaller gap than DEGU-lite at matched efficiency, confirming the aleatoric-dominated regime favours supervised $\shat$. On \textbf{Mendelian}, DEGU is marginally below HCCP (0.033 vs.\ 0.041), consistent with monogenic signal making ensemble disagreement a near-equivalent proxy. Both methods avoid the high-gap, low-efficiency corner that homoscedastic split-CP and class-Mondrian baselines occupy in Tab.~\ref{tab:h2h} and Tab.~\ref{tab:cp_baselines}.}
+\label{fig:pareto_degu}
+\end{figure}
 
 \subsection{Cross-dataset transfer}
 \label{app:tables:crossdataset}

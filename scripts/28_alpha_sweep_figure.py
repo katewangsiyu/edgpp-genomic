@@ -11,6 +11,12 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+# --- Unified NeurIPS-classic style ---
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from T_tools.paper_style import apply_paper_style  # noqa: E402
+apply_paper_style()
+
 
 def load_sweeps(path: Path) -> dict:
     d = json.load(open(path))

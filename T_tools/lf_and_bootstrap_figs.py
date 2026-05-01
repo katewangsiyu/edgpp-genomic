@@ -14,6 +14,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+# --- Unified NeurIPS-classic style ---
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from T_tools.paper_style import apply_paper_style  # noqa: E402
+apply_paper_style()
+
 REPO = Path(__file__).resolve().parents[1]
 FIG = REPO / "papers" / "neurips2027_pathA" / "figures"
 FIG.mkdir(parents=True, exist_ok=True)
@@ -40,24 +46,30 @@ def fig_lf_forest():
             y = ys[i]
             ax.plot([lo, hi], [y, y], color=color, lw=3, alpha=0.6)
             ax.plot([point], [y], "o", color=color, markersize=8)
-            ax.text(max(point, hi) * 1.15, y, f"$K^\\star\\!=\\!{Kstar}$",
-                    fontsize=8, va="center")
+            # Cap text x-position so K* annotation stays inside axis on log scale
+            txt_x = min(max(point, hi) * 1.15, 350)
+            ax.text(txt_x, y, f"$K^\\star\\!=\\!{Kstar}$",
+                    fontsize=8, va="center", clip_on=False)
         ax.set_yticks(ys)
         ax.set_yticklabels([r[0] for r in sub], fontsize=9)
         ax.set_xscale("log")
         ax.set_xlabel(r"$\hat L_F$ (log scale)")
         ax.set_title(f"{dataset}")
         ax.grid(True, axis="x", which="both", alpha=0.3)
-        # K_CV reference
+        # K_CV reference (top-left to avoid overlapping K* annotations on the right)
         K_cv = 3 if dataset == "Mendelian" else 2
         ax.axvline(0.4, color="k", linestyle=":", alpha=0)  # invisible spacer
-        ax.text(0.97, 0.05, fr"$\hat K_{{\mathrm{{CV}}}}={K_cv}$",
-                transform=ax.transAxes, ha="right", va="bottom",
+        ax.text(0.03, 0.95, fr"$\hat K_{{\mathrm{{CV}}}}={K_cv}$",
+                transform=ax.transAxes, ha="left", va="top",
                 fontsize=10, fontweight="bold",
                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="k", alpha=0.8))
-    fig.suptitle(r"$L_F$ estimator 95\% CIs and resulting $K^\star$ "
+    fig.suptitle(r"$L_F$ estimator 95% CIs and resulting $K^\star$ "
                  r"(LCLS gives tight CIs; legacy max-of-ratios saturates)",
                  fontsize=10)
+    # Expand x-axis to fit K* annotations on the right
+    for ax in axes:
+        xmin, xmax = ax.get_xlim()
+        ax.set_xlim(xmin, xmax * 2.5)
     fig.tight_layout()
     out = FIG / "fig_lf_forest.pdf"
     fig.savefig(out, bbox_inches="tight")
@@ -81,14 +93,14 @@ def fig_bootstrap_density():
         bs_mean = float(d["summary"]["sigma_cov_range"]["mean"])
         bs_std = float(d["summary"]["sigma_cov_range"]["std"])
         # Histogram + KDE
-        ax.hist(gaps, bins=30, density=True, color="C0", alpha=0.5, edgecolor="k", linewidth=0.4)
+        ax.hist(gaps, bins=30, density=False, color="C0", alpha=0.5, edgecolor="k", linewidth=0.4)
         # Mean / point reference lines
         ax.axvline(bs_mean, color="C0", linestyle="-", lw=2,
                    label=fr"bootstrap mean $= {bs_mean:.3f}$")
         ax.axvline(point_estimates[label], color="C3", linestyle="--", lw=2,
                    label=fr"all-chrom point $= {point_estimates[label]:.3f}$")
         ax.set_xlabel(r"per-resample max-bin coverage gap")
-        ax.set_ylabel("density")
+        ax.set_ylabel("count")
         ax.set_title(label, fontsize=10)
         ax.grid(True, axis="y", alpha=0.3)
         ax.legend(fontsize=8, loc="upper right")

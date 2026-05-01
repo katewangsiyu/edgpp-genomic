@@ -23,6 +23,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
+
+# --- Unified NeurIPS-classic style ---
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from T_tools.paper_style import apply_paper_style  # noqa: E402
+apply_paper_style()
 from sklearn.model_selection import train_test_split
 
 REPO = Path(__file__).resolve().parents[1]

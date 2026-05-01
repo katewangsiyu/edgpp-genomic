@@ -42,6 +42,12 @@ import numpy as np
 import pandas as pd
 from scipy.stats import ks_2samp
 
+# --- Unified NeurIPS-classic style ---
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from T_tools.paper_style import apply_paper_style  # noqa: E402
+apply_paper_style()
+
 
 def _bin_pairs(
     sigma: np.ndarray, scores: np.ndarray, mask: np.ndarray,

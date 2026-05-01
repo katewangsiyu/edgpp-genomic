@@ -9,11 +9,11 @@
 不确定某个新文件属于哪一层时，先问我。
 ## 硬性目标（不可动）
 
-**论文出口**:
-- **P0（硬目标，无时间约束）**: NeurIPS 2027 main (~2027-05) — Path A conformalized heteroscedastic VEP
-- **P1（保底）**: NeurIPS 2026 D&B Track (~2026-06) — Day 10 GBM+conformal 素材独立打包
+**论文出口（2026-05-01 pivot）**:
+- **P0（硬目标）**: **NeurIPS 2026 main track** — Abstract DDL **2026-05-04 AOE**, Full paper DDL **2026-05-06 AOE**. Path A conformalized heteroscedastic VEP. 论文模板已切 `neurips_2026.sty` (commit 1770e17), 主文 8 页 + appendix.
+- **P1（保底）**: NeurIPS 2026 D&B Track（同 deadline）— Day 10 GBM+conformal 素材独立打包. 若 main 来不及降级到 D&B.
 - **P2（期刊保底）**: npj AI（直接对标 DEGU）
-- **里程碑**: 2026-08 bioRxiv preprint 占坑
+- **未走的旧目标**: NeurIPS 2027 main + 2026-08 bioRxiv preprint 占坑（pivot 后已废弃）
 
 **评测基准**: TraitGym (Benegas/Eraslan/Song, bioRxiv 2025)
 - Mendelian matched_9（3380 变异）+ complex_traits matched_9

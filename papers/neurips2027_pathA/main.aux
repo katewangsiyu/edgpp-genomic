@@ -19,6 +19,7 @@
 \citation{barber2020limits}
 \citation{barber2023exchangeability}
 \citation{benegas2025traitgym}
+\citation{bostrom2020mondrian}
 \citation{notin2023proteingym}
 \citation{barber2020limits}
 \citation{barber2020limits}
@@ -34,6 +35,9 @@
 \citation{xie2025imbalancedcp,ding2023classcond,shi2024augmentedrank}
 \citation{barber2023exchangeability}
 \citation{notin2023proteingym}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces HCCP at a glance. \textbf  {(a)} Heteroscedastic aggregator outputs $(\hat  {p}, \hat  {\sigma })$; nonconformity score $s(x,y) = |y - \hat  {p}(x)| / \hat  {\sigma }(x)$ scales the decision radius by local uncertainty. \textbf  {(b)} Mondrian calibration partitions the labeled data by $(y \times \hat  {\sigma }\text  {-bin})$; per-cell quantile thresholds $\hat  {q}_{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet  {barber2020limits}'s pointwise impossibility. \textbf  {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$.}}{2}{figure.1}\protected@file@percent }
+\newlabel{fig:concept}{{1}{2}{HCCP at a glance. \textbf {(a)} Heteroscedastic aggregator outputs $(\phat , \shat )$; nonconformity score $s(x,y) = |y - \phat (x)| / \shat (x)$ scales the decision radius by local uncertainty. \textbf {(b)} Mondrian calibration partitions the labeled data by $(y \times \shat \text {-bin})$; per-cell quantile thresholds $\qhat _{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet {barber2020limits}'s pointwise impossibility. \textbf {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$}{figure.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
 \citation{vovk2005algorithmic,vovk2003mondrian,angelopoulos2022gentle}
 \citation{barber2020limits}
 \citation{papadopoulos2008normalized}
@@ -45,13 +49,13 @@
 \citation{deng2021isotonic}
 \citation{tibshirani2019weighted,gibbs2021adaptive,barber2023exchangeability}
 \citation{dewolf2025conditional}
+\citation{yao2026nonasymp}
+\citation{plassier2025cp2hpd}
 \citation{crps_binning2026}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces HCCP at a glance. \textbf  {(a)} Heteroscedastic aggregator outputs $(\hat  {p}, \hat  {\sigma })$; nonconformity score $s(x,y) = |y - \hat  {p}(x)| / \hat  {\sigma }(x)$ scales the decision radius by local uncertainty. \textbf  {(b)} Mondrian calibration partitions the labeled data by $(y \times \hat  {\sigma }\text  {-bin})$; per-cell quantile thresholds $\hat  {q}_{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet  {barber2020limits}'s pointwise impossibility. \textbf  {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$.}}{2}{figure.1}\protected@file@percent }
-\newlabel{fig:concept}{{1}{2}{HCCP at a glance. \textbf {(a)} Heteroscedastic aggregator outputs $(\phat , \shat )$; nonconformity score $s(x,y) = |y - \phat (x)| / \shat (x)$ scales the decision radius by local uncertainty. \textbf {(b)} Mondrian calibration partitions the labeled data by $(y \times \shat \text {-bin})$; per-cell quantile thresholds $\qhat _{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet {barber2020limits}'s pointwise impossibility. \textbf {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$}{figure.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
 \citation{sadinle2019lac}
 \citation{shi2024augmentedrank,ding2023classcond}
 \citation{xie2025imbalancedcp}
+\citation{bairaktari2025kandinsky}
 \citation{nix1994nll}
 \citation{lakshminarayanan2017simple}
 \citation{zhou2026degu}
@@ -61,23 +65,21 @@
 \citation{benegas2023gpnmsa}
 \citation{avsec2026alphagenome}
 \citation{papangelou2025cpgenomics,wang2025cqrprs,pcos2025conformal}
-\citation{benegas2025traitgym}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{3}{section.2}\protected@file@percent }
 \newlabel{sec:related}{{2}{3}{Related work}{section.2}{}}
 \@writefile{toc}{\contentsline {paragraph}{Conformal prediction with conditioning.}{3}{section*.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Class-conditional and imbalanced CP.}{3}{section*.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Heteroscedastic UQ and VEP benchmarks.}{3}{section*.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}Problem formulation}{3}{section.3}\protected@file@percent }
-\newlabel{sec:formulation}{{3}{3}{Problem formulation}{section.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Setup and assumptions}{3}{subsection.3.1}\protected@file@percent }
-\newlabel{sec:formulation:setup}{{3.1}{3}{Setup and assumptions}{subsection.3.1}{}}
-\newlabel{ass:A1}{{1}{3}{A1 chrom-group exchangeability}{assumption.1}{}}
-\newlabel{ass:A1prime}{{2}{3}{A1$'$ chrom-wise i.i.d}{assumption.2}{}}
-\newlabel{ass:A2}{{3}{3}{A2 score stationarity across chromosomes}{assumption.3}{}}
+\citation{benegas2025traitgym}
 \citation{lcls2024lipschitz}
 \citation{vovk2003mondrian}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces HCCP --- Heteroscedastic Class-Conditional Conformal Prediction}}{4}{algorithm.1}\protected@file@percent }
-\newlabel{alg:hccp}{{1}{4}{Pipeline}{algorithm.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Problem formulation}{4}{section.3}\protected@file@percent }
+\newlabel{sec:formulation}{{3}{4}{Problem formulation}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Setup and assumptions}{4}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:formulation:setup}{{3.1}{4}{Setup and assumptions}{subsection.3.1}{}}
+\newlabel{ass:A1}{{1}{4}{A1 chrom-group exchangeability}{assumption.1}{}}
+\newlabel{ass:A1prime}{{2}{4}{A1$'$ chrom-wise i.i.d}{assumption.2}{}}
+\newlabel{ass:A2}{{3}{4}{A2 score stationarity across chromosomes}{assumption.3}{}}
 \newlabel{ass:ASL}{{4}{4}{A-SL Score-Lipschitz regularity}{assumption.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Score and prediction set}{4}{subsection.3.2}\protected@file@percent }
 \newlabel{sec:formulation:score}{{3.2}{4}{Score and prediction set}{subsection.3.2}{}}
@@ -89,7 +91,10 @@
 \@writefile{toc}{\contentsline {paragraph}{Why the joint $(y \times \hat  {\sigma }\text  {-bin})$ partition.}{4}{section*.6}\protected@file@percent }
 \citation{barber2023exchangeability}
 \citation{barber2020limits}
+\citation{yao2026nonasymp}
 \citation{vanderlaan2024sccp}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces HCCP --- Heteroscedastic Class-Conditional Conformal Prediction}}{5}{algorithm.1}\protected@file@percent }
+\newlabel{alg:hccp}{{1}{5}{Pipeline}{algorithm.1}{}}
 \@writefile{toc}{\contentsline {paragraph}{$K$ selection: nested chrom-LOO.}{5}{section*.7}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {5}Theory}{5}{section.5}\protected@file@percent }
 \newlabel{sec:theory}{{5}{5}{Theory}{section.5}{}}
@@ -97,15 +102,20 @@
 \newlabel{sec:theory:t3prime}{{5.1}{5}{Bin-conditional coverage (T3 / T3$'$)}{subsection.5.1}{}}
 \newlabel{thm:t3}{{1}{5}{T3 bin-conditional coverage, exact}{theorem.1}{}}
 \newlabel{thm:t3prime_main}{{2}{5}{T3$'$ bin-conditional coverage, robust}{theorem.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Optimal bin count and matching lower bound (T5.1, T5.2)}{5}{subsection.5.2}\protected@file@percent }
-\newlabel{sec:theory:t5}{{5.2}{5}{Optimal bin count and matching lower bound (T5.1, T5.2)}{subsection.5.2}{}}
-\newlabel{eq:gap_decomp}{{3}{5}{Optimal bin count and matching lower bound (T5.1, T5.2)}{equation.5.3}{}}
-\newlabel{thm:t5oracle}{{3}{5}{T5.1 oracle bin count}{theorem.3}{}}
-\newlabel{thm:t5lower}{{4}{5}{T5.2 matching finite-sample lower bound on the equi-bin Mondrian-$K$ class}{theorem.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Optimal bin count and within-class tight rate (T5.1, T5.2)}{5}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:theory:t5}{{5.2}{5}{Optimal bin count and within-class tight rate (T5.1, T5.2)}{subsection.5.2}{}}
 \citation{lcls2024lipschitz}
 \citation{kircher2014cadd}
 \citation{linder2025borzoi}
 \citation{benegas2023gpnmsa}
+\newlabel{eq:gap_decomp}{{3}{6}{Optimal bin count and within-class tight rate (T5.1, T5.2)}{equation.5.3}{}}
+\newlabel{thm:t5oracle}{{3}{6}{T5.1 oracle bin count}{theorem.3}{}}
+\newlabel{thm:t5lower}{{4}{6}{T5.2 within-class tight finite-sample lower bound on the equi-bin Mondrian-$K$ class}{theorem.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Summary of guarantees}{6}{subsection.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces HCCP coverage guarantees at a glance. Auxiliary lemmas (T1, T2, T1$'$, T2$'$, T3-loc, T3.b, T4) live in App.\nobreakspace  {}\ref  {app:proofs}.}}{6}{table.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Experiments}{6}{section.6}\protected@file@percent }
+\newlabel{sec:experiments}{{6}{6}{Experiments}{section.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Setup.}{6}{section*.8}\protected@file@percent }
 \citation{benegas2025traitgym}
 \citation{benegas2025traitgym}
 \citation{bostrom2020mondrian}
@@ -113,133 +123,126 @@
 \citation{hore2025rlcp}
 \citation{tibshirani2019weighted}
 \citation{vanderlaan2024sccp}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Summary of guarantees}{6}{subsection.5.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces HCCP coverage guarantees at a glance. Auxiliary lemmas (T1, T2, T1$'$, T2$'$, T3-loc, T3.b, T4) live in App.\nobreakspace  {}\ref  {app:proofs}.}}{6}{table.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Experiments}{6}{section.6}\protected@file@percent }
-\newlabel{sec:experiments}{{6}{6}{Experiments}{section.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Setup.}{6}{section*.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Main results}{6}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Head-to-head against contemporary CP}{6}{subsection.6.2}\protected@file@percent }
-\newlabel{sec:experiments:h2h}{{6.2}{6}{Head-to-head against contemporary CP}{subsection.6.2}{}}
 \citation{notin2023proteingym}
-\citation{tibshirani2019weighted}
-\citation{avsec2026alphagenome}
-\citation{zhou2026degu}
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces TraitGym chrom-LOO. HCCP at $K = 5$ for direct comparability with split-CP and class-conditional baselines. AUPRC chrom-weighted; $\hat  {\sigma }$-bin gap = max-over-bins absolute deviation from $0.90$.}}{7}{table.2}\protected@file@percent }
 \newlabel{tab:main}{{2}{7}{TraitGym chrom-LOO. HCCP at $K = 5$ for direct comparability with split-CP and class-conditional baselines. AUPRC chrom-weighted; $\shat $-bin gap = max-over-bins absolute deviation from $0.90$}{table.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Main results}{7}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Head-to-head against contemporary CP}{7}{subsection.6.2}\protected@file@percent }
+\newlabel{sec:experiments:h2h}{{6.2}{7}{Head-to-head against contemporary CP}{subsection.6.2}{}}
 \@writefile{toc}{\contentsline {paragraph}{Imbalance scaling validates T5's $\pi _{\qopname  \relax m{min}}$ dependence.}{7}{section*.9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Three-axis OOD + cross-domain stress test}{7}{subsection.6.3}\protected@file@percent }
 \newlabel{sec:experiments:ood}{{6.3}{7}{Three-axis OOD + cross-domain stress test}{subsection.6.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Failure mode: M$\to $C cross-dataset}{7}{subsection.6.4}\protected@file@percent }
-\newlabel{sec:experiments:failure_mode}{{6.4}{7}{Failure mode: M$\to $C cross-dataset}{subsection.6.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Ablations}{7}{subsection.6.5}\protected@file@percent }
+\citation{tibshirani2019weighted}
+\citation{avsec2026alphagenome}
+\citation{zhou2026degu}
 \citation{pcos2025conformal}
 \citation{richards2015acmg}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Failure mode: M$\to $C cross-dataset}{8}{subsection.6.4}\protected@file@percent }
+\newlabel{sec:experiments:failure_mode}{{6.4}{8}{Failure mode: M$\to $C cross-dataset}{subsection.6.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Ablations}{8}{subsection.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{8}{section.7}\protected@file@percent }
+\newlabel{sec:discussion}{{7}{8}{Discussion}{section.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Clinical implications.}{8}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Assumption discussion.}{8}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Broader impact.}{8}{section*.12}\protected@file@percent }
 \citation{avsec2026alphagenome}
 \bibstyle{plainnat}
 \bibdata{refs}
 \bibcite{pcos2025conformal}{{1}{2025}{{Adegoke et~al.}}{{Adegoke, Babalola, and Odesola}}}
 \bibcite{angelopoulos2022gentle}{{2}{2022}{{Angelopoulos and Bates}}{{}}}
 \bibcite{avsec2026alphagenome}{{3}{2026}{{Avsec et~al.}}{{Avsec, Latysheva, Cheng, Novati, Taylor, Ward, Bycroft, Nicolaisen, Arvaniti, Pan, Hassabis, and Kohli}}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{8}{section.7}\protected@file@percent }
-\newlabel{sec:discussion}{{7}{8}{Discussion}{section.7}{}}
-\@writefile{toc}{\contentsline {paragraph}{Clinical implications.}{8}{section*.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Assumption discussion.}{8}{section*.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Broader impact.}{8}{section*.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{8}{section.8}\protected@file@percent }
-\newlabel{sec:conclusion}{{8}{8}{Conclusion}{section.8}{}}
-\bibcite{barber2020limits}{{4}{2020}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
-\bibcite{barber2021jackknife}{{5}{2021}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
-\bibcite{barber2023exchangeability}{{6}{2023}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
-\bibcite{benegas2023gpnmsa}{{7}{2023}{{Benegas et~al.}}{{Benegas, Albors, Aw, Ye, and Song}}}
-\bibcite{benegas2025traitgym}{{8}{2025}{{Benegas et~al.}}{{Benegas, Eraslan, and Song}}}
-\bibcite{bostrom2022crepes}{{9}{2022}{{Bostr{\"o}m}}{{}}}
-\bibcite{bostrom2020mondrian}{{10}{2020}{{Bostr{\"o}m and Johansson}}{{}}}
-\bibcite{dewolf2025conditional}{{11}{2025}{{De~Wolf et~al.}}{{De~Wolf, De~Baets, and Waegeman}}}
-\bibcite{deng2021isotonic}{{12}{2021}{{Deng et~al.}}{{Deng, Han, and Zhang}}}
-\bibcite{ding2023classcond}{{13}{2023}{{Ding et~al.}}{{Ding, Angelopoulos, Bates, Jordan, and Tibshirani}}}
-\bibcite{gibbs2021adaptive}{{14}{2021}{{Gibbs and Cand{\`e}s}}{{}}}
-\bibcite{hore2025rlcp}{{15}{2025}{{Hore and Barber}}{{}}}
-\bibcite{lcls2024lipschitz}{{16}{2024}{{Huang et~al.}}{{Huang, Roberts, and Calliess}}}
-\bibcite{kircher2014cadd}{{17}{2014}{{Kircher et~al.}}{{Kircher, Witten, Jain, O'Roak, Cooper, and Shendure}}}
-\bibcite{lakshminarayanan2017simple}{{18}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
-\bibcite{lei2018distribution}{{19}{2018}{{Lei et~al.}}{{Lei, G'Sell, Rinaldo, Tibshirani, and Wasserman}}}
-\bibcite{linder2025borzoi}{{20}{2025}{{Linder et~al.}}{{Linder, Srivastava, Yuan, Agarwal, and Kelley}}}
-\bibcite{nix1994nll}{{21}{1994}{{Nix and Weigend}}{{}}}
-\bibcite{notin2023proteingym}{{22}{2023}{{Notin et~al.}}{{Notin, Kollasch, Ritter, van Niekerk, Paul, Spinner, Rollins, Shaw, Orenbuch, Weitzman, Frazer, Dias, Franceschi, Gal, and Marks}}}
-\bibcite{papadopoulos2008normalized}{{23}{2008}{{Papadopoulos et~al.}}{{Papadopoulos, Gammerman, and Vovk}}}
-\bibcite{papangelou2025cpgenomics}{{24}{2025}{{Papangelou et~al.}}{{Papangelou, Kyriakidis, Natsiavas, Chouvarda, and Malousi}}}
-\bibcite{richards2015acmg}{{25}{2015}{{Richards et~al.}}{{Richards, Aziz, Bale, Bick, Das, Gastier-Foster, Grody, Hegde, Lyon, Spector, Voelkerding, and Rehm}}}
-\bibcite{romano2019cqr}{{26}{2019}{{Romano et~al.}}{{Romano, Patterson, and Cand{\`e}s}}}
-\bibcite{sadinle2019lac}{{27}{2019}{{Sadinle et~al.}}{{Sadinle, Lei, and Wasserman}}}
-\bibcite{shi2024augmentedrank}{{28}{2024}{{Shi et~al.}}{{Shi, Ghosh, Belkhouja, Doppa, and Yan}}}
-\bibcite{tibshirani2019weighted}{{29}{2019}{{Tibshirani et~al.}}{{Tibshirani, Barber, Cand{\`e}s, and Ramdas}}}
-\bibcite{crps_binning2026}{{30}{2026}{{Toccaceli}}{{}}}
-\bibcite{vanderlaan2024sccp}{{31}{2024}{{van~der Laan}}{{}}}
-\bibcite{vovk2003mondrian}{{32}{2003}{{Vovk et~al.}}{{Vovk, Lindsay, Nouretdinov, and Gammerman}}}
-\bibcite{vovk2005algorithmic}{{33}{2005}{{Vovk et~al.}}{{Vovk, Gammerman, and Shafer}}}
-\bibcite{wang2025cqrprs}{{34}{2025}{{Wang et~al.}}{{Wang, Wang, Bogdan, Masala, Fiorillo, Devoto, Cucca, Belsky, and Ionita-Laza}}}
-\bibcite{xie2025imbalancedcp}{{35}{2025}{{Xie et~al.}}{{Xie, Zhou, Liang, Favaro, and Sesia}}}
-\bibcite{zhou2026degu}{{36}{2026}{{Zhou et~al.}}{{Zhou, Rizzo, Christensen, Tang, and Koo}}}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Full proofs of T1--T5}{10}{appendix.A}\protected@file@percent }
-\newlabel{app:proofs}{{A}{10}{Full proofs of T1--T5}{appendix.A}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Assumptions hierarchy}{10}{subsection.A.1}\protected@file@percent }
-\newlabel{app:proofs:assumptions}{{A.1}{10}{Assumptions hierarchy}{subsection.A.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Empirical validation of A2.}{11}{section*.14}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Auxiliary lemmas}{11}{subsection.A.2}\protected@file@percent }
-\newlabel{app:proofs:lemmas}{{A.2}{11}{Auxiliary lemmas}{subsection.A.2}{}}
-\newlabel{lem:rank}{{1}{11}{Rank uniformity for exchangeable sequences}{lemma.1}{}}
-\newlabel{lem:cp_quantile}{{2}{11}{Exchangeable CP quantile bound}{lemma.2}{}}
+\bibcite{bairaktari2025kandinsky}{{4}{2025}{{Bairaktari et~al.}}{{Bairaktari, Wu, and Wu}}}
+\bibcite{barber2020limits}{{5}{2020}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
+\bibcite{barber2021jackknife}{{6}{2021}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
+\bibcite{barber2023exchangeability}{{7}{2023}{{Barber et~al.}}{{Barber, Cand{\`e}s, Ramdas, and Tibshirani}}}
+\bibcite{benegas2023gpnmsa}{{8}{2023}{{Benegas et~al.}}{{Benegas, Albors, Aw, Ye, and Song}}}
+\bibcite{benegas2025traitgym}{{9}{2025}{{Benegas et~al.}}{{Benegas, Eraslan, and Song}}}
+\bibcite{bostrom2022crepes}{{10}{2022}{{Bostr{\"o}m}}{{}}}
+\bibcite{bostrom2020mondrian}{{11}{2020}{{Bostr{\"o}m and Johansson}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{9}{section.8}\protected@file@percent }
+\newlabel{sec:conclusion}{{8}{9}{Conclusion}{section.8}{}}
+\bibcite{dewolf2025conditional}{{12}{2025}{{De~Wolf et~al.}}{{De~Wolf, De~Baets, and Waegeman}}}
+\bibcite{deng2021isotonic}{{13}{2021}{{Deng et~al.}}{{Deng, Han, and Zhang}}}
+\bibcite{ding2023classcond}{{14}{2023}{{Ding et~al.}}{{Ding, Angelopoulos, Bates, Jordan, and Tibshirani}}}
+\bibcite{gibbs2021adaptive}{{15}{2021}{{Gibbs and Cand{\`e}s}}{{}}}
+\bibcite{hore2025rlcp}{{16}{2025}{{Hore and Barber}}{{}}}
+\bibcite{lcls2024lipschitz}{{17}{2024}{{Huang et~al.}}{{Huang, Roberts, and Calliess}}}
+\bibcite{kircher2014cadd}{{18}{2014}{{Kircher et~al.}}{{Kircher, Witten, Jain, O'Roak, Cooper, and Shendure}}}
+\bibcite{lakshminarayanan2017simple}{{19}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
+\bibcite{lei2018distribution}{{20}{2018}{{Lei et~al.}}{{Lei, G'Sell, Rinaldo, Tibshirani, and Wasserman}}}
+\bibcite{linder2025borzoi}{{21}{2025}{{Linder et~al.}}{{Linder, Srivastava, Yuan, Agarwal, and Kelley}}}
+\bibcite{nix1994nll}{{22}{1994}{{Nix and Weigend}}{{}}}
+\bibcite{notin2023proteingym}{{23}{2023}{{Notin et~al.}}{{Notin, Kollasch, Ritter, van Niekerk, Paul, Spinner, Rollins, Shaw, Orenbuch, Weitzman, Frazer, Dias, Franceschi, Gal, and Marks}}}
+\bibcite{papadopoulos2008normalized}{{24}{2008}{{Papadopoulos et~al.}}{{Papadopoulos, Gammerman, and Vovk}}}
+\bibcite{papangelou2025cpgenomics}{{25}{2025}{{Papangelou et~al.}}{{Papangelou, Kyriakidis, Natsiavas, Chouvarda, and Malousi}}}
+\bibcite{plassier2025cp2hpd}{{26}{2025}{{Plassier et~al.}}{{}}}
+\bibcite{richards2015acmg}{{27}{2015}{{Richards et~al.}}{{Richards, Aziz, Bale, Bick, Das, Gastier-Foster, Grody, Hegde, Lyon, Spector, Voelkerding, and Rehm}}}
+\bibcite{romano2019cqr}{{28}{2019}{{Romano et~al.}}{{Romano, Patterson, and Cand{\`e}s}}}
+\bibcite{sadinle2019lac}{{29}{2019}{{Sadinle et~al.}}{{Sadinle, Lei, and Wasserman}}}
+\bibcite{shi2024augmentedrank}{{30}{2024}{{Shi et~al.}}{{Shi, Ghosh, Belkhouja, Doppa, and Yan}}}
+\bibcite{tibshirani2019weighted}{{31}{2019}{{Tibshirani et~al.}}{{Tibshirani, Barber, Cand{\`e}s, and Ramdas}}}
+\bibcite{crps_binning2026}{{32}{2026}{{Toccaceli}}{{}}}
+\bibcite{vanderlaan2024sccp}{{33}{2024}{{van~der Laan}}{{}}}
+\bibcite{vovk2003mondrian}{{34}{2003}{{Vovk et~al.}}{{Vovk, Lindsay, Nouretdinov, and Gammerman}}}
+\bibcite{vovk2005algorithmic}{{35}{2005}{{Vovk et~al.}}{{Vovk, Gammerman, and Shafer}}}
+\bibcite{wang2025cqrprs}{{36}{2025}{{Wang et~al.}}{{Wang, Wang, Bogdan, Masala, Fiorillo, Devoto, Cucca, Belsky, and Ionita-Laza}}}
+\bibcite{xie2025imbalancedcp}{{37}{2025}{{Xie et~al.}}{{Xie, Zhou, Liang, Favaro, and Sesia}}}
+\bibcite{yao2026nonasymp}{{38}{2026}{{Yao et~al.}}{{Yao, He, and Gastpar}}}
+\bibcite{zhou2026degu}{{39}{2026}{{Zhou et~al.}}{{Zhou, Rizzo, Christensen, Tang, and Koo}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Full proofs of T1--T5}{11}{appendix.A}\protected@file@percent }
+\newlabel{app:proofs}{{A}{11}{Full proofs of T1--T5}{appendix.A}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Assumptions hierarchy}{11}{subsection.A.1}\protected@file@percent }
+\newlabel{app:proofs:assumptions}{{A.1}{11}{Assumptions hierarchy}{subsection.A.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Empirical validation of A2.}{12}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Auxiliary lemmas}{12}{subsection.A.2}\protected@file@percent }
+\newlabel{app:proofs:lemmas}{{A.2}{12}{Auxiliary lemmas}{subsection.A.2}{}}
+\newlabel{lem:rank}{{1}{12}{Rank uniformity for exchangeable sequences}{lemma.1}{}}
+\newlabel{lem:cp_quantile}{{2}{12}{Exchangeable CP quantile bound}{lemma.2}{}}
 \newlabel{lem:rescaling}{{3}{12}{Monotone score-rescaling invariance}{lemma.3}{}}
 \newlabel{lem:bin_boundary}{{4}{12}{Bin-boundary mass bound}{lemma.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Lemma\nobreakspace  {}\ref  {thm:t1}: T1 marginal coverage}{12}{subsection.A.3}\protected@file@percent }
-\newlabel{app:proofs:t1}{{A.3}{12}{Lemma~\ref {thm:t1}: T1 marginal coverage}{subsection.A.3}{}}
-\newlabel{thm:t1}{{5}{12}{T1 marginal coverage --- standard split-CP at the marginal partition level}{lemma.5}{}}
-\citation{barber2023exchangeability}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Lemma\nobreakspace  {}\ref  {thm:t1}: T1 marginal coverage}{13}{subsection.A.3}\protected@file@percent }
+\newlabel{app:proofs:t1}{{A.3}{13}{Lemma~\ref {thm:t1}: T1 marginal coverage}{subsection.A.3}{}}
+\newlabel{thm:t1}{{5}{13}{T1 marginal coverage --- standard split-CP at the marginal partition level}{lemma.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Lemma\nobreakspace  {}\ref  {thm:t2}: T2 class-conditional coverage}{13}{subsection.A.4}\protected@file@percent }
 \newlabel{app:proofs:t2}{{A.4}{13}{Lemma~\ref {thm:t2}: T2 class-conditional coverage}{subsection.A.4}{}}
 \newlabel{thm:t2}{{6}{13}{T2 class-conditional coverage --- standard split-CP at the class partition level}{lemma.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Remark.}{13}{section*.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.5}Robust fallback: T1$'$ and T2$'$}{13}{subsection.A.5}\protected@file@percent }
-\newlabel{app:proofs:t1prime_t2prime}{{A.5}{13}{Robust fallback: T1$'$ and T2$'$}{subsection.A.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Barber 2023 Theorem\nobreakspace  {}2 (restated).}{13}{section*.16}\protected@file@percent }
 \citation{barber2023exchangeability}
+\@writefile{toc}{\contentsline {paragraph}{Remark.}{14}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.5}Robust fallback: T1$'$ and T2$'$}{14}{subsection.A.5}\protected@file@percent }
+\newlabel{app:proofs:t1prime_t2prime}{{A.5}{14}{Robust fallback: T1$'$ and T2$'$}{subsection.A.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Barber 2023 Theorem\nobreakspace  {}2 (restated).}{14}{section*.16}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Empirical TV estimates.}{14}{section*.17}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.6}Proof of Theorem\nobreakspace  {}\ref  {thm:t3} (bin-conditional coverage, exact)}{14}{subsection.A.6}\protected@file@percent }
 \newlabel{app:proofs:t3}{{A.6}{14}{Proof of Theorem~\ref {thm:t3} (bin-conditional coverage, exact)}{subsection.A.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Local coverage gap bound.}{14}{section*.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.7}Lemma\nobreakspace  {}\ref  {thm:t3prime}: T3$'$ bin-conditional coverage, robust}{14}{subsection.A.7}\protected@file@percent }
-\newlabel{app:proofs:t3prime}{{A.7}{14}{Lemma~\ref {thm:t3prime}: T3$'$ bin-conditional coverage, robust}{subsection.A.7}{}}
-\newlabel{thm:t3prime}{{7}{14}{T3$'$ bin-conditional coverage, robust}{lemma.7}{}}
-\@writefile{toc}{\contentsline {paragraph}{Relation to T3.}{15}{section*.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.8}Lemma\nobreakspace  {}\ref  {thm:t3loc}: T3-loc feature-ball coverage}{15}{subsection.A.8}\protected@file@percent }
-\newlabel{app:proofs:t3loc}{{A.8}{15}{Lemma~\ref {thm:t3loc}: T3-loc feature-ball coverage}{subsection.A.8}{}}
-\newlabel{thm:t3loc}{{8}{15}{T3-loc feature-ball coverage}{lemma.8}{}}
+\citation{barber2023exchangeability}
+\@writefile{toc}{\contentsline {paragraph}{Local coverage gap bound.}{15}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.7}Lemma\nobreakspace  {}\ref  {thm:t3prime}: T3$'$ bin-conditional coverage, robust}{15}{subsection.A.7}\protected@file@percent }
+\newlabel{app:proofs:t3prime}{{A.7}{15}{Lemma~\ref {thm:t3prime}: T3$'$ bin-conditional coverage, robust}{subsection.A.7}{}}
+\newlabel{thm:t3prime}{{7}{15}{T3$'$ bin-conditional coverage, robust}{lemma.7}{}}
 \citation{barber2020limits}
-\citation{barber2023exchangeability}
-\citation{barber2023exchangeability}
-\citation{barber2023exchangeability}
+\@writefile{toc}{\contentsline {paragraph}{Relation to T3.}{16}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.8}Lemma\nobreakspace  {}\ref  {thm:t3loc}: T3-loc feature-ball coverage}{16}{subsection.A.8}\protected@file@percent }
+\newlabel{app:proofs:t3loc}{{A.8}{16}{Lemma~\ref {thm:t3loc}: T3-loc feature-ball coverage}{subsection.A.8}{}}
+\newlabel{thm:t3loc}{{8}{16}{T3-loc feature-ball coverage}{lemma.8}{}}
 \@writefile{toc}{\contentsline {paragraph}{Honest limitations.}{16}{section*.20}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.9}Lemma\nobreakspace  {}\ref  {thm:t3b}: T3.b $\hat  {\sigma }$ perturbation}{16}{subsection.A.9}\protected@file@percent }
 \newlabel{app:proofs:t3b}{{A.9}{16}{Lemma~\ref {thm:t3b}: T3.b $\shat $ perturbation}{subsection.A.9}{}}
 \newlabel{thm:t3b}{{9}{16}{T3.b $\shat $ perturbation}{lemma.9}{}}
-\@writefile{toc}{\contentsline {paragraph}{Graceful degradation.}{16}{section*.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.10}Lemma\nobreakspace  {}\ref  {thm:t4}: T4 chrom-shift bound (Barber 2023 Thm\nobreakspace  {}2)}{16}{subsection.A.10}\protected@file@percent }
-\newlabel{app:proofs:t4}{{A.10}{16}{Lemma~\ref {thm:t4}: T4 chrom-shift bound (Barber 2023 Thm~2)}{subsection.A.10}{}}
-\newlabel{thm:t4}{{10}{16}{T4 chrom-shift bound, \citet {barber2023exchangeability} Thm~2}{lemma.10}{}}
+\citation{barber2023exchangeability}
+\citation{barber2023exchangeability}
+\citation{barber2023exchangeability}
 \citation{barber2023exchangeability}
 \citation{barber2021jackknife}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.11}Proof of Theorem\nobreakspace  {}\ref  {thm:t5oracle} (T5.1 oracle bin count)}{17}{subsection.A.11}\protected@file@percent }
-\newlabel{app:proofs:t5}{{A.11}{17}{Proof of Theorem~\ref {thm:t5oracle} (T5.1 oracle bin count)}{subsection.A.11}{}}
-\citation{hore2025rlcp}
-\citation{benegas2025traitgym}
+\@writefile{toc}{\contentsline {paragraph}{Graceful degradation.}{17}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.10}Lemma\nobreakspace  {}\ref  {thm:t4}: T4 chrom-shift bound (Barber 2023 Thm\nobreakspace  {}2)}{17}{subsection.A.10}\protected@file@percent }
+\newlabel{app:proofs:t4}{{A.10}{17}{Lemma~\ref {thm:t4}: T4 chrom-shift bound (Barber 2023 Thm~2)}{subsection.A.10}{}}
+\newlabel{thm:t4}{{10}{17}{T4 chrom-shift bound, \citet {barber2023exchangeability} Thm~2}{lemma.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.11}Proof of Theorem\nobreakspace  {}\ref  {thm:t5oracle} (T5.1 oracle bin count)}{18}{subsection.A.11}\protected@file@percent }
+\newlabel{app:proofs:t5}{{A.11}{18}{Proof of Theorem~\ref {thm:t5oracle} (T5.1 oracle bin count)}{subsection.A.11}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {A.12}Proof of Theorem\nobreakspace  {}\ref  {thm:t5lower} (T5.2 matching lower bound)}{18}{subsection.A.12}\protected@file@percent }
 \newlabel{app:proofs:t5lower}{{A.12}{18}{Proof of Theorem~\ref {thm:t5lower} (T5.2 matching lower bound)}{subsection.A.12}{}}
-\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{18}{section*.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B}Data and training details}{18}{appendix.B}\protected@file@percent }
-\newlabel{app:data}{{B}{18}{Data and training details}{appendix.B}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}TraitGym benchmark}{18}{subsection.B.1}\protected@file@percent }
-\newlabel{app:data:traitgym}{{B.1}{18}{TraitGym benchmark}{subsection.B.1}{}}
+\citation{hore2025rlcp}
+\citation{benegas2025traitgym}
 \citation{kircher2014cadd}
 \citation{linder2025borzoi}
 \citation{linder2025borzoi}
@@ -248,137 +251,150 @@
 \citation{benegas2023gpnmsa}
 \citation{avsec2026alphagenome}
 \citation{avsec2026alphagenome}
+\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{19}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Data and training details}{19}{appendix.B}\protected@file@percent }
+\newlabel{app:data}{{B}{19}{Data and training details}{appendix.B}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}TraitGym benchmark}{19}{subsection.B.1}\protected@file@percent }
+\newlabel{app:data:traitgym}{{B.1}{19}{TraitGym benchmark}{subsection.B.1}{}}
 \@writefile{toc}{\contentsline {paragraph}{Chrom-LOO protocol.}{19}{section*.23}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Input features}{19}{subsection.B.2}\protected@file@percent }
 \newlabel{app:data:features}{{B.2}{19}{Input features}{subsection.B.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Features used in HCCP aggregator. All pre-computed as per TraitGym conventions.}}{19}{table.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Aggregator hyperparameters}{19}{subsection.B.3}\protected@file@percent }
 \newlabel{app:data:hparams}{{B.3}{19}{Aggregator hyperparameters}{subsection.B.3}{}}
 \@writefile{toc}{\contentsline {paragraph}{Base classifier $\hat  {p}$.}{19}{section*.24}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{AlphaGenome features.}{19}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Heteroscedastic head $\hat  {\sigma }$.}{19}{section*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Conformal calibration.}{19}{section*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{DEGU-lite ensemble.}{19}{section*.28}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Features used in HCCP aggregator. All pre-computed as per TraitGym conventions.}}{20}{table.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Heteroscedastic head $\hat  {\sigma }$.}{20}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Conformal calibration.}{20}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{DEGU-lite ensemble.}{20}{section*.28}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Within-cell KS audit}{20}{subsection.B.4}\protected@file@percent }
 \newlabel{app:data:ks}{{B.4}{20}{Within-cell KS audit}{subsection.B.4}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Per-chromosome A2-cell KS audit (CADD+GPN-MSA+Borzoi). A perfectly stationary score law would reject at the nominal $5\%$ rate. The score law $s(x,y) = |y - \hat  {p}(x)| / (\hat  {\sigma }(x) + \epsilon )$ is used.}}{20}{table.4}\protected@file@percent }
 \newlabel{tab:ks_audit}{{4}{20}{Per-chromosome A2-cell KS audit (CADD+GPN-MSA+Borzoi). A perfectly stationary score law would reject at the nominal $5\%$ rate. The score law $s(x,y) = |y - \phat (x)| / (\shat (x) + \epsilon )$ is used}{table.4}{}}
 \@writefile{toc}{\contentsline {paragraph}{Interpretation.}{20}{section*.29}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{$K$-invariance of the rejection rate.}{20}{section*.30}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Mendelian per-chromosome A2-cell KS audit $K$-sweep at min-per-chrom-cell$=20$. Rejection rate is the fraction of (cell, chromosome) pairs at which $p < 0.05$.}}{20}{table.5}\protected@file@percent }
-\newlabel{tab:ks_kinvariance}{{5}{20}{Mendelian per-chromosome A2-cell KS audit $K$-sweep at min-per-chrom-cell$=20$. Rejection rate is the fraction of (cell, chromosome) pairs at which $p < 0.05$}{table.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.5}Leakage sanity audit}{20}{subsection.B.5}\protected@file@percent }
-\newlabel{app:data:leakage}{{B.5}{20}{Leakage sanity audit}{subsection.B.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{20}{section*.31}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Mendelian per-chromosome A2-cell KS audit $K$-sweep at min-per-chrom-cell$=20$. Rejection rate is the fraction of (cell, chromosome) pairs at which $p < 0.05$.}}{21}{table.5}\protected@file@percent }
+\newlabel{tab:ks_kinvariance}{{5}{21}{Mendelian per-chromosome A2-cell KS audit $K$-sweep at min-per-chrom-cell$=20$. Rejection rate is the fraction of (cell, chromosome) pairs at which $p < 0.05$}{table.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5}Leakage sanity audit}{21}{subsection.B.5}\protected@file@percent }
+\newlabel{app:data:leakage}{{B.5}{21}{Leakage sanity audit}{subsection.B.5}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Leakage sanity audit. Test A trains on shuffled labels and evaluates on the original labels: under leakage, shuffling would leave AUPRC high; we observe collapse toward the positive-class prior ($\approx 0.10$). Test B forces row-level stochasticity via 80\% random row masking and confirms \texttt  {random\_state} \emph  {does} produce variance under active randomness --- but less than $0.003$ AUPRC std, reflecting TraitGym's strong feature signal rather than a bug. Test C audits the chrom-LOO split.}}{21}{table.6}\protected@file@percent }
 \newlabel{tab:leakage_sanity}{{6}{21}{Leakage sanity audit. Test A trains on shuffled labels and evaluates on the original labels: under leakage, shuffling would leave AUPRC high; we observe collapse toward the positive-class prior ($\approx 0.10$). Test B forces row-level stochasticity via 80\% random row masking and confirms \texttt {random\_state} \emph {does} produce variance under active randomness --- but less than $0.003$ AUPRC std, reflecting TraitGym's strong feature signal rather than a bug. Test C audits the chrom-LOO split}{table.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.6}Compute}{21}{subsection.B.6}\protected@file@percent }
-\newlabel{app:data:compute}{{B.6}{21}{Compute}{subsection.B.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Wall-clock cost of the full HCCP pipeline and main baselines, single chrom-LOO sweep on TraitGym. CPU times on 16-core Xeon; GPU on a single T4. Memory peak excludes Python overhead. The $B = 200$ chromosome-level bootstrap (Tab.\nobreakspace  {}\ref  {tab:main}) uses the cached calibration scores and adds $\sim 30$ CPU-min total.}}{21}{table.7}\protected@file@percent }
-\newlabel{tab:compute}{{7}{21}{Wall-clock cost of the full HCCP pipeline and main baselines, single chrom-LOO sweep on TraitGym. CPU times on 16-core Xeon; GPU on a single T4. Memory peak excludes Python overhead. The $B = 200$ chromosome-level bootstrap (Tab.~\ref {tab:main}) uses the cached calibration scores and adds $\sim 30$ CPU-min total}{table.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Per-partition tables}{21}{appendix.C}\protected@file@percent }
-\newlabel{app:tables}{{C}{21}{Per-partition tables}{appendix.C}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}$K_{\mathrm  {eval}}$ sensitivity sweep}{21}{subsection.C.1}\protected@file@percent }
-\newlabel{app:tables:keval_sensitivity}{{C.1}{21}{$K_{\mathrm {eval}}$ sensitivity sweep}{subsection.C.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{21}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.6}Compute}{22}{subsection.B.6}\protected@file@percent }
+\newlabel{app:data:compute}{{B.6}{22}{Compute}{subsection.B.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Wall-clock cost of the full HCCP pipeline and main baselines, single chrom-LOO sweep on TraitGym. CPU times on 16-core Xeon; GPU on a single T4. Memory peak excludes Python overhead. The $B = 200$ chromosome-level bootstrap (Tab.\nobreakspace  {}\ref  {tab:main}) uses the cached calibration scores and adds $\sim 30$ CPU-min total.}}{22}{table.7}\protected@file@percent }
+\newlabel{tab:compute}{{7}{22}{Wall-clock cost of the full HCCP pipeline and main baselines, single chrom-LOO sweep on TraitGym. CPU times on 16-core Xeon; GPU on a single T4. Memory peak excludes Python overhead. The $B = 200$ chromosome-level bootstrap (Tab.~\ref {tab:main}) uses the cached calibration scores and adds $\sim 30$ CPU-min total}{table.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Per-partition tables}{22}{appendix.C}\protected@file@percent }
+\newlabel{app:tables}{{C}{22}{Per-partition tables}{appendix.C}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}$K_{\mathrm  {eval}}$ sensitivity sweep}{22}{subsection.C.1}\protected@file@percent }
+\newlabel{app:tables:keval_sensitivity}{{C.1}{22}{$K_{\mathrm {eval}}$ sensitivity sweep}{subsection.C.1}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces $K_{\mathrm  {eval}}$ sensitivity. Numbers from \texttt  {T\_tools/cp\_baselines\_h2h.py --K-mode nested-cv} on TraitGym CADD+GPN-MSA+Borzoi. The recommended $K_{\mathrm  {eval}}$ (Mendelian $K_{\mathrm  {eval}} = 3$, Complex $K_{\mathrm  {eval}} = 5$) keeps $\geq 100$ minority-class samples per cell. \textbf  {Complex}: HCCP dominates by $25$–$34\times $ at $K_{\mathrm  {eval}} \leq 5$ and by $3$–$4\times $ at $K_{\mathrm  {eval}} \geq 8$, robustly across the sweep. \textbf  {Mendelian}: HCCP wins by $1.15\times $ at the recommended $K_{\mathrm  {eval}} = 3$ and ties at $K_{\mathrm  {eval}} = 2$; at $K_{\mathrm  {eval}} \geq 5$, the per-cell minority count drops below $\sim 70$ and weighted CP / RLCP catch up because the heteroscedastic head can no longer be reliably calibrated on the smaller per-cell partition. The Mendelian-specific narrowing of margin at high $K_{\mathrm  {eval}}$ is consistent with the per-cell sample-size floor argument that motivates the recommended $K_{\mathrm  {eval}}$ in the first place (§\ref  {sec:theory:t5}).}}{22}{table.8}\protected@file@percent }
 \newlabel{tab:keval_sensitivity}{{8}{22}{$K_{\mathrm {eval}}$ sensitivity. Numbers from \texttt {T\_tools/cp\_baselines\_h2h.py --K-mode nested-cv} on TraitGym CADD+GPN-MSA+Borzoi. The recommended $K_{\mathrm {eval}}$ (Mendelian $K_{\mathrm {eval}} = 3$, Complex $K_{\mathrm {eval}} = 5$) keeps $\geq 100$ minority-class samples per cell. \textbf {Complex}: HCCP dominates by $25$–$34\times $ at $K_{\mathrm {eval}} \leq 5$ and by $3$–$4\times $ at $K_{\mathrm {eval}} \geq 8$, robustly across the sweep. \textbf {Mendelian}: HCCP wins by $1.15\times $ at the recommended $K_{\mathrm {eval}} = 3$ and ties at $K_{\mathrm {eval}} = 2$; at $K_{\mathrm {eval}} \geq 5$, the per-cell minority count drops below $\sim 70$ and weighted CP / RLCP catch up because the heteroscedastic head can no longer be reliably calibrated on the smaller per-cell partition. The Mendelian-specific narrowing of margin at high $K_{\mathrm {eval}}$ is consistent with the per-cell sample-size floor argument that motivates the recommended $K_{\mathrm {eval}}$ in the first place (§\ref {sec:theory:t5})}{table.8}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Per-chromosome coverage}{22}{subsection.C.2}\protected@file@percent }
 \newlabel{app:tables:perchrom}{{C.2}{22}{Per-chromosome coverage}{subsection.C.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Per-chromosome coverage under Mondrian-$(y \times \hat  {\sigma }\text  {-bin})$, Mendelian dataset. Target: 0.90. Chromosomes 17--22, X are test chroms under chrom-LOO.}}{22}{table.9}\protected@file@percent }
-\newlabel{tab:perchrom}{{9}{22}{Per-chromosome coverage under Mondrian-$(y \times \shat \text {-bin})$, Mendelian dataset. Target: 0.90. Chromosomes 17--22, X are test chroms under chrom-LOO}{table.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Per-trait clinical clustering (Complex traits)}{22}{subsection.C.3}\protected@file@percent }
-\newlabel{app:tables:trait_cluster}{{C.3}{22}{Per-trait clinical clustering (Complex traits)}{subsection.C.3}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Per-cluster HCCP coverage on the 28 Complex traits with $\geq 10$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 2$). All three clusters hold target marginal coverage to within $\pm 0.005$ and minority-class coverage to within $\pm 0.04$; the per-trait worst gap stays $\leq 0.043$ in each cluster, confirming that the trait-LOO floor in the headline is not driven by one easy cluster.}}{23}{table.10}\protected@file@percent }
-\newlabel{tab:trait_cluster}{{10}{23}{Per-cluster HCCP coverage on the 28 Complex traits with $\geq 10$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 2$). All three clusters hold target marginal coverage to within $\pm 0.005$ and minority-class coverage to within $\pm 0.04$; the per-trait worst gap stays $\leq 0.043$ in each cluster, confirming that the trait-LOO floor in the headline is not driven by one easy cluster}{table.10}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Per-cluster HCCP coverage on the 30 Mendelian OMIMs with $\geq 5$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 3$). Skeletal/connective shows the highest worst per-trait gap ($0.122$) driven by under-coverage of the minority pathogenic class ($\mathrm  {cov}_{|Y=1} = 0.745$); the smaller $n_{\mathrm  {tot}}$ in this cluster ($n = 470$) means per-cell calibration size approaches the $\lceil 1/\alpha \rceil = 10$ floor, where T3's bound widens. The other two clusters hold target tightly.}}{23}{table.11}\protected@file@percent }
-\newlabel{tab:omim_cluster}{{11}{23}{Per-cluster HCCP coverage on the 30 Mendelian OMIMs with $\geq 5$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 3$). Skeletal/connective shows the highest worst per-trait gap ($0.122$) driven by under-coverage of the minority pathogenic class ($\mathrm {cov}_{|Y=1} = 0.745$); the smaller $n_{\mathrm {tot}}$ in this cluster ($n = 470$) means per-cell calibration size approaches the $\lceil 1/\alpha \rceil = 10$ floor, where T3's bound widens. The other two clusters hold target tightly}{table.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Per-chromosome coverage under Mondrian-$(y \times \hat  {\sigma }\text  {-bin})$, Mendelian dataset. Target: 0.90. Chromosomes 17--22, X are test chroms under chrom-LOO.}}{23}{table.9}\protected@file@percent }
+\newlabel{tab:perchrom}{{9}{23}{Per-chromosome coverage under Mondrian-$(y \times \shat \text {-bin})$, Mendelian dataset. Target: 0.90. Chromosomes 17--22, X are test chroms under chrom-LOO}{table.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Per-chromosome HCCP marginal coverage on chrom-LOO ($\alpha = 0.10$, $K = 5$, target $= 0.90$). \textbf  {Mendelian (left)} shows substantial cross-chromosome variability driven by clustering of pathogenic variants: chr6, chr19, and chr20 under-cover (worst chr19 at $0.828$); chrX, chr3, chr11 over-cover. The variability is consistent with the high cell-level KS rejection rate on Mendelian (App.\nobreakspace  {}\ref  {app:proofs}) and motivates T3$'$'s robust certificate (Thm.\nobreakspace  {}\ref  {thm:t3prime_main}) over T3's exact bin-conditional bound. \textbf  {Complex (right)} is tighter — all chromosomes within $\pm 0.04$ of target — reflecting Complex's lower cross-chromosome heterogeneity.}}{23}{figure.2}\protected@file@percent }
+\newlabel{fig:per_chrom}{{2}{23}{Per-chromosome HCCP marginal coverage on chrom-LOO ($\alpha = 0.10$, $K = 5$, target $= 0.90$). \textbf {Mendelian (left)} shows substantial cross-chromosome variability driven by clustering of pathogenic variants: chr6, chr19, and chr20 under-cover (worst chr19 at $0.828$); chrX, chr3, chr11 over-cover. The variability is consistent with the high cell-level KS rejection rate on Mendelian (App.~\ref {app:proofs}) and motivates T3$'$'s robust certificate (Thm.~\ref {thm:t3prime_main}) over T3's exact bin-conditional bound. \textbf {Complex (right)} is tighter — all chromosomes within $\pm 0.04$ of target — reflecting Complex's lower cross-chromosome heterogeneity}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Per-trait clinical clustering (Complex traits)}{23}{subsection.C.3}\protected@file@percent }
+\newlabel{app:tables:trait_cluster}{{C.3}{23}{Per-trait clinical clustering (Complex traits)}{subsection.C.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.4}K-sweep ablation}{23}{subsection.C.4}\protected@file@percent }
 \newlabel{app:tables:ksweep}{{C.4}{23}{K-sweep ablation}{subsection.C.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces $K$-sweep on Mendelian and Complex (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, single seed). Worst-cell gap = $\qopname  \relax m{max}_{k,b} |\mathrm  {cov}_{k,b} - 0.90|$; $n_{\qopname  \relax m{min}}$ = minimum calibration count per cell; fallback = cells triggering pooled backoff. Bolded rows are the legacy non-nested K-selection minimum (test-fold leakage; see §\ref  {sec:theory:t5} for the rectified nested-CV $\hat  K(c_{\mathrm  {outer}})$).}}{23}{table.12}\protected@file@percent }
-\newlabel{tab:ksweep}{{12}{23}{$K$-sweep on Mendelian and Complex (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, single seed). Worst-cell gap = $\max _{k,b} |\mathrm {cov}_{k,b} - 0.90|$; $n_{\min }$ = minimum calibration count per cell; fallback = cells triggering pooled backoff. Bolded rows are the legacy non-nested K-selection minimum (test-fold leakage; see §\ref {sec:theory:t5} for the rectified nested-CV $\hat K(c_{\mathrm {outer}})$)}{table.12}{}}
-\citation{lcls2024lipschitz}
-\citation{lcls2024lipschitz}
-\citation{lcls2024lipschitz}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Per-cluster HCCP coverage on the 28 Complex traits with $\geq 10$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 2$). All three clusters hold target marginal coverage to within $\pm 0.005$ and minority-class coverage to within $\pm 0.04$; the per-trait worst gap stays $\leq 0.043$ in each cluster, confirming that the trait-LOO floor in the headline is not driven by one easy cluster.}}{24}{table.10}\protected@file@percent }
+\newlabel{tab:trait_cluster}{{10}{24}{Per-cluster HCCP coverage on the 28 Complex traits with $\geq 10$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 2$). All three clusters hold target marginal coverage to within $\pm 0.005$ and minority-class coverage to within $\pm 0.04$; the per-trait worst gap stays $\leq 0.043$ in each cluster, confirming that the trait-LOO floor in the headline is not driven by one easy cluster}{table.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Per-cluster HCCP coverage on the 30 Mendelian OMIMs with $\geq 5$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 3$). Skeletal/connective shows the highest worst per-trait gap ($0.122$) driven by under-coverage of the minority pathogenic class ($\mathrm  {cov}_{|Y=1} = 0.745$); the smaller $n_{\mathrm  {tot}}$ in this cluster ($n = 470$) means per-cell calibration size approaches the $\lceil 1/\alpha \rceil = 10$ floor, where T3's bound widens. The other two clusters hold target tightly.}}{24}{table.11}\protected@file@percent }
+\newlabel{tab:omim_cluster}{{11}{24}{Per-cluster HCCP coverage on the 30 Mendelian OMIMs with $\geq 5$ positives (trait-LOO, CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 3$). Skeletal/connective shows the highest worst per-trait gap ($0.122$) driven by under-coverage of the minority pathogenic class ($\mathrm {cov}_{|Y=1} = 0.745$); the smaller $n_{\mathrm {tot}}$ in this cluster ($n = 470$) means per-cell calibration size approaches the $\lceil 1/\alpha \rceil = 10$ floor, where T3's bound widens. The other two clusters hold target tightly}{table.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces $K$-sweep on Mendelian and Complex (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, single seed). Worst-cell gap = $\qopname  \relax m{max}_{k,b} |\mathrm  {cov}_{k,b} - 0.90|$; $n_{\qopname  \relax m{min}}$ = minimum calibration count per cell; fallback = cells triggering pooled backoff. Bolded rows are the legacy non-nested K-selection minimum (test-fold leakage; see §\ref  {sec:theory:t5} for the rectified nested-CV $\hat  K(c_{\mathrm  {outer}})$).}}{24}{table.12}\protected@file@percent }
+\newlabel{tab:ksweep}{{12}{24}{$K$-sweep on Mendelian and Complex (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, single seed). Worst-cell gap = $\max _{k,b} |\mathrm {cov}_{k,b} - 0.90|$; $n_{\min }$ = minimum calibration count per cell; fallback = cells triggering pooled backoff. Bolded rows are the legacy non-nested K-selection minimum (test-fold leakage; see §\ref {sec:theory:t5} for the rectified nested-CV $\hat K(c_{\mathrm {outer}})$)}{table.12}{}}
 \@writefile{toc}{\contentsline {paragraph}{Reading the table --- three regimes.}{24}{section*.32}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{$L_F$ estimator with concentration bound.}{24}{section*.33}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Four $L_F$ estimators and their oracle $K^\star = \lfloor \sqrt  {L_F R \pi _{\qopname  \relax m{min}} n}\rfloor $ and $G(K^\star ) \leq 2\sqrt  {L_F R / (\pi _{\qopname  \relax m{min}} n)}$ bounds. The modal nested-CV $\hat  K(c_{\mathrm  {outer}})$ (§\ref  {sec:theory:t5}) is reported for comparison; the legacy non-nested $K_{\mathrm  {CV}}$ (test-gap argmin) values $3$ Mendelian and $2$ Complex are deprecated.}}{24}{table.13}\protected@file@percent }
-\newlabel{tab:LF_estimators}{{13}{24}{Four $L_F$ estimators and their oracle $K^\star = \lfloor \sqrt {L_F R \pi _{\min } n}\rfloor $ and $G(K^\star ) \leq 2\sqrt {L_F R / (\pi _{\min } n)}$ bounds. The modal nested-CV $\hat K(c_{\mathrm {outer}})$ (§\ref {sec:theory:t5}) is reported for comparison; the legacy non-nested $K_{\mathrm {CV}}$ (test-gap argmin) values $3$ Mendelian and $2$ Complex are deprecated}{table.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}DEGU-lite vs HCCP head-to-head}{24}{subsection.C.5}\protected@file@percent }
-\newlabel{app:tables:degu}{{C.5}{24}{DEGU-lite vs HCCP head-to-head}{subsection.C.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{24}{section*.34}\protected@file@percent }
-\citation{bostrom2020mondrian}
-\citation{sadinle2019lac}
-\citation{bostrom2020mondrian}
-\citation{sadinle2019lac}
-\citation{hore2025rlcp}
-\citation{tibshirani2019weighted}
-\citation{vanderlaan2024sccp}
-\citation{hore2025rlcp}
-\citation{tibshirani2019weighted}
-\citation{vanderlaan2024sccp}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces $L_F$ estimator 95\% bootstrap CIs and resulting $K^\star $. LCLS gives a tight CI ($\hat  L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star $ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star $ by an order of magnitude. The modal nested-CV $\hat  K(c_{\mathrm  {outer}}) \in \{5, 8\}$ (Mendelian) and $5$ (Complex) is the binding finite-sample constraint, well below all three asymptotic $K^\star $ predictions.}}{25}{figure.2}\protected@file@percent }
-\newlabel{fig:lf_forest}{{2}{25}{$L_F$ estimator 95\% bootstrap CIs and resulting $K^\star $. LCLS gives a tight CI ($\hat L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star $ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star $ by an order of magnitude. The modal nested-CV $\hat K(c_{\mathrm {outer}}) \in \{5, 8\}$ (Mendelian) and $5$ (Complex) is the binding finite-sample constraint, well below all three asymptotic $K^\star $ predictions}{figure.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Bootstrap distribution of HCCP $\hat  {\sigma }$-bin gap across $B = 200$ chromosome-level resamples. Mendelian (left) shows substantial right-skew driven by replicates that include high-gap chromosomes (chr6 / chr19 / chr20, see Tab.\nobreakspace  {}\ref  {tab:perchrom}); the all-chrom point estimate $0.077$ sits on the right tail of the distribution, while the bootstrap mean $0.020$ is closer to the centre. Complex (right) is much tighter (point and bootstrap mean both $\approx 0.02$).}}{25}{figure.3}\protected@file@percent }
-\newlabel{fig:bootstrap_density}{{3}{25}{Bootstrap distribution of HCCP $\shat $-bin gap across $B = 200$ chromosome-level resamples. Mendelian (left) shows substantial right-skew driven by replicates that include high-gap chromosomes (chr6 / chr19 / chr20, see Tab.~\ref {tab:perchrom}); the all-chrom point estimate $0.077$ sits on the right tail of the distribution, while the bootstrap mean $0.020$ is closer to the centre. Complex (right) is much tighter (point and bootstrap mean both $\approx 0.02$)}{figure.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.6}Cross-dataset transfer}{25}{subsection.C.6}\protected@file@percent }
-\newlabel{app:tables:crossdataset}{{C.6}{25}{Cross-dataset transfer}{subsection.C.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Directional asymmetry.}{25}{section*.35}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.7}Single-axis CP head-to-head and contemporary CP comparison (deferred from \S  \ref  {sec:experiments:h2h})}{25}{subsection.C.7}\protected@file@percent }
-\newlabel{app:tables:h2h}{{C.7}{25}{Single-axis CP head-to-head and contemporary CP comparison (deferred from \S \ref {sec:experiments:h2h})}{subsection.C.7}{}}
-\citation{pcos2025conformal}
-\citation{notin2023proteingym}
-\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces HCCP vs DEGU-lite: same features (CADD+GPN-MSA+Borzoi), same Mondrian partition, different $\hat  {\sigma }$ source. Worst gap = max per-$\hat  {\sigma }$-bin deviation from target 0.90.}}{26}{table.14}\protected@file@percent }
-\newlabel{tab:degu}{{14}{26}{HCCP vs DEGU-lite: same features (CADD+GPN-MSA+Borzoi), same Mondrian partition, different $\shat $ source. Worst gap = max per-$\shat $-bin deviation from target 0.90}{table.14}{}}
+\citation{lcls2024lipschitz}
+\citation{lcls2024lipschitz}
+\citation{lcls2024lipschitz}
+\@writefile{toc}{\contentsline {paragraph}{$L_F$ estimator with concentration bound.}{25}{section*.33}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Four $L_F$ estimators and their oracle $K^\star = \lfloor \sqrt  {L_F R \pi _{\qopname  \relax m{min}} n}\rfloor $ and $G(K^\star ) \leq 2\sqrt  {L_F R / (\pi _{\qopname  \relax m{min}} n)}$ bounds. The modal nested-CV $\hat  K(c_{\mathrm  {outer}})$ (§\ref  {sec:theory:t5}) is reported for comparison; the legacy non-nested $K_{\mathrm  {CV}}$ (test-gap argmin) values $3$ Mendelian and $2$ Complex are deprecated.}}{25}{table.13}\protected@file@percent }
+\newlabel{tab:LF_estimators}{{13}{25}{Four $L_F$ estimators and their oracle $K^\star = \lfloor \sqrt {L_F R \pi _{\min } n}\rfloor $ and $G(K^\star ) \leq 2\sqrt {L_F R / (\pi _{\min } n)}$ bounds. The modal nested-CV $\hat K(c_{\mathrm {outer}})$ (§\ref {sec:theory:t5}) is reported for comparison; the legacy non-nested $K_{\mathrm {CV}}$ (test-gap argmin) values $3$ Mendelian and $2$ Complex are deprecated}{table.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}DEGU-lite vs HCCP head-to-head}{25}{subsection.C.5}\protected@file@percent }
+\newlabel{app:tables:degu}{{C.5}{25}{DEGU-lite vs HCCP head-to-head}{subsection.C.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces HCCP vs DEGU-lite: same features (CADD+GPN-MSA+Borzoi), same Mondrian partition, different $\hat  {\sigma }$ source. Worst gap = max per-$\hat  {\sigma }$-bin deviation from target 0.90.}}{25}{table.14}\protected@file@percent }
+\newlabel{tab:degu}{{14}{25}{HCCP vs DEGU-lite: same features (CADD+GPN-MSA+Borzoi), same Mondrian partition, different $\shat $ source. Worst gap = max per-$\shat $-bin deviation from target 0.90}{table.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces $L_F$ estimator 95\% bootstrap CIs and resulting $K^\star $. LCLS gives a tight CI ($\hat  L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star $ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star $ by an order of magnitude. The modal nested-CV $\hat  K(c_{\mathrm  {outer}}) \in \{5, 8\}$ (Mendelian) and $5$ (Complex) is the binding finite-sample constraint, well below all three asymptotic $K^\star $ predictions.}}{26}{figure.3}\protected@file@percent }
+\newlabel{fig:lf_forest}{{3}{26}{$L_F$ estimator 95\% bootstrap CIs and resulting $K^\star $. LCLS gives a tight CI ($\hat L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star $ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star $ by an order of magnitude. The modal nested-CV $\hat K(c_{\mathrm {outer}}) \in \{5, 8\}$ (Mendelian) and $5$ (Complex) is the binding finite-sample constraint, well below all three asymptotic $K^\star $ predictions}{figure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Bootstrap distribution of HCCP $\hat  {\sigma }$-bin gap across $B = 200$ chromosome-level resamples. Mendelian (left) shows substantial right-skew driven by replicates that include high-gap chromosomes (chr6 / chr19 / chr20, see Tab.\nobreakspace  {}\ref  {tab:perchrom}); the all-chrom point estimate $0.077$ sits on the right tail of the distribution, while the bootstrap mean $0.020$ is closer to the centre. Complex (right) is much tighter (point and bootstrap mean both $\approx 0.02$).}}{26}{figure.4}\protected@file@percent }
+\newlabel{fig:bootstrap_density}{{4}{26}{Bootstrap distribution of HCCP $\shat $-bin gap across $B = 200$ chromosome-level resamples. Mendelian (left) shows substantial right-skew driven by replicates that include high-gap chromosomes (chr6 / chr19 / chr20, see Tab.~\ref {tab:perchrom}); the all-chrom point estimate $0.077$ sits on the right tail of the distribution, while the bootstrap mean $0.020$ is closer to the centre. Complex (right) is much tighter (point and bootstrap mean both $\approx 0.02$)}{figure.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{26}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.6}Cross-dataset transfer}{26}{subsection.C.6}\protected@file@percent }
+\newlabel{app:tables:crossdataset}{{C.6}{26}{Cross-dataset transfer}{subsection.C.6}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Cross-dataset transfer (CADD+Borzoi). M$\to $C: train on Mendelian, test on Complex. C$\to $M: reverse. AUPRC chrom-weighted (TraitGym convention). Marginal-gap = marginal coverage minus target $0.90$ (signed). T4 proxy bound $= 1 - \alpha - d_{\mathrm  {TV}}$.}}{26}{table.15}\protected@file@percent }
 \newlabel{tab:crossdataset}{{15}{26}{Cross-dataset transfer (CADD+Borzoi). M$\to $C: train on Mendelian, test on Complex. C$\to $M: reverse. AUPRC chrom-weighted (TraitGym convention). Marginal-gap = marginal coverage minus target $0.90$ (signed). T4 proxy bound $= 1 - \alpha - d_{\mathrm {TV}}$}{table.15}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.8}A-SL audit (deferred from \S  \ref  {sec:formulation:setup})}{26}{subsection.C.8}\protected@file@percent }
-\newlabel{app:tables:asl_audit}{{C.8}{26}{A-SL audit (deferred from \S \ref {sec:formulation:setup})}{subsection.C.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}$\alpha $ sensitivity}{26}{appendix.D}\protected@file@percent }
-\newlabel{app:alpha}{{D}{26}{$\alpha $ sensitivity}{appendix.D}{}}
-\@writefile{toc}{\contentsline {paragraph}{Observations.}{26}{section*.36}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Operating-point recommendations.}{26}{section*.37}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\hat  {p}, \hat  {\sigma })$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm  {eval}}$-fair scoring (Mendelian $K_{\mathrm  {eval}} = 3$, Complex $K_{\mathrm  {eval}} = 5$). Single-seed point estimates. \textbf  {Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets.}}}{27}{table.16}\protected@file@percent }
-\newlabel{tab:h2h}{{16}{27}{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat , \shat )$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm {eval}}$-fair scoring (Mendelian $K_{\mathrm {eval}} = 3$, Complex $K_{\mathrm {eval}} = 5$). Single-seed point estimates. \textbf {Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets.}}{table.16}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces HCCP vs.\ contemporary local-CP methods, sharing $(\hat  {p}, \hat  {\sigma })$. $\hat  {\sigma }$-bin gap and $\mathrm  {Cov}_{|Y=1}$ subscripts are $\pm $ one std from $B = 200$ chrom-level bootstrap resamples. Complex CI: HCCP $[0.019, 0.119]$ vs.\ baselines $[0.770, 0.879]$ (disjoint).}}{27}{table.17}\protected@file@percent }
-\newlabel{tab:cp_baselines}{{17}{27}{HCCP vs.\ contemporary local-CP methods, sharing $(\phat , \shat )$. $\shat $-bin gap and $\mathrm {Cov}_{|Y=1}$ subscripts are $\pm $ one std from $B = 200$ chrom-level bootstrap resamples. Complex CI: HCCP $[0.019, 0.119]$ vs.\ baselines $[0.770, 0.879]$ (disjoint)}{table.17}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {E}Cross-domain stress test --- ProteinGym}{27}{appendix.E}\protected@file@percent }
-\newlabel{app:proteingym}{{E}{27}{Cross-domain stress test --- ProteinGym}{appendix.E}{}}
-\@writefile{toc}{\contentsline {paragraph}{Features.}{27}{section*.38}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Protocol (assay-LOO).}{27}{section*.39}\protected@file@percent }
-\newlabel{app:proteingym:results}{{E}{27}{Results}{section*.40}{}}
-\@writefile{toc}{\contentsline {paragraph}{Results.}{27}{section*.40}\protected@file@percent }
+\citation{bostrom2020mondrian}
+\citation{sadinle2019lac}
+\citation{bostrom2020mondrian}
+\citation{sadinle2019lac}
+\citation{hore2025rlcp}
 \citation{tibshirani2019weighted}
-\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Imbalance sweep: $\mathrm  {cov}_{|Y=1}$ as a function of $\pi _{+}$, Complex CADD+GPN-MSA+Borzoi. Partition $K$ for B2 / B4 selected per outer fold via nested chrom-LOO at $K_{\mathrm  {eval}} = 5$. B1 and B2 collapse as $\pi _{+} \to 0$; B3 and B4 are insensitive.}}{28}{table.18}\protected@file@percent }
-\newlabel{tab:imbsweep}{{18}{28}{Imbalance sweep: $\mathrm {cov}_{|Y=1}$ as a function of $\pi _{+}$, Complex CADD+GPN-MSA+Borzoi. Partition $K$ for B2 / B4 selected per outer fold via nested chrom-LOO at $K_{\mathrm {eval}} = 5$. B1 and B2 collapse as $\pi _{+} \to 0$; B3 and B4 are insensitive}{table.18}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {A-SL audit.} Per-pair Lipschitz ratio $\rho _{k,a,b} = \mathrm  {KS}(\hat  F_{k,a}, \hat  F_{k,b}) / |\bar  \sigma _a - \bar  \sigma _b|$ on $\hat  {\sigma }$-bin pairs. Noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian) / $8.1$ (Complex). LCLS estimator $\hat  L_F \approx 3$/$4.5$ measures the typical local slope and underestimates the upper envelope by $\sim $3--5$\times $.}}{28}{figure.4}\protected@file@percent }
-\newlabel{fig:asl_audit}{{4}{28}{\textbf {A-SL audit.} Per-pair Lipschitz ratio $\rho _{k,a,b} = \mathrm {KS}(\hat F_{k,a}, \hat F_{k,b}) / |\bar \sigma _a - \bar \sigma _b|$ on $\shat $-bin pairs. Noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian) / $8.1$ (Complex). LCLS estimator $\hat L_F \approx 3$/$4.5$ measures the typical local slope and underestimates the upper envelope by $\sim $3--5$\times $}{figure.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Interpretation against pre-specified predictions.}{28}{section*.41}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Diagnostic: how does HCCP fail on OOD outliers?}{28}{section*.42}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Top row: empirical coverage vs nominal $1 - \alpha $ for Split CP (homoscedastic class-cond), HCCP class-cond, and HCCP Mondrian $(y \times \hat  {\sigma }\text  {-bin})$. All three variants track the target to within $\pm 0.015$. Bottom row: $\hat  {\sigma }$-bin coverage range $\qopname  \relax m{max}_b \mathrm  {cov}_b - \qopname  \relax m{min}_b \mathrm  {cov}_b$ for HCCP Mondrian; the paper's $\alpha = 0.10$ headline 0.04 threshold (dashed) is respected across all $\alpha $.}}{29}{figure.5}\protected@file@percent }
-\newlabel{fig:alpha_sweep}{{5}{29}{Top row: empirical coverage vs nominal $1 - \alpha $ for Split CP (homoscedastic class-cond), HCCP class-cond, and HCCP Mondrian $(y \times \shat \text {-bin})$. All three variants track the target to within $\pm 0.015$. Bottom row: $\shat $-bin coverage range $\max _b \mathrm {cov}_b - \min _b \mathrm {cov}_b$ for HCCP Mondrian; the paper's $\alpha = 0.10$ headline 0.04 threshold (dashed) is respected across all $\alpha $}{figure.5}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces $\alpha $ sweep: marginal coverage, $\hat  {\sigma }$-bin gap, and singleton fraction (Mendelian / Complex, CADD+GPN-MSA+Borzoi, $K = 5$, seed 42). HCCP maintains coverage within one finite-sample slack $1/(n_{\qopname  \relax m{min}}+1)$ of target across all $\alpha $. Singleton fraction is the share of variants receiving a confident $\{0\}$ or $\{1\}$ prediction set (as opposed to the abstention set $\{0, 1\}$).}}{29}{table.19}\protected@file@percent }
-\newlabel{tab:alpha_sweep}{{19}{29}{$\alpha $ sweep: marginal coverage, $\shat $-bin gap, and singleton fraction (Mendelian / Complex, CADD+GPN-MSA+Borzoi, $K = 5$, seed 42). HCCP maintains coverage within one finite-sample slack $1/(n_{\min }+1)$ of target across all $\alpha $. Singleton fraction is the share of variants receiving a confident $\{0\}$ or $\{1\}$ prediction set (as opposed to the abstention set $\{0, 1\}$)}{table.19}{}}
-\@writefile{toc}{\contentsline {paragraph}{Why this matters for the main paper.}{29}{section*.43}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces ProteinGym assay-LOO: HCCP coverage statistics aggregated over the 50 largest valid assays ($\geq 200$ mutants, $\geq 50$ positives; per-assay mutants capped at 3{,}000). $\alpha = 0.10$, $K = 5$. Source: \texttt  {outputs/proteingym\_hccp\_n50/summary.json}.}}{30}{table.20}\protected@file@percent }
-\newlabel{tab:proteingym}{{20}{30}{ProteinGym assay-LOO: HCCP coverage statistics aggregated over the 50 largest valid assays ($\geq 200$ mutants, $\geq 50$ positives; per-assay mutants capped at 3{,}000). $\alpha = 0.10$, $K = 5$. Source: \texttt {outputs/proteingym\_hccp\_n50/summary.json}}{table.20}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces ProteinGym cross-domain stress test (50 held-out assays). \textbf  {Left:} marginal coverage vs.\ test-assay AUPRC per held-out protein. Coverage stays within $\pm 0.02$ of the $0.90$ target for $27/50$ assays and within $\pm 0.05$ for $44/50$. AUPRC and coverage are positively correlated (Spearman $\rho = 0.46$, $p = 0.001$): when the base predictor is strong, coverage tracks the target. \textbf  {Right:} distribution of $\hat  {\sigma }$-bin coverage gap across the 50 assays, with TraitGym trait-LOO floor ($0.004$) and chrom-LOO ($0.077$) references overlaid. ProteinGym sits between the two (median $0.042$, p90 $0.095$), consistent with a genuine but bounded distribution shift.}}{30}{figure.6}\protected@file@percent }
-\newlabel{fig:proteingym}{{6}{30}{ProteinGym cross-domain stress test (50 held-out assays). \textbf {Left:} marginal coverage vs.\ test-assay AUPRC per held-out protein. Coverage stays within $\pm 0.02$ of the $0.90$ target for $27/50$ assays and within $\pm 0.05$ for $44/50$. AUPRC and coverage are positively correlated (Spearman $\rho = 0.46$, $p = 0.001$): when the base predictor is strong, coverage tracks the target. \textbf {Right:} distribution of $\shat $-bin coverage gap across the 50 assays, with TraitGym trait-LOO floor ($0.004$) and chrom-LOO ($0.077$) references overlaid. ProteinGym sits between the two (median $0.042$, p90 $0.095$), consistent with a genuine but bounded distribution shift}{figure.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Feature engineering details}{30}{subsection.E.1}\protected@file@percent }
-\newlabel{app:proteingym:features}{{E.1}{30}{Feature engineering details}{subsection.E.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {F}Synthetic conditional-coverage validation}{30}{appendix.F}\protected@file@percent }
-\newlabel{app:synthetic}{{F}{30}{Synthetic conditional-coverage validation}{appendix.F}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {F.1}Synthetic data-generating process}{31}{subsection.F.1}\protected@file@percent }
-\newlabel{app:synthetic:dgp}{{F.1}{31}{Synthetic data-generating process}{subsection.F.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {F.2}Empirical validation of T5 (rate $O(n^{-1/2})$)}{31}{subsection.F.2}\protected@file@percent }
-\newlabel{app:synthetic:t5}{{F.2}{31}{Empirical validation of T5 (rate $O(n^{-1/2})$)}{subsection.F.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces Worst-cell coverage gap $G(\hat  K_{\mathrm  {CV}})$ (mean $\pm $ SE over 5 replicates) on synthetic data, $L_F = 4$. The dimension-free claim of T5.1 is visible as approximately matching values across $d$ at fixed $(n, \pi _{\qopname  \relax m{min}})$; the $\pi _{\qopname  \relax m{min}}^{-1/2}$ constant is visible as the $\pi _{\qopname  \relax m{min}} = 0.50$ rows being roughly $\sqrt  {5} \approx 2.24\times $ smaller than $\pi _{\qopname  \relax m{min}} = 0.10$ at matched $n$.}}{31}{table.21}\protected@file@percent }
-\newlabel{tab:synthetic_t5}{{21}{31}{Worst-cell coverage gap $G(\hat K_{\mathrm {CV}})$ (mean $\pm $ SE over 5 replicates) on synthetic data, $L_F = 4$. The dimension-free claim of T5.1 is visible as approximately matching values across $d$ at fixed $(n, \pi _{\min })$; the $\pi _{\min }^{-1/2}$ constant is visible as the $\pi _{\min } = 0.50$ rows being roughly $\sqrt {5} \approx 2.24\times $ smaller than $\pi _{\min } = 0.10$ at matched $n$}{table.21}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {F.3}T3.b ($\hat  {\sigma }$-perturbation) ground-truth validation}{31}{subsection.F.3}\protected@file@percent }
-\newlabel{app:synthetic:t3b}{{F.3}{31}{T3.b ($\shat $-perturbation) ground-truth validation}{subsection.F.3}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces T3.b empirical coverage drift between plug-in and oracle predictors as a function of $\hat  {\sigma }$ relative error $\eta $. Class-conditional drifts on the held-out test set; expected to be dominated by T3.b's bound $2\eta \bar  \sigma /\Delta + 1/(n_{\qopname  \relax m{min}}+1)$. All drifts $\leq 0.022$, confirming graceful degradation; no cliff is observed even at $\eta = 0.50$.}}{31}{table.22}\protected@file@percent }
-\newlabel{tab:synthetic_t3b}{{22}{31}{T3.b empirical coverage drift between plug-in and oracle predictors as a function of $\shat $ relative error $\eta $. Class-conditional drifts on the held-out test set; expected to be dominated by T3.b's bound $2\eta \bar \sigma /\Delta + 1/(n_{\min }+1)$. All drifts $\leq 0.022$, confirming graceful degradation; no cliff is observed even at $\eta = 0.50$}{table.22}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem\nobreakspace  {}\ref  {thm:t5oracle}. Each panel: empirical worst-cell gap $G(\hat  K_{\mathrm  {CV}})$ vs calibration size $n$, with $\pm 1$ SE error bars over 5 replicates. Three coloured curves: feature dimensions $d \in \{8, 32, 128\}$. Black dashed: theoretical $O(n^{-1/2})$ slope anchored at $n = 4{,}000, d = 32$. The three dimension curves overlap inside each panel (dimension-free rate); the right panel sits below the left by a factor of $\approx 2$ at matched $n$ (the $\pi _{\qopname  \relax m{min}}^{-1/2}$ constant of T5.1).}}{32}{figure.7}\protected@file@percent }
-\newlabel{fig:n_sweep}{{7}{32}{Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem~\ref {thm:t5oracle}. Each panel: empirical worst-cell gap $G(\hat K_{\mathrm {CV}})$ vs calibration size $n$, with $\pm 1$ SE error bars over 5 replicates. Three coloured curves: feature dimensions $d \in \{8, 32, 128\}$. Black dashed: theoretical $O(n^{-1/2})$ slope anchored at $n = 4{,}000, d = 32$. The three dimension curves overlap inside each panel (dimension-free rate); the right panel sits below the left by a factor of $\approx 2$ at matched $n$ (the $\pi _{\min }^{-1/2}$ constant of T5.1)}{figure.7}{}}
+\citation{vanderlaan2024sccp}
+\citation{hore2025rlcp}
+\citation{tibshirani2019weighted}
+\citation{vanderlaan2024sccp}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces HCCP vs DEGU-lite on the (efficiency, $\hat  {\sigma }$-bin coverage gap) Pareto plane. X-axis: singleton fraction (variants receiving a confident $\{0\}$ or $\{1\}$ set rather than the abstention $\{0,1\}$); higher is more efficient. Y-axis: worst $\hat  {\sigma }$-bin coverage gap (lower is better). The shaded \emph  {ideal zone} marks the top-right corner of the plane (high efficiency + low gap). On \textbf  {Complex}, HCCP sits in the ideal zone with $\sim 4\times $ smaller gap than DEGU-lite at matched efficiency, confirming the aleatoric-dominated regime favours supervised $\hat  {\sigma }$. On \textbf  {Mendelian}, DEGU is marginally below HCCP (0.033 vs.\ 0.041), consistent with monogenic signal making ensemble disagreement a near-equivalent proxy. Both methods avoid the high-gap, low-efficiency corner that homoscedastic split-CP and class-Mondrian baselines occupy in Tab.\nobreakspace  {}\ref  {tab:h2h} and Tab.\nobreakspace  {}\ref  {tab:cp_baselines}.}}{27}{figure.5}\protected@file@percent }
+\newlabel{fig:pareto_degu}{{5}{27}{HCCP vs DEGU-lite on the (efficiency, $\shat $-bin coverage gap) Pareto plane. X-axis: singleton fraction (variants receiving a confident $\{0\}$ or $\{1\}$ set rather than the abstention $\{0,1\}$); higher is more efficient. Y-axis: worst $\shat $-bin coverage gap (lower is better). The shaded \emph {ideal zone} marks the top-right corner of the plane (high efficiency + low gap). On \textbf {Complex}, HCCP sits in the ideal zone with $\sim 4\times $ smaller gap than DEGU-lite at matched efficiency, confirming the aleatoric-dominated regime favours supervised $\shat $. On \textbf {Mendelian}, DEGU is marginally below HCCP (0.033 vs.\ 0.041), consistent with monogenic signal making ensemble disagreement a near-equivalent proxy. Both methods avoid the high-gap, low-efficiency corner that homoscedastic split-CP and class-Mondrian baselines occupy in Tab.~\ref {tab:h2h} and Tab.~\ref {tab:cp_baselines}}{figure.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Directional asymmetry.}{27}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.7}Single-axis CP head-to-head and contemporary CP comparison (deferred from \S  \ref  {sec:experiments:h2h})}{27}{subsection.C.7}\protected@file@percent }
+\newlabel{app:tables:h2h}{{C.7}{27}{Single-axis CP head-to-head and contemporary CP comparison (deferred from \S \ref {sec:experiments:h2h})}{subsection.C.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.8}HCCP decoupled from the GBM aggregator (deferred from \S  \ref  {sec:experiments:h2h})}{27}{subsection.C.8}\protected@file@percent }
+\newlabel{app:tables:hccp_logreg}{{C.8}{27}{HCCP decoupled from the GBM aggregator (deferred from \S \ref {sec:experiments:h2h})}{subsection.C.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\hat  {p}, \hat  {\sigma })$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm  {eval}}$-fair scoring (Mendelian $K_{\mathrm  {eval}} = 3$, Complex $K_{\mathrm  {eval}} = 5$). \textbf  {All four rows on $B = 200$ chromosome-level bootstrap (mean $\pm $ std).} Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets. Note that the on-axis baseline B2 $\hat  {\sigma }$-Mondrian still loses on $\hat  {\sigma }$-bin gap because $\hat  {\sigma }$-only stratification does not preserve $\mathrm  {cov}_{|Y=1}$ at $\pi _{\qopname  \relax m{min}}=0.10$; the $(y \times \hat  {\sigma })$ product is necessary, not just the $\hat  {\sigma }$ axis.}}{28}{table.16}\protected@file@percent }
+\newlabel{tab:h2h}{{16}{28}{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat , \shat )$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm {eval}}$-fair scoring (Mendelian $K_{\mathrm {eval}} = 3$, Complex $K_{\mathrm {eval}} = 5$). \textbf {All four rows on $B = 200$ chromosome-level bootstrap (mean $\pm $ std).} Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets. Note that the on-axis baseline B2 $\shat $-Mondrian still loses on $\shat $-bin gap because $\shat $-only stratification does not preserve $\mathrm {cov}_{|Y=1}$ at $\pi _{\min }=0.10$; the $(y \times \shat )$ product is necessary, not just the $\shat $ axis}{table.16}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces HCCP vs.\ contemporary local-CP methods, sharing $(\hat  {p}, \hat  {\sigma })$. $\hat  {\sigma }$-bin gap and $\mathrm  {Cov}_{|Y=1}$ subscripts are $\pm $ one std from $B = 200$ chrom-level bootstrap resamples. Complex CI: HCCP $[0.019, 0.119]$ vs.\ baselines $[0.770, 0.879]$ (disjoint).}}{28}{table.17}\protected@file@percent }
+\newlabel{tab:cp_baselines}{{17}{28}{HCCP vs.\ contemporary local-CP methods, sharing $(\phat , \shat )$. $\shat $-bin gap and $\mathrm {Cov}_{|Y=1}$ subscripts are $\pm $ one std from $B = 200$ chrom-level bootstrap resamples. Complex CI: HCCP $[0.019, 0.119]$ vs.\ baselines $[0.770, 0.879]$ (disjoint)}{table.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.9}A-SL audit (deferred from \S  \ref  {sec:formulation:setup})}{28}{subsection.C.9}\protected@file@percent }
+\newlabel{app:tables:asl_audit}{{C.9}{28}{A-SL audit (deferred from \S \ref {sec:formulation:setup})}{subsection.C.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {A-SL audit.} Per-pair Lipschitz ratio $\rho _{k,a,b} = \mathrm  {KS}(\hat  F_{k,a}, \hat  F_{k,b}) / |\bar  \sigma _a - \bar  \sigma _b|$ on $\hat  {\sigma }$-bin pairs. Noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian) / $8.1$ (Complex). LCLS estimator $\hat  L_F \approx 3$/$4.5$ measures the typical local slope and underestimates the upper envelope by $\sim $3--5$\times $.}}{28}{figure.6}\protected@file@percent }
+\newlabel{fig:asl_audit}{{6}{28}{\textbf {A-SL audit.} Per-pair Lipschitz ratio $\rho _{k,a,b} = \mathrm {KS}(\hat F_{k,a}, \hat F_{k,b}) / |\bar \sigma _a - \bar \sigma _b|$ on $\shat $-bin pairs. Noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian) / $8.1$ (Complex). LCLS estimator $\hat L_F \approx 3$/$4.5$ measures the typical local slope and underestimates the upper envelope by $\sim $3--5$\times $}{figure.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}$\alpha $ sensitivity}{28}{appendix.D}\protected@file@percent }
+\newlabel{app:alpha}{{D}{28}{$\alpha $ sensitivity}{appendix.D}{}}
+\citation{pcos2025conformal}
+\citation{notin2023proteingym}
+\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Imbalance sweep: $\mathrm  {cov}_{|Y=1}$ as a function of $\pi _{+}$, Complex CADD+GPN-MSA+Borzoi. Partition $K$ for B2 / B4 selected per outer fold via nested chrom-LOO at $K_{\mathrm  {eval}} = 5$. B1 and B2 collapse as $\pi _{+} \to 0$; B3 and B4 are insensitive.}}{29}{table.18}\protected@file@percent }
+\newlabel{tab:imbsweep}{{18}{29}{Imbalance sweep: $\mathrm {cov}_{|Y=1}$ as a function of $\pi _{+}$, Complex CADD+GPN-MSA+Borzoi. Partition $K$ for B2 / B4 selected per outer fold via nested chrom-LOO at $K_{\mathrm {eval}} = 5$. B1 and B2 collapse as $\pi _{+} \to 0$; B3 and B4 are insensitive}{table.18}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces HCCP applied on $(\hat  {p}_{\mathrm  {LogReg}}, \hat  {\sigma })$ vs.\ on $(\hat  {p}_{\mathrm  {GBM}}, \hat  {\sigma })$. The $\hat  {\sigma }$-bin gap and minority-class coverage are essentially unchanged across the base-predictor swap, confirming the conformal-side gain is decoupled from the AUPRC gain.}}{29}{table.19}\protected@file@percent }
+\newlabel{tab:hccp_logreg}{{19}{29}{HCCP applied on $(\phat _{\mathrm {LogReg}}, \shat )$ vs.\ on $(\phat _{\mathrm {GBM}}, \shat )$. The $\shat $-bin gap and minority-class coverage are essentially unchanged across the base-predictor swap, confirming the conformal-side gain is decoupled from the AUPRC gain}{table.19}{}}
+\@writefile{toc}{\contentsline {paragraph}{Observations.}{29}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Operating-point recommendations.}{29}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {E}Cross-domain stress test --- ProteinGym}{29}{appendix.E}\protected@file@percent }
+\newlabel{app:proteingym}{{E}{29}{Cross-domain stress test --- ProteinGym}{appendix.E}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Top row: empirical coverage vs nominal $1 - \alpha $ for Split CP (homoscedastic class-cond), HCCP class-cond, and HCCP Mondrian $(y \times \hat  {\sigma }\text  {-bin})$. All three variants track the target to within $\pm 0.015$. Bottom row: $\hat  {\sigma }$-bin coverage range $\qopname  \relax m{max}_b \mathrm  {cov}_b - \qopname  \relax m{min}_b \mathrm  {cov}_b$ for HCCP Mondrian; the paper's $\alpha = 0.10$ headline 0.04 threshold (dashed) is respected across all $\alpha $.}}{30}{figure.7}\protected@file@percent }
+\newlabel{fig:alpha_sweep}{{7}{30}{Top row: empirical coverage vs nominal $1 - \alpha $ for Split CP (homoscedastic class-cond), HCCP class-cond, and HCCP Mondrian $(y \times \shat \text {-bin})$. All three variants track the target to within $\pm 0.015$. Bottom row: $\shat $-bin coverage range $\max _b \mathrm {cov}_b - \min _b \mathrm {cov}_b$ for HCCP Mondrian; the paper's $\alpha = 0.10$ headline 0.04 threshold (dashed) is respected across all $\alpha $}{figure.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces $\alpha $ sweep: marginal coverage, $\hat  {\sigma }$-bin gap, and singleton fraction (Mendelian / Complex, CADD+GPN-MSA+Borzoi, $K = 5$, seed 42). HCCP maintains coverage within one finite-sample slack $1/(n_{\qopname  \relax m{min}}+1)$ of target across all $\alpha $. Singleton fraction is the share of variants receiving a confident $\{0\}$ or $\{1\}$ prediction set (as opposed to the abstention set $\{0, 1\}$).}}{30}{table.20}\protected@file@percent }
+\newlabel{tab:alpha_sweep}{{20}{30}{$\alpha $ sweep: marginal coverage, $\shat $-bin gap, and singleton fraction (Mendelian / Complex, CADD+GPN-MSA+Borzoi, $K = 5$, seed 42). HCCP maintains coverage within one finite-sample slack $1/(n_{\min }+1)$ of target across all $\alpha $. Singleton fraction is the share of variants receiving a confident $\{0\}$ or $\{1\}$ prediction set (as opposed to the abstention set $\{0, 1\}$)}{table.20}{}}
+\@writefile{toc}{\contentsline {paragraph}{Features.}{30}{section*.38}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Protocol (assay-LOO).}{30}{section*.39}\protected@file@percent }
+\newlabel{app:proteingym:results}{{E}{31}{Results}{section*.40}{}}
+\@writefile{toc}{\contentsline {paragraph}{Results.}{31}{section*.40}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces ProteinGym assay-LOO: HCCP coverage statistics aggregated over the 50 largest valid assays ($\geq 200$ mutants, $\geq 50$ positives; per-assay mutants capped at 3{,}000). $\alpha = 0.10$, $K = 5$. Source: \texttt  {outputs/proteingym\_hccp\_n50/summary.json}.}}{31}{table.21}\protected@file@percent }
+\newlabel{tab:proteingym}{{21}{31}{ProteinGym assay-LOO: HCCP coverage statistics aggregated over the 50 largest valid assays ($\geq 200$ mutants, $\geq 50$ positives; per-assay mutants capped at 3{,}000). $\alpha = 0.10$, $K = 5$. Source: \texttt {outputs/proteingym\_hccp\_n50/summary.json}}{table.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces ProteinGym cross-domain stress test (50 held-out assays). \textbf  {Left:} marginal coverage vs.\ test-assay AUPRC per held-out protein. Coverage stays within $\pm 0.02$ of the $0.90$ target for $27/50$ assays and within $\pm 0.05$ for $44/50$. AUPRC and coverage are positively correlated (Spearman $\rho = 0.46$, $p = 0.001$): when the base predictor is strong, coverage tracks the target. \textbf  {Right:} distribution of $\hat  {\sigma }$-bin coverage gap across the 50 assays, with TraitGym trait-LOO floor ($0.004$) and chrom-LOO ($0.077$) references overlaid. ProteinGym sits between the two (median $0.042$, p90 $0.095$), consistent with a genuine but bounded distribution shift.}}{31}{figure.8}\protected@file@percent }
+\newlabel{fig:proteingym}{{8}{31}{ProteinGym cross-domain stress test (50 held-out assays). \textbf {Left:} marginal coverage vs.\ test-assay AUPRC per held-out protein. Coverage stays within $\pm 0.02$ of the $0.90$ target for $27/50$ assays and within $\pm 0.05$ for $44/50$. AUPRC and coverage are positively correlated (Spearman $\rho = 0.46$, $p = 0.001$): when the base predictor is strong, coverage tracks the target. \textbf {Right:} distribution of $\shat $-bin coverage gap across the 50 assays, with TraitGym trait-LOO floor ($0.004$) and chrom-LOO ($0.077$) references overlaid. ProteinGym sits between the two (median $0.042$, p90 $0.095$), consistent with a genuine but bounded distribution shift}{figure.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpretation against pre-specified predictions.}{31}{section*.41}\protected@file@percent }
+\citation{tibshirani2019weighted}
+\@writefile{toc}{\contentsline {paragraph}{Diagnostic: how does HCCP fail on OOD outliers?}{32}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why this matters for the main paper.}{32}{section*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Feature engineering details}{32}{subsection.E.1}\protected@file@percent }
+\newlabel{app:proteingym:features}{{E.1}{32}{Feature engineering details}{subsection.E.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Synthetic conditional-coverage validation}{32}{appendix.F}\protected@file@percent }
+\newlabel{app:synthetic}{{F}{32}{Synthetic conditional-coverage validation}{appendix.F}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.1}Synthetic data-generating process}{33}{subsection.F.1}\protected@file@percent }
+\newlabel{app:synthetic:dgp}{{F.1}{33}{Synthetic data-generating process}{subsection.F.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.2}Empirical validation of T5 (rate $O(n^{-1/2})$)}{33}{subsection.F.2}\protected@file@percent }
+\newlabel{app:synthetic:t5}{{F.2}{33}{Empirical validation of T5 (rate $O(n^{-1/2})$)}{subsection.F.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces Worst-cell coverage gap $G(\hat  K_{\mathrm  {CV}})$ (mean $\pm $ SE over 5 replicates) on synthetic data, $L_F = 4$. The dimension-free claim of T5.1 is visible as approximately matching values across $d$ at fixed $(n, \pi _{\qopname  \relax m{min}})$; the $\pi _{\qopname  \relax m{min}}^{-1/2}$ constant is visible as the $\pi _{\qopname  \relax m{min}} = 0.50$ rows being roughly $\sqrt  {5} \approx 2.24\times $ smaller than $\pi _{\qopname  \relax m{min}} = 0.10$ at matched $n$.}}{33}{table.22}\protected@file@percent }
+\newlabel{tab:synthetic_t5}{{22}{33}{Worst-cell coverage gap $G(\hat K_{\mathrm {CV}})$ (mean $\pm $ SE over 5 replicates) on synthetic data, $L_F = 4$. The dimension-free claim of T5.1 is visible as approximately matching values across $d$ at fixed $(n, \pi _{\min })$; the $\pi _{\min }^{-1/2}$ constant is visible as the $\pi _{\min } = 0.50$ rows being roughly $\sqrt {5} \approx 2.24\times $ smaller than $\pi _{\min } = 0.10$ at matched $n$}{table.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.3}T3.b ($\hat  {\sigma }$-perturbation) ground-truth validation}{33}{subsection.F.3}\protected@file@percent }
+\newlabel{app:synthetic:t3b}{{F.3}{33}{T3.b ($\shat $-perturbation) ground-truth validation}{subsection.F.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {23}{\ignorespaces T3.b empirical coverage drift between plug-in and oracle predictors as a function of $\hat  {\sigma }$ relative error $\eta $. Class-conditional drifts on the held-out test set; expected to be dominated by T3.b's bound $2\eta \bar  \sigma /\Delta + 1/(n_{\qopname  \relax m{min}}+1)$. All drifts $\leq 0.022$, confirming graceful degradation; no cliff is observed even at $\eta = 0.50$.}}{33}{table.23}\protected@file@percent }
+\newlabel{tab:synthetic_t3b}{{23}{33}{T3.b empirical coverage drift between plug-in and oracle predictors as a function of $\shat $ relative error $\eta $. Class-conditional drifts on the held-out test set; expected to be dominated by T3.b's bound $2\eta \bar \sigma /\Delta + 1/(n_{\min }+1)$. All drifts $\leq 0.022$, confirming graceful degradation; no cliff is observed even at $\eta = 0.50$}{table.23}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem\nobreakspace  {}\ref  {thm:t5oracle}. Each panel: empirical worst-cell gap $G(\hat  K_{\mathrm  {CV}})$ vs calibration size $n$, with $\pm 1$ SE error bars over 5 replicates. Three coloured curves: feature dimensions $d \in \{8, 32, 128\}$. Black dashed: theoretical $O(n^{-1/2})$ slope anchored at $n = 4{,}000, d = 32$. The three dimension curves overlap inside each panel (dimension-free rate); the right panel sits below the left by a factor of $\approx 2$ at matched $n$ (the $\pi _{\qopname  \relax m{min}}^{-1/2}$ constant of T5.1).}}{34}{figure.9}\protected@file@percent }
+\newlabel{fig:n_sweep}{{9}{34}{Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem~\ref {thm:t5oracle}. Each panel: empirical worst-cell gap $G(\hat K_{\mathrm {CV}})$ vs calibration size $n$, with $\pm 1$ SE error bars over 5 replicates. Three coloured curves: feature dimensions $d \in \{8, 32, 128\}$. Black dashed: theoretical $O(n^{-1/2})$ slope anchored at $n = 4{,}000, d = 32$. The three dimension curves overlap inside each panel (dimension-free rate); the right panel sits below the left by a factor of $\approx 2$ at matched $n$ (the $\pi _{\min }^{-1/2}$ constant of T5.1)}{figure.9}{}}
 \citation{benegas2025traitgym}
 \citation{notin2023proteingym}
 \citation{benegas2025traitgym}
@@ -388,4 +404,4 @@
 \citation{benegas2023gpnmsa}
 \citation{avsec2026alphagenome}
 \citation{bostrom2022crepes}
-\gdef \@abspage@last{35}
+\gdef \@abspage@last{37}

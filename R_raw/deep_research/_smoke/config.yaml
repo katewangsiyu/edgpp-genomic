@@ -1,0 +1,13 @@
+searches:
+  - query: "heteroscedastic conformal prediction"
+    num_results: 3
+    venues:
+      NeurIPS: [2024, 2025]
+  - query: "variant effect prediction deep learning genomics"
+    num_results: 3
+    venues:
+      NeurIPS: [2024]
+      ICLR: [2025]
+output:
+  root: /home/lzeng/workspace/edgpp-genomic/R_raw/deep_research/_smoke/search_results
+  overwrite: true

@@ -1,4 +1,4 @@
-\begin{thebibliography}{36}
+\begin{thebibliography}{39}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -28,6 +28,13 @@ Anastasios~N. Angelopoulos and Stephen Bates.
   Demis Hassabis, and Pushmeet Kohli.
 \newblock {AlphaGenome}: a unified foundation model for genomics.
 \newblock \emph{Nature}, 2026.
+
+\bibitem[Bairaktari et~al.(2025)Bairaktari, Wu, and
+  Wu]{bairaktari2025kandinsky}
+Konstantina Bairaktari, Jiayun Wu, and Steven Wu.
+\newblock Kandinsky conformal prediction: Beyond class- and
+  covariate-conditional coverage.
+\newblock In \emph{ICML}, 2025.
 
 \bibitem[Barber et~al.(2020)Barber, Cand{\`e}s, Ramdas, and
   Tibshirani]{barber2020limits}
@@ -183,6 +190,12 @@ Christina Papangelou, Konstantinos Kyriakidis, Pantelis Natsiavas, Ioanna
 \newblock \emph{Frontiers in Bioinformatics}, 2025.
 \newblock \doi{10.3389/fbinf.2025.1507448}.
 
+\bibitem[Plassier et~al.(2025)]{plassier2025cp2hpd}
+Vincent Plassier et~al.
+\newblock Probabilistic conformal prediction with approximate conditional
+  validity.
+\newblock In \emph{ICLR}, 2025.
+
 \bibitem[Richards et~al.(2015)Richards, Aziz, Bale, Bick, Das, Gastier-Foster,
   Grody, Hegde, Lyon, Spector, Voelkerding, and Rehm]{richards2015acmg}
 Sue Richards, Nazneen Aziz, Sherri Bale, David Bick, Soma Das, Julie
@@ -255,11 +268,17 @@ Tianmin Xie, Yixuan Zhou, Tengyuan Liang, Stefano Favaro, and Matteo Sesia.
 \newblock Conformal inference for open-set and imbalanced classification.
 \newblock \emph{arXiv preprint arXiv:2510.13037}, 2025.
 
+\bibitem[Yao et~al.(2026)Yao, He, and Gastpar]{yao2026nonasymp}
+Yunzhen Yao, Lie He, and Michael Gastpar.
+\newblock Non-asymptotic analysis of efficiency in conformalized regression.
+\newblock In \emph{ICLR}, 2026.
+\newblock arXiv:2510.07093.
+
 \bibitem[Zhou et~al.(2026)Zhou, Rizzo, Christensen, Tang, and
   Koo]{zhou2026degu}
 Jessica Zhou, Anthony Rizzo, Peter Christensen, Xiao Tang, and Peter~K. Koo.
-\newblock Deep ensemble distillation with gaussian uncertainty for regulatory
-  genomics.
-\newblock \emph{npj Artificial Intelligence}, 2026.
+\newblock Uncertainty-aware genomic deep learning with knowledge distillation.
+\newblock \emph{npj Artificial Intelligence}, 2\penalty0 (3), 2026.
+\newblock URL \url{https://www.nature.com/articles/s44387-025-00053-3}.
 
 \end{thebibliography}
