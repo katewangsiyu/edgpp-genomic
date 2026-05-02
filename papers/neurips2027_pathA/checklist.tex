@@ -25,7 +25,7 @@
 \item {\bf Open access to data and code}
     \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
     \item[] Answer: \answerYes{}
-    \item[] Justification: TraitGym matched\_9 and ProteinGym are publicly distributed by their creators. Code (aggregator training, HCCP calibration, nested-CV $K$-selection, bootstrap) is provided as anonymized supplementary material at submission time and will be released under a permissive licence on acceptance; pipeline scripts (\texttt{T\_tools/cp\_baselines\_h2h.py}, \texttt{T\_tools/bootstrap\_cp\_baselines.py}, \texttt{T\_tools/asl\_audit.py}) are referenced in App.~\ref{app:data}.
+    \item[] Justification: TraitGym matched\_9 and ProteinGym are publicly distributed by their creators. Code (aggregator training, HCCP calibration, nested-CV $K$-selection, bootstrap) is provided as anonymized supplementary material at submission time and will be released under a permissive licence on acceptance; pipeline scripts (\texttt{T\_tools/cp\_baselines\_h2h.py} for the H2H sweep referenced in Tab.~\ref{tab:keval_sensitivity}, \texttt{T\_tools/trait\_cluster\_aggregate.py} for the trait-clinical clustering of Tab.~\ref{tab:trait_cluster}, \texttt{T\_tools/synthetic\_n\_sweep.py} for the synthetic rate validation of App.~\ref{app:synthetic}) are referenced inline.
 
 \item {\bf Experimental setting/details}
     \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer) necessary to understand the results?
@@ -35,7 +35,7 @@
 \item {\bf Experiment statistical significance}
     \item[] Question: Does the paper report error bars suitably and correctly defined or other appropriate information about the statistical significance of the experiments?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Tab.~\ref{tab:main} HCCP rows report $\pm$ one std from $B = 200$ chromosome-level bootstrap resamples; Tab.~\ref{tab:cp_baselines} reports per-method bootstrap mean $\pm$ std plus $95\%$ CIs; Tab.~\ref{tab:keval_sensitivity} reports point estimates across $K_{\mathrm{eval}}$ for sensitivity. Bootstrap captures calibration-set variability (chrom-resample with replacement); single-seed point estimates are flagged as such in Tab.~\ref{tab:h2h} caption.
+    \item[] Justification: Tab.~\ref{tab:main} HCCP rows report $\pm$ one std from $B = 200$ chromosome-level bootstrap resamples; Tab.~\ref{tab:h2h} and Tab.~\ref{tab:cp_baselines} report per-method bootstrap mean $\pm$ std. Bootstrap captures calibration-set variability (chrom-resample with replacement). Single-seed point estimates are flagged as such in Tab.~\ref{tab:keval_sensitivity} (Mendelian $K_{\mathrm{eval}}=3$ HCCP gap $0.163$ point estimate vs $0.173 \pm 0.192$ bootstrap mean in Tab.~\ref{tab:cp_baselines}) and in Tab.~\ref{tab:degu}; the offset between the two is documented in the caption of Tab.~\ref{tab:keval_sensitivity}.
 
 \item {\bf Experiments compute resources}
     \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
@@ -60,7 +60,7 @@
 \item {\bf Licenses for existing assets}
     \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
     \item[] Answer: \answerYes{}
-    \item[] Justification: TraitGym \citep{benegas2025traitgym}, ProteinGym \citep{notin2023proteingym}, CADD \citep{kircher2014cadd}, Borzoi \citep{linder2025borzoi}, GPN-MSA \citep{benegas2023gpnmsa}, AlphaGenome \citep{avsec2026alphagenome} are all cited; the \texttt{crepes} package \citep{bostrom2022crepes} is used for the H2H baselines and acknowledged. We use each asset in accordance with its public licence; full licence inventory in App.~\ref{app:data}.
+    \item[] Justification: TraitGym \citep{benegas2025traitgym}, ProteinGym \citep{notin2023proteingym}, CADD \citep{kircher2014cadd}, Borzoi \citep{linder2025borzoi}, GPN-MSA \citep{benegas2023gpnmsa}, AlphaGenome \citep{avsec2026alphagenome} are all cited via the bibliography with full publication metadata; the \texttt{crepes} package \citep{bostrom2022crepes} is used for the H2H baselines and acknowledged. We use each asset in accordance with its publicly distributed licence (TraitGym: MIT; ProteinGym: CC-BY-4.0; CADD: free academic; Borzoi/GPN-MSA: open-source per the original repos; AlphaGenome: Google API terms; \texttt{crepes}: BSD-3).
 
 \item {\bf New assets}
     \item[] Question: Are new assets introduced in the paper well documented and is the documentation provided alongside the assets?
