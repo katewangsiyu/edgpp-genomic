@@ -48,7 +48,7 @@ We evaluate HCCP on three orthogonal distributional axes (chrom-LOO, trait-LOO, 
 \subsection{Failure mode: M$\to$C cross-dataset}
 \label{sec:experiments:failure_mode}
 
-The reverse cross-dataset direction (Mendelian-trained $\to$ Complex-tested) jointly violates HCCP's two preconditions: (i) the base predictor collapses (AUPRC $0.205$ vs.\ in-distribution $0.353$), and (ii) calibration-fold exchangeability fails at the dataset level (ClinVar pathogenicity vs.\ GWAS catalog selection criteria; \citet{tibshirani2019weighted}). Marginal coverage drops to $0.738$, within $1.4$ std of the Barber 2023 Thm 2 marginal-coverage proxy bound ($0.742$). We do not claim T3$'$ binds the bin-conditional gap in this regime; this is the joint-failure boundary that delineates where HCCP's coverage machinery is operational. The forward C$\to$M direction (in §\ref{sec:experiments:ood}) and ProteinGym cross-domain do not violate either precondition, and HCCP holds.
+The reverse cross-dataset direction (Mendelian-trained $\to$ Complex-tested) jointly violates HCCP's two preconditions: (i) the base predictor collapses (AUPRC $0.205$ vs.\ in-distribution $0.353$), and (ii) calibration-fold exchangeability fails at the dataset level (ClinVar pathogenicity vs.\ GWAS catalog selection criteria; \citet{tibshirani2019weighted}). Marginal coverage drops to $0.738$, only $0.004$ below the Barber 2023 Thm 2 marginal-coverage proxy bound ($0.742$). We do not claim T3$'$ binds the bin-conditional gap in this regime; this is the joint-failure boundary that delineates where HCCP's coverage machinery is operational. The forward C$\to$M direction (in §\ref{sec:experiments:ood}) and ProteinGym cross-domain do not violate either precondition, and HCCP holds.
 
 \subsection{Ablations}
 
