@@ -1,6 +1,6 @@
 % Appendix D: α sensitivity
 
-Figure~\ref{fig:alpha_sweep} and Table~\ref{tab:alpha_sweep} report HCCP's empirical coverage and $\shat$-bin gap as the miscoverage level $\alpha$ sweeps over $\{0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50\}$, fixed feature set CADD+GPN-MSA+Borzoi, fixed $K = 5$, single seed. The target $1 - \alpha$ line is included for reference.
+Figure~\ref{fig:alpha_sweep} and Tab.~\ref{tab:alpha_sweep} report HCCP's empirical coverage and $\shat$-bin gap as the miscoverage level $\alpha$ sweeps over $\{0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50\}$, fixed feature set CADD+GPN-MSA+Borzoi, fixed $K = 5$, single seed. The target $1 - \alpha$ line is included for reference.
 
 \begin{figure}[h]
 \centering
@@ -21,7 +21,7 @@ Figure~\ref{fig:alpha_sweep} and Table~\ref{tab:alpha_sweep} report HCCP's empir
 (i) The marginal coverage is calibrated to within $\leq 0.015$ of target at every $\alpha$, consistent with the exact T1 two-sided bound $[1 - \alpha,\, 1 - \alpha + 1/(n_{\min}+1)]$. (ii) The worst-cell $\shat$-bin gap stays below the $\alpha = 0.10$ headline 0.04 threshold across the entire $\alpha$ range, confirming the T3 bound is not an artifact of a specific $\alpha$ choice. (iii) The singleton fraction grows monotonically with $\alpha$ on Complex (from $3\%$ at $\alpha = 0.01$ to $77\%$ at $\alpha = 0.50$) but is non-monotone on Mendelian (peaks at $82\%$ near $\alpha = 0.15$, falls back at higher $\alpha$ as empty sets $\emptyset$ emerge); this is expected for class-imbalanced problems where a very loose $\alpha$ can drop a small-$\shat$ variant below the lowered quantile bar on both classes simultaneously.
 
 \paragraph{Operating-point recommendations.}
-The singleton fraction column of Table~\ref{tab:alpha_sweep} is the practical knob: low $\alpha$ buys high coverage at the cost of frequent abstention; high $\alpha$ produces more confident calls at the cost of more uncovered cases. We provide three benchmarked operating points:
+The singleton fraction column of Tab.~\ref{tab:alpha_sweep} is the practical knob: low $\alpha$ buys high coverage at the cost of frequent abstention; high $\alpha$ produces more confident calls at the cost of more uncovered cases. We provide three benchmarked operating points:
 
 \begin{itemize}
     \item \textbf{High-stakes rare-disease classification} ($\alpha = 0.10$): Mendelian singleton $80\%$, Complex singleton $22\%$. Use when a missed pathogenic variant has clinical-grade cost (e.g., hereditary cancer panels). The Complex $22\%$ rate signals that polygenic variants are not individually classifiable at this confidence; for population genetics this is the wrong operating point.

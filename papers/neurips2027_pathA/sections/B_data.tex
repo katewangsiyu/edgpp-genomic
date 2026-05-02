@@ -5,7 +5,7 @@
 
 We use TraitGym \citep{benegas2025traitgym}, a standardized evaluation suite for variant effect prediction. Two matched datasets:
 \begin{itemize}
-    \item \textbf{Mendelian (matched\_9)}: 338 ClinVar pathogenic variants + 3,042 matched benign controls = 3,380 total across 113 OMIM phenotypes. Matching on consequence type, MAF, and TSS distance (9 strata).
+    \item \textbf{Mendelian (matched\_9)}: 338 ClinVar pathogenic variants + 3,042 matched benign controls = 3,380 total across 113 OMIM phenotypes. Matching on consequence type, minor allele frequency (MAF), and transcription start site (TSS) distance (9 strata).
     \item \textbf{Complex (matched\_9)}: 1,140 GWAS-significant variants + 10,260 matched controls = 11,400 total across 29 complex traits.
 \end{itemize}
 
@@ -76,9 +76,9 @@ Complex   & 125 & 10.4\% (13/125) & 0.315 & 0.113 & 0.102 \\
 \end{tabular}
 \end{table}
 
-\paragraph{Interpretation.} A2-cell is approximately satisfied on Complex (10.4\% vs 5\% null, max KS $0.315$) but noticeably violated on Mendelian (46.2\%, max KS $0.434$). The violation concentrates in the highest-$\shat$ positive-class cell $(y{=}1, b{=}4)$ --- chromosomes chr9, chr7, chr3, chr19, and chrX each show KS $\geq 0.40$ at this cell, consistent with chromosome-specific pathogenic variant concentration. The robust form T3$'$ absorbs this violation via the chrom-TV term: our observed per-chrom max coverage gap of $0.073$ (chr19, Table~\ref{tab:perchrom}) is within the $\bar\delta_{\mathrm{TV}}^{(k,b)}$ bound consistent with max KS $\leq 0.44 \Rightarrow d_{\mathrm{TV}} \leq 0.22$. Full per-chromosome breakdowns: \texttt{outputs/ks\_audit/*\_ks\_per\_chrom\_n20.json}.
+\paragraph{Interpretation.} A2-cell is approximately satisfied on Complex (10.4\% vs 5\% null, max KS $0.315$) but noticeably violated on Mendelian (46.2\%, max KS $0.434$). The violation concentrates in the highest-$\shat$ positive-class cell $(y{=}1, b{=}4)$ --- chromosomes chr9, chr7, chr3, chr19, and chrX each show KS $\geq 0.40$ at this cell, consistent with chromosome-specific pathogenic variant concentration. The robust form T3$'$ absorbs this violation via the chrom-TV term: our observed per-chrom max marginal-coverage gap of $0.100$ (chr6, Tab.~\ref{tab:perchrom}) is within the $\bar\delta_{\mathrm{TV}}^{(k,b)}$ bound consistent with max KS $\leq 0.44 \Rightarrow d_{\mathrm{TV}} \leq 0.22$. Full per-chromosome breakdowns: \texttt{outputs/ks\_audit/*\_ks\_per\_chrom\_n20.json}.
 
-\paragraph{$K$-invariance of the rejection rate.} To confirm that the 46.2\% rejection on Mendelian is a dataset-intrinsic chrom-TV signal rather than a binning artefact at the legacy default $K = 5$, we re-run the per-chromosome KS audit on Mendelian at $K_{\mathrm{eval}} \in \{2, 3, 5, 8, 10\}$ with the same min-per-chrom-cell threshold of $20$ (Table~\ref{tab:ks_kinvariance}). The rejection rate stays in the $40$--$46\%$ band across all five $K$ values, and the maximum cell-by-chrom KS statistic stays in $[0.434, 0.565]$. T3$'$ is therefore the binding operational guarantee on Mendelian regardless of partition granularity. Source: \texttt{outputs/ks\_audit\_kcv/mendelian\_K\{2,3,5,8,10\}\_n20.json}.
+\paragraph{$K$-invariance of the rejection rate.} To confirm that the 46.2\% rejection on Mendelian is a dataset-intrinsic chrom-TV signal rather than a binning artefact at the legacy default $K = 5$, we re-run the per-chromosome KS audit on Mendelian at $K_{\mathrm{eval}} \in \{2, 3, 5, 8, 10\}$ with the same min-per-chrom-cell threshold of $20$ (Tab.~\ref{tab:ks_kinvariance}). The rejection rate stays in the $40$--$46\%$ band across all five $K$ values, and the maximum cell-by-chrom KS statistic stays in $[0.434, 0.565]$. T3$'$ is therefore the binding operational guarantee on Mendelian regardless of partition granularity. Source: \texttt{outputs/ks\_audit\_kcv/mendelian\_K\{2,3,5,8,10\}\_n20.json}.
 
 \begin{table}[h]
 \centering

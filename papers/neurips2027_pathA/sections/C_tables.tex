@@ -4,7 +4,7 @@
 \subsection{Single-axis CP head-to-head and contemporary CP comparison (deferred from \S\ref{sec:experiments:h2h})}
 \label{app:tables:h2h}
 
-Table~\ref{tab:h2h} reports the four single-axis Mondrian variants (split CP, $\shat$-Mondrian, class-Mondrian, HCCP) on TraitGym; Table~\ref{tab:cp_baselines} compares HCCP against contemporary local-CP methods (RLCP, weighted CP, SC-CP) with $B = 200$ chrom-level bootstrap CIs. Table~\ref{tab:imbsweep} reports the imbalance sweep on Complex.
+Tab.~\ref{tab:h2h} reports the four single-axis Mondrian variants (split CP, $\shat$-Mondrian, class-Mondrian, HCCP) on TraitGym; Tab.~\ref{tab:cp_baselines} compares HCCP against contemporary local-CP methods (RLCP, weighted CP, SC-CP) with $B = 200$ chrom-level bootstrap CIs. Tab.~\ref{tab:imbsweep} reports the imbalance sweep on Complex.
 
 \begin{table}[h]
 \centering
@@ -78,7 +78,7 @@ B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
 \subsection{HCCP decoupled from the GBM aggregator (deferred from \S\ref{sec:experiments:h2h})}
 \label{app:tables:hccp_logreg}
 
-To rule out ``HCCP's coverage advantage rides on the GBM aggregator's $+14.8$\,pp AUPRC improvement'', we apply the same HCCP calibration on top of the published TraitGym LogReg aggregator (Mendelian feature set CADD+GPN-MSA+Borzoi, AUPRC $0.752$; Complex feature set CADD+Borzoi, AUPRC $0.332$) instead of our GBM. The variance head $\shat(x)$ is reused unchanged, since it is fit on features $X$ rather than on $\phat_{\mathrm{GBM}}$ (a per-$x$ aleatoric estimator, base-predictor agnostic). Table~\ref{tab:hccp_logreg} reports $B=200$ chrom-bootstrap CIs.
+To rule out ``HCCP's coverage advantage rides on the GBM aggregator's $+14.8$\,pp AUPRC improvement'', we apply the same HCCP calibration on top of the published TraitGym LogReg aggregator (Mendelian feature set CADD+GPN-MSA+Borzoi, AUPRC $0.752$; Complex feature set CADD+Borzoi, AUPRC $0.332$) instead of our GBM. The variance head $\shat(x)$ is reused unchanged, since it is fit on features $X$ rather than on $\phat_{\mathrm{GBM}}$ (a per-$x$ aleatoric estimator, base-predictor agnostic). Tab.~\ref{tab:hccp_logreg} reports $B=200$ chrom-bootstrap CIs.
 
 \begin{table}[h]
 \centering
@@ -106,7 +106,7 @@ The Complex row is essentially identical across the swap (gap $0.060$ vs $0.059$
 \subsection{$K_{\mathrm{eval}}$ sensitivity sweep}
 \label{app:tables:keval_sensitivity}
 
-Table~\ref{tab:keval_sensitivity} reports HCCP $\shat$-bin gap against the strongest contemporary single-axis CP baseline (RLCP, weighted CP, or SC-CP, whichever is tightest at each row) for $K_{\mathrm{eval}} \in \{2, 3, 5, 8, 10\}$. HCCP partition $K$ is selected per outer fold by nested chrom-LOO; reporting metric is the worst-cell gap on a fixed $K_{\mathrm{eval}}$ partition. Numbers are point estimates from a single seed (\texttt{T\_tools/cp\_baselines\_h2h.py --K-mode nested-cv}); the Mendelian $K_{\mathrm{eval}} = 3$ row corresponds to Tab.~\ref{tab:cp_baselines}'s $0.173 \pm 0.192$ HCCP entry under bootstrap, and the small offset ($0.163$ here) reflects the bootstrap-vs-point-estimate discrepancy.
+Tab.~\ref{tab:keval_sensitivity} reports HCCP $\shat$-bin gap against the strongest contemporary single-axis CP baseline (RLCP, weighted CP, or SC-CP, whichever is tightest at each row) for $K_{\mathrm{eval}} \in \{2, 3, 5, 8, 10\}$. HCCP partition $K$ is selected per outer fold by nested chrom-LOO; reporting metric is the worst-cell gap on a fixed $K_{\mathrm{eval}}$ partition. Numbers are point estimates from a single seed (\texttt{T\_tools/cp\_baselines\_h2h.py --K-mode nested-cv}); the Mendelian $K_{\mathrm{eval}} = 3$ row corresponds to Tab.~\ref{tab:cp_baselines}'s $0.173 \pm 0.192$ HCCP entry under bootstrap, and the small offset ($0.163$ here) reflects the bootstrap-vs-point-estimate discrepancy.
 
 \begin{table}[h]
 \centering
@@ -138,7 +138,7 @@ Dataset & $K_{\mathrm{eval}}$ & HCCP gap & RLCP & wCP & SC-CP & ratio (best base
 \subsection{Per-chromosome coverage}
 \label{app:tables:perchrom}
 
-Table~\ref{tab:perchrom} reports per-chromosome coverage for the HCCP Mondrian predictor (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 5$).
+Tab.~\ref{tab:perchrom} reports per-chromosome coverage for the HCCP Mondrian predictor (CADD+GPN-MSA+Borzoi, $\alpha = 0.10$, $K = 5$).
 
 \begin{table}[h]
 \centering
@@ -246,7 +246,7 @@ C$\to$M transfer preserves coverage (0.901) because the complex-trait feature sp
 \subsection{K-sweep ablation}
 \label{app:tables:ksweep}
 
-Table~\ref{tab:ksweep} validates Theorem~\ref{thm:t5oracle} (T5.1) empirically by sweeping $K \in \{2, 3, 5, 8, 10, 15, 20, 30\}$. For each dataset the plug-in Lipschitz estimate is $\hat L_F \approx 49.4$ (Mendelian) and $21.8$ (Complex) via 100-batch finite differences on $\shat(X)$; the resulting oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ is $88$ (Mendelian) and $110$ (Complex), neither of which is realizable because the finite-sample variance term $K/(\pi_{\min} n)$ dominates long before the stationarity bias term $L_F R / K$ crosses it. The bolded rows in Tab.~\ref{tab:ksweep} mark the $K$ that minimises the chrom-LOO test-fold worst-cell gap ($K = 3$ Mendelian, $K = 2$ Complex) under the \emph{legacy non-nested} K-selection protocol; the proper nested chrom-LOO selector (§\ref{sec:theory:t5}) instead picks the modal $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ on Mendelian and $\hat K(c_{\mathrm{outer}}) = 5$ on Complex, restoring CP exchangeability. The fallback column reports the number of $(k,b)$ cells that triggered pooled class-conditional backoff ($n_{k,b} < 5$, §\ref{sec:method}).
+Tab.~\ref{tab:ksweep} validates Theorem~\ref{thm:t5oracle} (T5.1) empirically by sweeping $K \in \{2, 3, 5, 8, 10, 15, 20, 30\}$. For each dataset the plug-in Lipschitz estimate is $\hat L_F \approx 49.4$ (Mendelian) and $21.8$ (Complex) via 100-batch finite differences on $\shat(X)$; the resulting oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ is $88$ (Mendelian) and $110$ (Complex), neither of which is realizable because the finite-sample variance term $K/(\pi_{\min} n)$ dominates long before the stationarity bias term $L_F R / K$ crosses it. The bolded rows in Tab.~\ref{tab:ksweep} mark the $K$ that minimises the chrom-LOO test-fold worst-cell gap ($K = 3$ Mendelian, $K = 2$ Complex) under the \emph{legacy non-nested} K-selection protocol; the proper nested chrom-LOO selector (§\ref{sec:theory:t5}) instead picks the modal $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ on Mendelian and $\hat K(c_{\mathrm{outer}}) = 5$ on Complex, restoring CP exchangeability. The fallback column reports the number of $(k,b)$ cells that triggered pooled class-conditional backoff ($n_{k,b} < 5$, §\ref{sec:method}).
 
 \begin{table}[h]
 \centering
@@ -280,10 +280,10 @@ $K$ & Worst gap & Mean gap & $n_{\min}$ & fallback & Worst gap & Mean gap & $n_{
 \paragraph{Reading the table --- three regimes.} The K-sweep extended to $K = 200$ exposes \emph{three} regimes of HCCP behaviour, only the first two of which are predicted by Theorem~\ref{thm:t5oracle}.
 (i) \textbf{Bias-dominated} ($K \leq 3$ Mendelian, $K \leq 5$ Complex): worst-cell gap falls as $K$ increases because within-bin score heterogeneity decreases. Sweet spot under legacy chrom-LOO test-gap minimisation is $K{=}3$ (Mendelian) and $K{=}2$ (Complex); the rectified nested-CV $\hat K(c_{\mathrm{outer}})$ is larger ($\{5, 8\}$ Mendelian, $5$ Complex) because the inner-fold scoring is on a fixed $K_{\mathrm{eval}}$ axis (§\ref{sec:theory:t5}).
 (ii) \textbf{Variance-dominated} ($K \in [5, 30]$ Mendelian, $K \in [10, 30]$ Complex): worst-cell gap rises as cells drop toward the $n_{k,b} \geq \lceil 1/\alpha\rceil = 10$ floor. Mendelian saturates at gap $0.73$; Complex at $0.60$. This is the tradeoff captured by Eq.~\ref{eq:gap_decomp}.
-(iii) \textbf{Fallback-dominated} ($K \geq 50$, not modeled by T5): once the majority of cells trigger the pooled-fallback ($n_{k,b} < 5$), the predictor effectively reverts to T2 class-conditional calibration, which is uniform across $\shat$-bins. Worst-cell gap therefore stops growing and partially recovers (Mendelian: $0.73 \to 0.10$ as $K$ grows from 30 to 200; Complex: 0.90 plateau and $0.70$). This third regime is invisible in the asymptotic T5 bound but visible at the realistic $n \leq 11{,}400$ scale of TraitGym, and it explains why both the legacy non-nested $K = 2,3$ and the nested-CV modal $\hat K = 5\text{--}8$ remain far below the oracle $K^\star$ derived from any $L_F$ estimator in Table~\ref{tab:LF_estimators}: the variance-dominated regime never ``wins'' before fallback takes over.
+(iii) \textbf{Fallback-dominated} ($K \geq 50$, not modeled by T5): once the majority of cells trigger the pooled-fallback ($n_{k,b} < 5$), the predictor effectively reverts to T2 class-conditional calibration, which is uniform across $\shat$-bins. Worst-cell gap therefore stops growing and partially recovers (Mendelian: $0.73 \to 0.10$ as $K$ grows from 30 to 200; Complex: 0.90 plateau and $0.70$). This third regime is invisible in the asymptotic T5 bound but visible at the realistic $n \leq 11{,}400$ scale of TraitGym, and it explains why both the legacy non-nested $K = 2,3$ and the nested-CV modal $\hat K = 5\text{--}8$ remain far below the oracle $K^\star$ derived from any $L_F$ estimator in Tab.~\ref{tab:LF_estimators}: the variance-dominated regime never ``wins'' before fallback takes over.
 
 \paragraph{$L_F$ estimator with concentration bound.}
-The oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ depends on the plug-in Lipschitz estimate $\hat L_F$. We adapt the Lipschitz-Constant Least-Squares estimator of \citet{lcls2024lipschitz} to our score-CDF Lipschitz problem: bin $\shat$ into 30 quantile bins per class with at least 20 variants per bin, compute pairwise Kolmogorov--Smirnov distances and $\shat$-gaps, then regress KS$_{ab} = \hat L_F \cdot \mathrm{gap}_{ab}$ via least squares through the origin. Bootstrap with $B = 500$ chrom-level resamples gives a 95\% CI. Table~\ref{tab:LF_estimators} shows that the LCLS estimator yields tight CIs ($\hat L_F = 2.97$ Mendelian, $4.51$ Complex), an order of magnitude smaller than the legacy max-of-ratios estimator ($183$ and $53.3$ respectively) which is biased high by KS-saturation noise on small $\shat$-gaps. Substituting LCLS $\hat L_F$ into Theorem~\ref{thm:t5oracle} gives $K^\star = 22$ (Mendelian) and $K^\star = 50$ (Complex), still above the modal nested-CV $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ on Mendelian and $\hat K(c_{\mathrm{outer}}) = 5$ on Complex, by a factor of $3$--$10\times$. The remaining gap is the finite-sample fallback effect (App.~\ref{app:tables:ksweep}, third regime).
+The oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ depends on the plug-in Lipschitz estimate $\hat L_F$. We adapt the Lipschitz-Constant Least-Squares estimator of \citet{lcls2024lipschitz} to our score-CDF Lipschitz problem: bin $\shat$ into 30 quantile bins per class with at least 20 variants per bin, compute pairwise Kolmogorov--Smirnov distances and $\shat$-gaps, then regress KS$_{ab} = \hat L_F \cdot \mathrm{gap}_{ab}$ via least squares through the origin. Bootstrap with $B = 500$ chrom-level resamples gives a 95\% CI. Tab.~\ref{tab:LF_estimators} shows that the LCLS estimator yields tight CIs ($\hat L_F = 2.97$ Mendelian, $4.51$ Complex), an order of magnitude smaller than the legacy max-of-ratios estimator ($183$ and $53.3$ respectively) which is biased high by KS-saturation noise on small $\shat$-gaps. Substituting LCLS $\hat L_F$ into Theorem~\ref{thm:t5oracle} gives $K^\star = 22$ (Mendelian) and $K^\star = 50$ (Complex), still above the modal nested-CV $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ on Mendelian and $\hat K(c_{\mathrm{outer}}) = 5$ on Complex, by a factor of $3$--$10\times$. The remaining gap is the finite-sample fallback effect (App.~\ref{app:tables:ksweep}, third regime).
 
 \begin{table}[h]
 \centering
@@ -326,7 +326,7 @@ legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \subsection{DEGU-lite vs HCCP head-to-head}
 \label{app:tables:degu}
 
-Table~\ref{tab:degu} compares HCCP's supervised $\shat$ against DEGU-lite's ensemble $\shat$ under identical Mondrian-$(y \times \shat\text{-bin})$ conformal calibration and feature sets.
+Tab.~\ref{tab:degu} compares HCCP's supervised $\shat$ against DEGU-lite's ensemble $\shat$ under identical Mondrian-$(y \times \shat\text{-bin})$ conformal calibration and feature sets.
 
 \begin{table}[h]
 \centering
