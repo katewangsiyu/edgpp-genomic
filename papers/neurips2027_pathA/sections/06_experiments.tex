@@ -8,7 +8,7 @@ TraitGym Mendelian matched\_9 ($n = 3{,}380$, 113 OMIM) and Complex matched\_9 (
 \begin{table}[t]
 \centering
 \small
-\caption{TraitGym chrom-LOO. HCCP at $K = 5$ for direct comparability with split-CP and class-conditional baselines. AUPRC chrom-weighted; $\shat$-bin gap = max-over-bins absolute deviation from $0.90$.}
+\caption{TraitGym chrom-LOO. HCCP at $K = 5$ for direct comparability with the split-CP and class-conditional baselines (the recommended Mondrian operating point $K_{\mathrm{eval}} = 3 / 5$ for Mendelian / Complex is reported in Tab.~\ref{tab:h2h}). AUPRC chrom-weighted; $\shat$-bin gap here is the \textbf{max-over-$\shat$-bins marginal coverage deviation from $0.90$} (averaged across class within each bin); the cell-level worst-$(k,b)$ gap that appears in T5's bound is reported in Tab.~\ref{tab:h2h}.}
 \label{tab:main}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lllcccc}
@@ -30,7 +30,7 @@ Dataset & Aggregator & Calibration & AUPRC $\uparrow$ & Cov$|Y{=}1$ & $\shat$-bi
 \end{tabular}
 \end{table}
 
-The GBM aggregator alone reaches SOTA Mendelian AUPRC $0.900$, a $+14.8$\,pp improvement over the published LogReg baseline \citep{benegas2025traitgym}. Class-conditional calibration fixes the minority-class pathology of split CP (cov$_{|Y=1}\,0.54 \to 0.90$ on Complex) but leaves the local gap at $0.46$--$0.51$. HCCP's joint $(y \times \shat\text{-bin})$ Mondrian reduces the $\shat$-bin gap by a further $5\text{--}25\times$, to within one standard error of the finite-sample $1/(n_{k,b}+1)$ floor.
+The GBM aggregator alone reaches SOTA Mendelian AUPRC $0.900$, a $+14.8$\,pp improvement over the published LogReg baseline \citep{benegas2025traitgym}. Class-conditional calibration fixes the minority-class pathology of split CP (cov$_{|Y=1}\,0.54 \to 0.90$ on Complex) but leaves the local gap at $0.46$--$0.51$. HCCP's joint $(y \times \shat\text{-bin})$ Mondrian reduces the marginal $\shat$-bin gap by a further $5\text{--}25\times$, to within one standard error of the finite-sample $1/(n_{k,b}+1)$ floor. The corresponding cell-level worst-$(k,b)$ gap (the object that appears in T5's bound) is larger by construction --- $0.173 \pm 0.192$ Mendelian and $0.060 \pm 0.031$ Complex at the recommended $K_{\mathrm{eval}}$ (Tab.~\ref{tab:h2h}); the two metrics differ by $\sim 8\times$ on Mendelian because minority-cell undercoverage drives the cell-level worst, which the marginal-bin metric averages out.
 
 \subsection{Head-to-head against contemporary CP}
 \label{sec:experiments:h2h}
@@ -43,7 +43,7 @@ Subsampling Complex to $\pi_{+} \in \{0.05, 0.10, 0.20, 0.30, 0.50\}$, B1 and B2
 \subsection{Three-axis OOD + cross-domain stress test}
 \label{sec:experiments:ood}
 
-We evaluate HCCP on three orthogonal distributional axes (chrom-LOO, trait-LOO, cross-dataset) and a cross-domain benchmark (ProteinGym). \emph{Trait-LOO} reaches the finite-sample $1/(n_{k,b}+1)$ floor on both datasets ($\shat$-bin gap $\leq 0.004$), with one honest exception: the Skeletal/connective OMIM cluster ($n_{\mathrm{tot}} = 470$) shows $\mathrm{cov}_{|Y=1} = 0.745$ ($1/3$ Mendelian clusters fall below the $0.85$ minority-coverage target). \emph{Chrom-LOO} on the SOTA feature set: gap $\leq 0.077$ Mendelian and $0.023$ Complex. \emph{Cross-dataset} C$\to$M holds (gap $0.035$); the reverse M$\to$C direction is reported as a failure-mode case study (§\ref{sec:experiments:failure_mode}). \emph{ProteinGym cross-domain} \citep{notin2023proteingym}: across 50 assay-LOO held-out proteins, HCCP attains marginal coverage $0.887$, within $\pm 0.02$ of target on $27/50$ assays and within $\pm 0.05$ on $44/50$. The $6$ outlier assays correlate with low base-predictor AUPRC (Spearman $\rho = 0.46$, $p = 0.001$), confirming coverage failures track base-predictor weakness rather than conformal failure (full diagnosis in App.~\ref{app:proteingym}).
+We evaluate HCCP on three orthogonal distributional axes (chrom-LOO, trait-LOO, cross-dataset) and a cross-domain benchmark (ProteinGym). \emph{Trait-LOO} reaches the finite-sample $1/(n_{k,b}+1)$ floor on both datasets ($\shat$-bin gap $\leq 0.004$), with one honest exception: the Skeletal/connective OMIM cluster ($n_{\mathrm{tot}} = 470$) shows $\mathrm{cov}_{|Y=1} = 0.745$ ($1/3$ Mendelian clusters fall below the $0.85$ minority-coverage target). \emph{Chrom-LOO} on the SOTA feature set: per-chrom |coverage gap| $\leq 0.100$ Mendelian (chr6 at $0.800$) and $\leq 0.023$ Complex (Tab.~\ref{tab:perchrom}). \emph{Cross-dataset} C$\to$M holds (gap $0.035$); the reverse M$\to$C direction is reported as a failure-mode case study (§\ref{sec:experiments:failure_mode}). \emph{ProteinGym cross-domain} \citep{notin2023proteingym}: across 50 assay-LOO held-out proteins, HCCP attains marginal coverage $0.887$, within $\pm 0.02$ of target on $27/50$ assays and within $\pm 0.05$ on $44/50$. The $6$ outlier assays correlate with low base-predictor AUPRC (Spearman $\rho = 0.46$, $p = 0.001$), confirming coverage failures track base-predictor weakness rather than conformal failure (full diagnosis in App.~\ref{app:proteingym}).
 
 \subsection{Failure mode: M$\to$C cross-dataset}
 \label{sec:experiments:failure_mode}

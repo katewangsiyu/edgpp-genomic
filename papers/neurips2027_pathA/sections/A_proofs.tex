@@ -204,7 +204,7 @@ Both bounds carry no factor of~2 (weighted-swap Barber~2023, not jackknife+).
 \end{proof}
 
 \paragraph{Empirical TV estimates.}
-The cell-level KS audit (App.~\ref{app:data:ks}, 177 tests across both datasets) gives worst-cell $d_{\mathrm{KS}} = 0.434$ on Mendelian (chr9 / chr7 / chr3 highest-$\shat$ pathogenic-rich cell) and $0.315$ on Complex. Using $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq d_{\mathrm{KS}}$ as the conservative envelope, the cell-level coverage gap is bounded by $\leq 0.31$ on Mendelian and $\leq 0.05$ on Complex; observed per-chromosome coverage gaps remain $\leq 0.073$ throughout, well below the certificate.
+The cell-level KS audit (App.~\ref{app:data:ks}, 177 tests across both datasets) gives worst-cell $d_{\mathrm{KS}} = 0.434$ on Mendelian (chr9 / chr7 / chr3 highest-$\shat$ pathogenic-rich cell) and $0.315$ on Complex. Using $\bar\delta_{\mathrm{TV}}^{(k,b)} \leq d_{\mathrm{KS}}$ as the conservative envelope, the cell-level coverage gap is bounded by $\leq 0.31$ on Mendelian and $\leq 0.05$ on Complex; observed per-chromosome coverage gaps remain $\leq 0.100$ throughout (chr6 at $0.800$; full table in App.~\ref{app:tables:perchrom}), well below the certificate.
 
 
 % ============================================================================
@@ -341,7 +341,7 @@ where $n_{\min}(x_0, r) = \min_{b \in \{b_\star, b_\star+1\}} n_{kb}$.
 \end{proof}
 
 \paragraph{Honest limitations.}
-A3-loc is stronger than A2-cell --- it requires local stationarity at the scale $r$, which we cannot fully verify at high feature-space dimension with our $n \leq 11{,}400$. We state T3-loc conditionally on A3-loc. The Day~13 cell-level KS audit is the closest finite-sample analog. The Lipschitz constant $L$ of $\shat$ is unknown and its empirical estimation via finite differences is deferred to App.~\ref{app:data}. Finally, \citet{barber2020limits}'s impossibility is not violated: we guarantee coverage averaged over $B_\ell(x_0, r)$, not pointwise, and the resolution $r < \Delta / (2L)$ prevents $r$ from going to zero without re-binning.
+A3-loc is stronger than A2-cell --- it requires local stationarity at the scale $r$, which we cannot fully verify at high feature-space dimension with our $n \leq 11{,}400$. We state T3-loc conditionally on A3-loc. The cell-level KS audit (App.~\ref{app:data:ks}) is the closest finite-sample analog. The Lipschitz constant $L$ of $\shat$ (distinct from the score-CDF Lipschitz $L_F$ of \ref{ass:ASL}) is not estimated in this paper and is deferred to future work; T3-loc is therefore stated as a conditional guarantee, not an operationally-deployed bound. Finally, \citet{barber2020limits}'s impossibility is not violated: we guarantee coverage averaged over $B_\ell(x_0, r)$, not pointwise, and the resolution $r < \Delta / (2L)$ prevents $r$ from going to zero without re-binning.
 
 
 % ============================================================================
