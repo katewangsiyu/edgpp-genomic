@@ -34,6 +34,9 @@
 \citation{xie2025imbalancedcp,ding2023classcond,shi2024augmentedrank}
 \citation{barber2023exchangeability}
 \citation{notin2023proteingym}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces HCCP at a glance. \textbf  {(a)} Heteroscedastic aggregator outputs $(\hat  {p}, \hat  {\sigma })$; nonconformity score $s(x,y) = |y - \hat  {p}(x)| / \hat  {\sigma }(x)$ scales the decision radius by local uncertainty. \textbf  {(b)} Mondrian calibration partitions the labeled data by $(y \times \hat  {\sigma }\text  {-bin})$; per-cell quantile thresholds $\hat  {q}_{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet  {barber2020limits}'s pointwise impossibility. \textbf  {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$.}}{2}{figure.1}\protected@file@percent }
+\newlabel{fig:concept}{{1}{2}{HCCP at a glance. \textbf {(a)} Heteroscedastic aggregator outputs $(\phat , \shat )$; nonconformity score $s(x,y) = |y - \phat (x)| / \shat (x)$ scales the decision radius by local uncertainty. \textbf {(b)} Mondrian calibration partitions the labeled data by $(y \times \shat \text {-bin})$; per-cell quantile thresholds $\qhat _{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet {barber2020limits}'s pointwise impossibility. \textbf {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$}{figure.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
 \citation{vovk2005algorithmic,vovk2003mondrian,angelopoulos2022gentle}
 \citation{barber2020limits}
 \citation{papadopoulos2008normalized}
@@ -48,9 +51,6 @@
 \citation{yao2026nonasymp}
 \citation{plassier2025cp2hpd}
 \citation{crps_binning2026}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces HCCP at a glance. \textbf  {(a)} Heteroscedastic aggregator outputs $(\hat  {p}, \hat  {\sigma })$; nonconformity score $s(x,y) = |y - \hat  {p}(x)| / \hat  {\sigma }(x)$ scales the decision radius by local uncertainty. \textbf  {(b)} Mondrian calibration partitions the labeled data by $(y \times \hat  {\sigma }\text  {-bin})$; per-cell quantile thresholds $\hat  {q}_{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet  {barber2020limits}'s pointwise impossibility. \textbf  {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$.}}{2}{figure.1}\protected@file@percent }
-\newlabel{fig:concept}{{1}{2}{HCCP at a glance. \textbf {(a)} Heteroscedastic aggregator outputs $(\phat , \shat )$; nonconformity score $s(x,y) = |y - \phat (x)| / \shat (x)$ scales the decision radius by local uncertainty. \textbf {(b)} Mondrian calibration partitions the labeled data by $(y \times \shat \text {-bin})$; per-cell quantile thresholds $\qhat _{k,b}$ restore class-conditional (T2) and bin-conditional (T3) coverage, while remaining compatible with \citet {barber2020limits}'s pointwise impossibility. \textbf {(c)} Three-axis OOD validation on TraitGym: trait-LOO reaches the finite-sample floor $0.002$--$0.004$; chrom-LOO and C$\to $M cross-dataset stay $\leq 0.077$}{figure.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
 \citation{sadinle2019lac}
 \citation{shi2024augmentedrank,ding2023classcond}
 \citation{xie2025imbalancedcp}
@@ -124,7 +124,6 @@
 \citation{tibshirani2019weighted}
 \citation{vanderlaan2024sccp}
 \citation{notin2023proteingym}
-\citation{tibshirani2019weighted}
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces TraitGym chrom-LOO. HCCP at $K = 5$ for direct comparability with split-CP and class-conditional baselines. AUPRC chrom-weighted; $\hat  {\sigma }$-bin gap = max-over-bins absolute deviation from $0.90$.}}{7}{table.2}\protected@file@percent }
 \newlabel{tab:main}{{2}{7}{TraitGym chrom-LOO. HCCP at $K = 5$ for direct comparability with split-CP and class-conditional baselines. AUPRC chrom-weighted; $\shat $-bin gap = max-over-bins absolute deviation from $0.90$}{table.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Head-to-head against contemporary CP}{7}{subsection.6.2}\protected@file@percent }
@@ -132,6 +131,7 @@
 \@writefile{toc}{\contentsline {paragraph}{Imbalance scaling validates T5's $\pi _{\qopname  \relax m{min}}$ dependence.}{7}{section*.9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Three-axis OOD + cross-domain stress test}{7}{subsection.6.3}\protected@file@percent }
 \newlabel{sec:experiments:ood}{{6.3}{7}{Three-axis OOD + cross-domain stress test}{subsection.6.3}{}}
+\citation{tibshirani2019weighted}
 \citation{avsec2026alphagenome}
 \citation{zhou2026degu}
 \citation{pcos2025conformal}
