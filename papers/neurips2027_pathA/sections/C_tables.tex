@@ -8,8 +8,8 @@ Tab.~\ref{tab:h2h} reports the four single-axis Mondrian variants (split CP, $\s
 
 \begin{table}[h]
 \centering
-\small
-\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$). \textbf{All four rows on $B = 200$ chromosome-level bootstrap (mean $\pm$ std).} The reported $\shat$-bin gap is the cell-level worst-$(k,b)$ deviation from $0.90$, the same object as $G(K)$ in Eq.~\eqref{eq:gap_decomp}; this differs from the marginal-bin metric of Tab.~\ref{tab:main}. Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets. Note that the on-axis baseline B2 $\shat$-Mondrian still loses on $\shat$-bin gap because $\shat$-only stratification does not preserve $\mathrm{cov}_{|Y=1}$ at $\pi_{\min}=0.10$; the $(y \times \shat)$ product is necessary, not just the $\shat$ axis.}
+\footnotesize
+\caption{Head-to-head against off-the-shelf normalized + Mondrian CP, sharing the same $(\phat, \shat)$. Baselines: B2 \citep{bostrom2020mondrian}, B3 \citep{sadinle2019lac}. Partition $K$ for B2 / B4 selected per outer fold via proper nested chrom-LOO with $K_{\mathrm{eval}}$-fair scoring (Mendelian $K_{\mathrm{eval}} = 3$, Complex $K_{\mathrm{eval}} = 5$). \textbf{All four rows on $B = 200$ chromosome-level bootstrap (mean $\pm$ std).} The reported $\shat$-bin gap is the cell-level worst-$(k,b)$ deviation from $0.90$, the same object as $G(K)$ in Eq.~\eqref{eq:gap_decomp}; this differs from the marginal-bin metric of Tab.~\ref{tab:main}. Of the four variants we evaluated, HCCP is the only frontier point at this corner on both datasets. Note that the on-axis baseline B2 $\shat$-Mondrian still loses on $\shat$-bin gap because $\shat$-only stratification does not preserve $\mathrm{cov}_{|Y=1}$ at $\pi_{\min}=0.10$; the $(y \times \shat)$ product is necessary, not just the $\shat$ axis.}
 \label{tab:h2h}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{llccc}
@@ -17,24 +17,24 @@ Tab.~\ref{tab:h2h} reports the four single-axis Mondrian variants (split CP, $\s
 Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ \\
 \midrule
 \multirow{4}{*}{Mendelian ($\pi_{+} = 0.10$)}
- & B1 vanilla split CP                       & $0.899_{\pm 0.009}$ & $\textcolor{red}{0.982_{\pm 0.008}}$ & $0.265_{\pm 0.153}$ \\
- & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & $0.901_{\pm 0.013}$ & $\textcolor{red}{0.821_{\pm 0.049}}$ & $\textcolor{red}{0.401_{\pm 0.187}}$ \\
- & B3 class-Mondrian \citep{sadinle2019lac}  & $0.898_{\pm 0.008}$ & $0.895_{\pm 0.032}$ & $\textcolor{red}{0.410_{\pm 0.172}}$ \\
- & \textbf{B4 HCCP (ours)}                    & $0.900_{\pm 0.012}$ & $\mathbf{0.875_{\pm 0.040}}$ & $\mathbf{0.173_{\pm 0.192}}$ \\
+ & B1 vanilla split CP            & $0.899_{\pm .009}$ & $\textcolor{red}{0.982_{\pm .008}}$ & $0.265_{\pm .153}$ \\
+ & B2 $\shat$-Mondrian            & $0.901_{\pm .013}$ & $\textcolor{red}{0.821_{\pm .049}}$ & $\textcolor{red}{0.401_{\pm .187}}$ \\
+ & B3 class-Mondrian              & $0.898_{\pm .008}$ & $0.895_{\pm .032}$                  & $\textcolor{red}{0.410_{\pm .172}}$ \\
+ & \textbf{B4 HCCP (ours)}        & $0.900_{\pm .012}$ & $\mathbf{0.875_{\pm .040}}$         & $\mathbf{0.173_{\pm .192}}$ \\
 \midrule
 \multirow{4}{*}{Complex ($\pi_{+} = 0.10$)}
- & B1 vanilla split CP                       & $0.900_{\pm 0.003}$ & $\textcolor{red}{0.614_{\pm 0.018}}$ & $\textcolor{red}{0.822_{\pm 0.028}}$ \\
- & B2 $\shat$-Mondrian \citep{bostrom2020mondrian} & $0.900_{\pm 0.003}$ & $\textcolor{red}{0.624_{\pm 0.018}}$ & $\textcolor{red}{0.827_{\pm 0.025}}$ \\
- & B3 class-Mondrian \citep{sadinle2019lac}  & $0.900_{\pm 0.004}$ & $0.900_{\pm 0.016}$ & $\textcolor{red}{0.805_{\pm 0.051}}$ \\
- & \textbf{B4 HCCP (ours)}                    & $0.900_{\pm 0.003}$ & $\mathbf{0.905_{\pm 0.010}}$ & $\mathbf{0.060_{\pm 0.031}}$ \\
+ & B1 vanilla split CP            & $0.900_{\pm .003}$ & $\textcolor{red}{0.614_{\pm .018}}$ & $\textcolor{red}{0.822_{\pm .028}}$ \\
+ & B2 $\shat$-Mondrian            & $0.900_{\pm .003}$ & $\textcolor{red}{0.624_{\pm .018}}$ & $\textcolor{red}{0.827_{\pm .025}}$ \\
+ & B3 class-Mondrian              & $0.900_{\pm .004}$ & $0.900_{\pm .016}$                  & $\textcolor{red}{0.805_{\pm .051}}$ \\
+ & \textbf{B4 HCCP (ours)}        & $0.900_{\pm .003}$ & $\mathbf{0.905_{\pm .010}}$         & $\mathbf{0.060_{\pm .031}}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[h]
 \centering
-\small
-\caption{HCCP vs.\ contemporary local-CP methods, sharing $(\phat, \shat)$. $\shat$-bin gap is the cell-level worst-$(k,b)$ metric (matched to Tab.~\ref{tab:h2h} convention). Subscripts are $\pm$ one std from $B = 200$ chrom-level bootstrap resamples. Complex CI: HCCP $[0.019, 0.119]$ vs.\ baselines $[0.770, 0.879]$ (disjoint).}
+\footnotesize
+\caption{HCCP vs.\ contemporary local-CP methods, sharing $(\phat, \shat)$. Baselines: RLCP \citep{hore2025rlcp}, weighted CP \citep{tibshirani2019weighted}, SC-CP \citep{vanderlaan2024sccp}. $\shat$-bin gap is the cell-level worst-$(k,b)$ metric (matched to Tab.~\ref{tab:h2h} convention). Subscripts are $\pm$ one std from $B = 200$ chrom-level bootstrap resamples. Complex CI: HCCP $[0.019, 0.119]$ vs.\ baselines $[0.770, 0.879]$ (disjoint).}
 \label{tab:cp_baselines}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{llcccc}
@@ -42,16 +42,16 @@ Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ \\
 Dataset & Method & Marg.\ cov.\ & Cov$|Y{=}1$ & $\shat$-bin gap $\downarrow$ & Singleton \\
 \midrule
 \multirow{4}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
- & \textbf{HCCP (ours)}                                & 0.900 & $\mathbf{0.905_{\pm 0.010}}$ & $\mathbf{0.060_{\pm 0.031}}$ & 0.224 \\
- & RLCP \citep{hore2025rlcp}                            & 0.952 & $\textcolor{red}{0.543_{\pm 0.019}}$ & $\textcolor{red}{0.820_{\pm 0.029}}$ & 0.762 \\
- & weighted CP \citep{tibshirani2019weighted}           & 0.901 & $\textcolor{red}{0.611_{\pm 0.020}}$ & $\textcolor{red}{0.821_{\pm 0.030}}$ & 0.785 \\
- & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & $\textcolor{red}{0.625_{\pm 0.018}}$ & $\textcolor{red}{0.817_{\pm 0.034}}$ & 0.710 \\
+ & \textbf{HCCP (ours)} & 0.900 & $\mathbf{0.905_{\pm .010}}$         & $\mathbf{0.060_{\pm .031}}$         & 0.224 \\
+ & RLCP                 & 0.952 & $\textcolor{red}{0.543_{\pm .019}}$ & $\textcolor{red}{0.820_{\pm .029}}$ & 0.762 \\
+ & weighted CP          & 0.901 & $\textcolor{red}{0.611_{\pm .020}}$ & $\textcolor{red}{0.821_{\pm .030}}$ & 0.785 \\
+ & SC-CP                & 0.900 & $\textcolor{red}{0.625_{\pm .018}}$ & $\textcolor{red}{0.817_{\pm .034}}$ & 0.710 \\
 \midrule
 \multirow{4}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
- & \textbf{HCCP (ours)}                                & 0.902 & $\mathbf{0.875_{\pm 0.040}}$ & $\mathbf{0.173_{\pm 0.192}}$ & 0.827 \\
- & RLCP \citep{hore2025rlcp}                            & 0.939 & $0.878_{\pm 0.034}$ & $\textcolor{red}{0.360_{\pm 0.171}}$ & 0.890 \\
- & weighted CP \citep{tibshirani2019weighted}           & 0.902 & $\textcolor{red}{0.982_{\pm 0.006}}$ & $0.252_{\pm 0.153}$ & 0.499 \\
- & SC-CP \citep{vanderlaan2024sccp}                     & 0.900 & $\textcolor{red}{0.859_{\pm 0.044}}$ & $\textcolor{red}{0.404_{\pm 0.182}}$ & 0.777 \\
+ & \textbf{HCCP (ours)} & 0.902 & $\mathbf{0.875_{\pm .040}}$         & $\mathbf{0.173_{\pm .192}}$         & 0.827 \\
+ & RLCP                 & 0.939 & $0.878_{\pm .034}$                  & $\textcolor{red}{0.360_{\pm .171}}$ & 0.890 \\
+ & weighted CP          & 0.902 & $\textcolor{red}{0.982_{\pm .006}}$ & $0.252_{\pm .153}$                  & 0.499 \\
+ & SC-CP                & 0.900 & $\textcolor{red}{0.859_{\pm .044}}$ & $\textcolor{red}{0.404_{\pm .182}}$ & 0.777 \\
 \bottomrule
 \end{tabular}
 \end{table}

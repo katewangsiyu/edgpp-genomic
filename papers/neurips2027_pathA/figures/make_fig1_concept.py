@@ -1,21 +1,16 @@
-"""Figure 1 concept pane — HCCP pipeline at a glance.
+"""Figure 1 — HCCP at a glance: pipeline schematic + Pareto frontier.
 
-Three panels:
-  (a) Heteroscedastic aggregator p̂(x) ± σ̂(x) on a 1-D toy, with the
-      nonconformity score geometry s(x,y) = |y - p̂(x)| / σ̂(x) visualized
-      as a band whose half-width scales with σ̂(x).
-  (b) Mondrian calibration grid on (y × σ̂-bin), annotated with per-cell
-      thresholds q̂_{k,b} and the T3 finite-sample rate 1/(n_{k,b}+1).
-  (c) Three-axis OOD coverage bars: chrom-LOO / trait-LOO / cross-dataset,
-      showing σ̂-bin gap ≤ 0.04 in every non-strong-shift regime.
+Two panels:
+  (a) Pipeline schematic: data -> (p_hat, sigma_hat) aggregator -> Mondrian
+      (y x sigma-bin) partition -> per-cell threshold q_{k,b} -> prediction
+      set C_alpha(x). Score s(x,y) = |y - p_hat(x)| / (sigma_hat(x) + eps)
+      shown beneath the pipeline.
+  (b) Pareto plot on (Cov|Y=1, sigma-bin gap): real numbers from Tab. 8
+      head-to-head (4 methods x 2 datasets, B = 200 chrom-bootstrap means).
+      HCCP sits alone in the bottom-right (high coverage + low gap) corner.
 
-Numbers are anchored to:
-  - Day 10 GBM Mendelian AUPRC 0.900 / Complex 0.353
-  - Day 12 chrom-LOO σ̂-bin gap 0.020 Complex / 0.077 Mendelian
-  - Day 14 trait-LOO gap 0.002-0.004
-  - Day 14 cross-dataset C→M gap 0.035
-Actual numbers in (c) come from tables in reports/; illustrative curves in
-(a,b) are synthetic to communicate the geometry only.
+Numbers in (b) come from sections/C_tables.tex tab:h2h. The schematic in (a)
+is a structural diagram with no synthetic data.
 """
 from __future__ import annotations
 
@@ -23,7 +18,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.patches import FancyBboxPatch, Rectangle
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 FIG_DIR = Path(__file__).resolve().parent
 OUT_PDF = FIG_DIR / "fig1_concept.pdf"
@@ -37,183 +32,191 @@ plt.rcParams.update({
     "axes.labelsize": 9,
     "xtick.labelsize": 8,
     "ytick.labelsize": 8,
-    "legend.fontsize": 8,
+    "legend.fontsize": 7.5,
     "axes.spines.top": False,
     "axes.spines.right": False,
 })
 
-C_POS = "#d1495b"       # pathogenic (y=1)
-C_NEG = "#4a6fa5"       # benign (y=0)
-C_SIGMA = "#f1a340"     # σ̂ band
-C_GRID = "#2c6e49"      # Mondrian accent
-C_OOD1 = "#4a6fa5"
-C_OOD2 = "#f1a340"
-C_OOD3 = "#d1495b"
+C_BOX = "#e8eef5"
+C_BOX_EDGE = "#2c3e50"
+C_HCCP = "#d1495b"
+C_BASE = "#4a6fa5"
+C_ARROW = "#2c3e50"
+C_IDEAL = "#a4c293"
 
 
+# ============================================================================
+# Panel (a) — Pipeline schematic
+# ============================================================================
 def panel_a(ax):
-    """Heteroscedastic p̂(x) ± σ̂(x) with score geometry."""
-    rng = np.random.default_rng(42)
-    xs = np.linspace(0.0, 1.0, 200)
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 5)
+    ax.set_aspect("auto")
+    ax.axis("off")
+    ax.set_title("(a) HCCP pipeline", loc="left", pad=4)
 
-    # p̂(x): smooth sigmoid-ish curve from ~0.1 to ~0.9
-    phat = 0.10 + 0.80 / (1.0 + np.exp(-8.0 * (xs - 0.55)))
-    # σ̂(x): U-shaped — small near 0 and 1, large near the decision boundary
-    sig = 0.05 + 0.22 * np.exp(-((xs - 0.55) / 0.22) ** 2)
+    # Box positions: x_center, y_center, width, height
+    boxes = [
+        (1.10, 3.4, 1.85, 1.30, "Input\n$(X_i, Y_i, C_i)$",
+         "chrom $C_i$\nfor LOO split"),
+        (3.65, 3.4, 2.10, 1.30, "Aggregator\n$\\hat{p}(x),\\ \\hat{\\sigma}(x)$",
+         "GBM + Gaussian-NLL\non chrom-LOO OOF"),
+        (6.30, 3.4, 2.10, 1.30, "Mondrian\n$(y \\times \\hat{\\sigma}\\text{-bin})$",
+         "$2K$ cells; $K = \\hat K(c_{\\mathrm{outer}})$\nvia nested chrom-LOO"),
+        (8.85, 3.4, 1.65, 1.30,
+         "Per-cell\n$\\hat{q}_{k,b}$",
+         "$\\mathcal{C}_\\alpha(x)$\n(T3 / T3$'$)"),
+    ]
 
-    # Central curve and ±σ̂ band (illustrative).
-    ax.fill_between(xs, np.clip(phat - sig, 0, 1), np.clip(phat + sig, 0, 1),
-                    color=C_SIGMA, alpha=0.30, linewidth=0,
-                    label=r"$\hat{p}(x) \pm \hat{\sigma}(x)$")
-    ax.plot(xs, phat, color="black", linewidth=1.6, label=r"$\hat{p}(x)$")
+    for cx, cy, w, h, title, sub in boxes:
+        box = FancyBboxPatch(
+            (cx - w / 2, cy - h / 2), w, h,
+            boxstyle="round,pad=0.06,rounding_size=0.10",
+            facecolor=C_BOX, edgecolor=C_BOX_EDGE, linewidth=1.0,
+        )
+        ax.add_patch(box)
+        ax.text(cx, cy + 0.20, title, ha="center", va="center",
+                fontsize=9.0)
+        ax.text(cx, cy - 0.36, sub, ha="center", va="center",
+                fontsize=7.2, color="#444444", style="italic")
 
-    # Scatter of pseudo-labels — dense negatives low, dense positives high,
-    # with a fuzzy band near boundary.
-    n_neg, n_pos = 80, 20
-    x_neg = rng.beta(1.5, 3.5, n_neg)
-    x_pos = rng.beta(4.0, 1.5, n_pos)
-    y_neg_jitter = rng.normal(0.0, 0.015, n_neg)
-    y_pos_jitter = rng.normal(0.0, 0.015, n_pos)
-    ax.scatter(x_neg, y_neg_jitter, s=10, color=C_NEG, alpha=0.6,
-               edgecolor="none", label=r"$y=0$")
-    ax.scatter(x_pos, 1.0 + y_pos_jitter, s=12, color=C_POS, alpha=0.75,
-               edgecolor="none", label=r"$y=1$")
+    # Arrows between boxes.
+    arrow_pairs = [
+        (boxes[0], boxes[1]),
+        (boxes[1], boxes[2]),
+        (boxes[2], boxes[3]),
+    ]
+    for src, dst in arrow_pairs:
+        x_src = src[0] + src[2] / 2
+        x_dst = dst[0] - dst[2] / 2
+        arrow = FancyArrowPatch(
+            (x_src + 0.04, src[1]), (x_dst - 0.04, dst[1]),
+            arrowstyle="-|>", mutation_scale=10,
+            linewidth=1.0, color=C_ARROW,
+        )
+        ax.add_patch(arrow)
 
-    # Highlight score geometry at two query points: one low-σ̂, one high-σ̂.
-    for x_q, tag in [(0.20, "low $\\hat{\\sigma}$"), (0.55, "high $\\hat{\\sigma}$")]:
-        idx = int(x_q * (len(xs) - 1))
-        p_q, s_q = phat[idx], sig[idx]
-        # Vertical score segment |y - p̂(x)| for y=1
-        ax.plot([x_q, x_q], [p_q, 1.0], color=C_POS, linewidth=1.2,
-                alpha=0.8, linestyle="--")
-        # σ̂ interval
-        ax.plot([x_q - 0.012, x_q + 0.012], [p_q + s_q, p_q + s_q],
-                color=C_SIGMA, linewidth=1.4)
-        ax.plot([x_q - 0.012, x_q + 0.012], [p_q - s_q, p_q - s_q],
-                color=C_SIGMA, linewidth=1.4)
-        ax.plot([x_q, x_q], [p_q - s_q, p_q + s_q], color=C_SIGMA, linewidth=1.4)
-        ax.annotate(tag, xy=(x_q, p_q), xytext=(x_q + 0.04, p_q - 0.18),
-                    fontsize=8, color="black",
-                    arrowprops=dict(arrowstyle="->", lw=0.6, color="gray"))
+    # Score bar beneath, anchored under the aggregator + Mondrian.
+    ax.annotate(
+        r"nonconformity score:  $s(x, y) \;=\; |y - \hat{p}(x)| \,/\, "
+        r"(\hat{\sigma}(x) + \epsilon)$  "
+        r"$\Longrightarrow$  per-cell quantile  "
+        r"$\hat{q}_{k,b} = \mathrm{Quantile}(s : Y{=}k, \mathrm{bin}{=}b)$",
+        xy=(5.0, 1.65), xycoords="data",
+        ha="center", va="center", fontsize=8.0,
+        bbox=dict(boxstyle="round,pad=0.35", facecolor="#fff8e7",
+                  edgecolor="#caa455", linewidth=0.6),
+    )
 
-    ax.set_xlim(-0.02, 1.02)
-    ax.set_ylim(-0.08, 1.08)
-    ax.set_xlabel(r"feature coordinate $x$ (1-D projection)")
-    ax.set_ylabel(r"probability")
-    ax.set_title(r"(a) Heteroscedastic aggregator $\hat{p}(x), \hat{\sigma}(x)$")
-    ax.legend(loc="center left", bbox_to_anchor=(0.02, 0.55), frameon=False)
+    # Two coverage targets summarized below.
+    ax.text(2.5, 0.55,
+            r"Targets:  (i) $P(Y \in \mathcal{C}_\alpha \mid Y{=}k) \geq 1 - \alpha$  "
+            r"[T2 class-cond.]",
+            ha="left", va="center", fontsize=7.6, color="#333333")
+    ax.text(3.18, 0.10,
+            r"(ii) $P(Y \in \mathcal{C}_\alpha \mid Y{=}k,\, b(X){=}b) \geq 1 - \alpha - 1/(n_{k,b}+1)$  "
+            r"[T3 bin-cond.]",
+            ha="left", va="center", fontsize=7.6, color="#333333")
 
 
+# ============================================================================
+# Panel (b) — Pareto frontier on (Cov|Y=1, sigma-bin gap)
+# Numbers from sections/C_tables.tex tab:h2h, B = 200 chrom-bootstrap means.
+# ============================================================================
 def panel_b(ax):
-    """Mondrian (y × σ̂-bin) calibration grid."""
-    K = 5
-    bins = list(range(1, K + 1))
-    classes = [0, 1]
+    # Mendelian, pi+ = 0.10
+    mend = {
+        "B1 split CP":      (0.982, 0.265),
+        "B2 $\\hat\\sigma$-Mond.":  (0.821, 0.401),
+        "B3 class-Mond.":   (0.895, 0.410),
+        "HCCP (ours)":      (0.875, 0.173),
+    }
+    # Complex, pi+ = 0.10
+    comp = {
+        "B1 split CP":      (0.614, 0.822),
+        "B2 $\\hat\\sigma$-Mond.":  (0.624, 0.827),
+        "B3 class-Mond.":   (0.900, 0.805),
+        "HCCP (ours)":      (0.905, 0.060),
+    }
 
-    # Per-cell threshold q̂_{k,b} — illustrative: grows with bin (harder in
-    # high-σ̂ cells), slightly wider for y=1 (minority).
-    q_grid = np.array([
-        [0.42, 0.58, 0.77, 1.05, 1.48],   # y=0
-        [0.55, 0.74, 0.99, 1.33, 1.82],   # y=1
-    ])
-    # Per-cell n_{k,b} (illustrative, TraitGym Complex roughly).
-    n_grid = np.array([
-        [1050, 1050, 1050, 1050, 1040],   # y=0
-        [ 135,  130,  130,  130,  130],   # y=1
-    ])
+    # Ideal zone: Cov|Y=1 >= 0.85 and sigma-bin gap <= 0.20 (recommended corner).
+    ax.fill_between([0.85, 1.0], 0, 0.20, color=C_IDEAL, alpha=0.30,
+                    linewidth=0, zorder=0)
+    ax.text(0.992, 0.011, "ideal corner\n(cov $\\geq$ 0.85, gap $\\leq$ 0.20)",
+            ha="right", va="bottom", fontsize=7.2, color="#3d6a45",
+            style="italic", zorder=1)
 
-    ax.set_xlim(0.3, K + 0.7)
-    ax.set_ylim(-0.6, 1.6)
-    ax.invert_yaxis()
-    ax.set_xticks(bins)
-    ax.set_yticks([0, 1])
-    ax.set_yticklabels([r"$y=0$", r"$y=1$"])
-    ax.set_xlabel(r"$\hat{\sigma}$-bin $b \in \{1, \ldots, K\}$  (low $\to$ high)")
-    ax.set_title(r"(b) Mondrian $(y \times \hat{\sigma}\text{-bin})$ calibration, $K=5$")
+    markers = {
+        "B1 split CP":     ("o", C_BASE, 56),
+        "B2 $\\hat\\sigma$-Mond.": ("s", C_BASE, 56),
+        "B3 class-Mond.":  ("^", C_BASE, 60),
+        "HCCP (ours)":     ("*", C_HCCP, 230),
+    }
 
-    # Fill cells: color intensity proportional to q̂, alpha proportional to n.
-    q_max = q_grid.max()
-    for ki, k in enumerate(classes):
-        for bi, b in enumerate(bins):
-            q = q_grid[ki, bi]
-            n = n_grid[ki, bi]
-            base_color = C_POS if k == 1 else C_NEG
-            alpha = 0.18 + 0.55 * (q / q_max)
-            rect = Rectangle((b - 0.45, k - 0.45), 0.9, 0.9,
-                             facecolor=base_color, alpha=alpha,
-                             edgecolor=C_GRID, linewidth=1.2)
-            ax.add_patch(rect)
-            ax.text(b, k - 0.12, rf"$\hat{{q}}={q:.2f}$",
-                    ha="center", va="center", fontsize=8.0, color="black")
-            ax.text(b, k + 0.18, rf"$n={n}$", ha="center", va="center",
-                    fontsize=7.5, color="black", alpha=0.75)
+    plotted = set()
+    for ds_name, ds_data, is_filled in [("Mendelian", mend, False),
+                                         ("Complex", comp, True)]:
+        for label, (cov, gap) in ds_data.items():
+            mk, color, sz = markers[label]
+            face = color if is_filled else "white"
+            edge = color
+            lw = 1.6 if label == "HCCP (ours)" else 1.0
+            ax.scatter(cov, gap, marker=mk, s=sz, facecolor=face,
+                       edgecolor=edge, linewidth=lw, zorder=3,
+                       label=label if label not in plotted else None)
+            plotted.add(label)
 
-    # T3 annotation.
-    ax.text(0.5 * (1 + K), 1.40,
-            r"T3: $P(Y \in \mathcal{C}_\alpha \mid Y{=}k,\, b(X){=}b) \geq "
-            r"1 - \alpha - 1/(n_{k,b}+1)$",
-            ha="center", va="center", fontsize=8.5, color=C_GRID)
+    # Connect each method's Mendelian-Complex pair with a faint line to show
+    # cross-dataset consistency.
+    for label in mend:
+        if label == "HCCP (ours)":
+            continue  # don't clutter HCCP's star markers
+        m_cov, m_gap = mend[label]
+        c_cov, c_gap = comp[label]
+        ax.plot([m_cov, c_cov], [m_gap, c_gap],
+                color=C_BASE, alpha=0.18, linewidth=0.8, zorder=2)
+    # HCCP connector in red.
+    ax.plot([mend["HCCP (ours)"][0], comp["HCCP (ours)"][0]],
+            [mend["HCCP (ours)"][1], comp["HCCP (ours)"][1]],
+            color=C_HCCP, alpha=0.35, linewidth=1.0, zorder=2)
 
+    # Annotate each HCCP point with dataset name.
+    ax.annotate("Mendelian", xy=mend["HCCP (ours)"],
+                xytext=(0.835, 0.245), fontsize=7.5, color=C_HCCP,
+                arrowprops=dict(arrowstyle="-", lw=0.5, color=C_HCCP, alpha=0.6))
+    ax.annotate("Complex", xy=comp["HCCP (ours)"],
+                xytext=(0.815, 0.105), fontsize=7.5, color=C_HCCP,
+                arrowprops=dict(arrowstyle="-", lw=0.5, color=C_HCCP, alpha=0.6))
 
-def panel_c(ax):
-    """Three-axis OOD σ̂-bin gap bars."""
-    # Numbers from reports/day14_external_validation.md §7.
-    # Chrom-LOO uses CADD+GPN-MSA+Borzoi; trait-LOO and cross-dataset use
-    # CADD+Borzoi (same anchor as §6 Table 2).
-    groups = ["Mendelian", "Complex"]
-    n_groups = len(groups)
-    chrom_loo = [0.077, 0.023]       # CADD+GPN-MSA+Borzoi
-    trait_loo = [0.004, 0.002]       # CADD+Borzoi
-    cross = [0.036, 0.331]           # Mendelian: C→M (reverse), Complex: M→C (strong shift)
+    # Legend: deduplicated, with marker key plus open/filled note.
+    handles, labels = ax.get_legend_handles_labels()
+    seen = set()
+    uniq = [(h, l) for h, l in zip(handles, labels) if not (l in seen or seen.add(l))]
+    leg = ax.legend([h for h, _ in uniq], [l for _, l in uniq],
+                    loc="upper left", frameon=True, framealpha=0.92,
+                    fontsize=7.5, handletextpad=0.4, borderpad=0.4)
+    leg.set_title("open = Mendelian,  filled = Complex", prop={"size": 6.8})
+    leg.get_frame().set_linewidth(0.4)
 
-    width = 0.26
-    positions = np.arange(n_groups)
-
-    b1 = ax.bar(positions - width, chrom_loo, width, label="chrom-LOO",
-                color=C_OOD1, edgecolor="black", linewidth=0.4)
-    b2 = ax.bar(positions,         trait_loo, width, label="trait-LOO",
-                color=C_OOD2, edgecolor="black", linewidth=0.4)
-    b3 = ax.bar(positions + width, cross,     width, label="cross-dataset",
-                color=C_OOD3, edgecolor="black", linewidth=0.4)
-
-    # 0.04 target line.
-    ax.axhline(0.04, color="black", linestyle="--", linewidth=0.8, alpha=0.6)
-    ax.text(0.02, 0.045, r"target $\leq 0.04$", fontsize=8, color="black",
-            transform=ax.get_yaxis_transform(), va="bottom", ha="left")
-
-    for bar_group in (b1, b2, b3):
-        for rect in bar_group:
-            h = rect.get_height()
-            ax.annotate(f"{h:.3f}", xy=(rect.get_x() + rect.get_width() / 2, h),
-                        xytext=(0, 2), textcoords="offset points",
-                        ha="center", va="bottom", fontsize=7.0)
-
-    # Annotate the strong-shift outlier.
-    ax.annotate("M$\\to$C\nstrong shift",
-                xy=(1 + width, cross[1]),
-                xytext=(1.2, 0.28),
-                fontsize=7.5, ha="left", va="center",
-                arrowprops=dict(arrowstyle="->", lw=0.6, color="gray"))
-
-    ax.set_xticks(positions)
-    ax.set_xticklabels(groups)
-    ax.set_ylabel(r"$\hat{\sigma}$-bin coverage gap")
-    ax.set_ylim(0, 0.36)
-    ax.set_title(r"(c) Three-axis OOD: $\hat{\sigma}$-bin gap on TraitGym")
-    ax.legend(loc="upper left", frameon=False, ncol=1)
+    ax.set_xlim(0.50, 1.00)
+    ax.set_ylim(-0.02, 0.90)
+    ax.set_xlabel(r"Cov$|Y{=}1$ (minority-class coverage, $\rightarrow$ better)")
+    ax.set_ylabel(r"$\hat{\sigma}$-bin gap (cell-level worst, $\downarrow$ better)")
+    ax.set_title("(b) Pareto frontier (Tab.~2)", loc="left", pad=4)
+    ax.grid(True, linestyle=":", linewidth=0.5, alpha=0.5)
+    ax.axhline(0.20, color="gray", linestyle="--", linewidth=0.5, alpha=0.5)
+    ax.axvline(0.85, color="gray", linestyle="--", linewidth=0.5, alpha=0.5)
 
 
 def main():
-    fig = plt.figure(figsize=(12.4, 3.6))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.05, 1.15, 0.95], wspace=0.32)
+    fig = plt.figure(figsize=(11.6, 3.4))
+    gs = fig.add_gridspec(1, 2, width_ratios=[1.55, 1.00], wspace=0.18)
 
     ax_a = fig.add_subplot(gs[0, 0])
     ax_b = fig.add_subplot(gs[0, 1])
-    ax_c = fig.add_subplot(gs[0, 2])
 
     panel_a(ax_a)
     panel_b(ax_b)
-    panel_c(ax_c)
 
     fig.tight_layout()
     fig.savefig(OUT_PDF, bbox_inches="tight")

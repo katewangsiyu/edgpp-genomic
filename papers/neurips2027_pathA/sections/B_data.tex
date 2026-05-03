@@ -106,21 +106,22 @@ Because \texttt{HistGradientBoostingClassifier} at \texttt{max\_depth=2} with \t
 \begin{table}[h]
 \centering
 \small
-\caption{Leakage sanity audit. Test A trains on shuffled labels and evaluates on the original labels: under leakage, shuffling would leave AUPRC high; we observe collapse toward the positive-class prior ($\approx 0.10$). Test B forces row-level stochasticity via 80\% random row masking and confirms \texttt{random\_state} \emph{does} produce variance under active randomness --- but less than $0.003$ AUPRC std, reflecting TraitGym's strong feature signal rather than a bug. Test C audits the chrom-LOO split.}
+\caption{Leakage sanity audit. Test A trains on shuffled labels and evaluates on the original labels: under leakage, shuffling would leave AUPRC high; we observe collapse toward the positive-class prior ($\approx 0.10$). Test B forces row-level stochasticity via 80\% random row masking with seeds $\{42,7,2024\}$ and confirms \texttt{random\_state} \emph{does} produce variance under active randomness --- but less than $0.003$ AUPRC std, reflecting TraitGym's strong feature signal rather than a bug. Test C audits the chrom-LOO split.}
 \label{tab:leakage_sanity}
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{llrr}
 \toprule
 Test & Condition & Mendelian AUPRC & Complex AUPRC \\
 \midrule
-Reference         & seed 42, no perturbation                    & 0.900 & 0.350 \\
+Reference          & seed 42, no perturbation                  & 0.900          & 0.350          \\
 \midrule
-A: label shuffle  & 10\% of training labels flipped              & 0.898 & 0.327 \\
-A: label shuffle  & 30\% of training labels flipped              & 0.776 & 0.257 \\
-A: label shuffle  & \textbf{50\% of training labels flipped}     & \textbf{0.147} & \textbf{0.126} \\
+A: label shuffle   & 10\% labels flipped                        & 0.898          & 0.327          \\
+A: label shuffle   & 30\% labels flipped                        & 0.776          & 0.257          \\
+A: label shuffle   & \textbf{50\% labels flipped}               & \textbf{0.147} & \textbf{0.126} \\
 \midrule
-B: subsample+seed & row-mask 0.8, $\sigma$ over seeds $\{42,7,2024\}$ & 0.0006 (std) & 0.0027 (std) \\
+B: subsample+seed  & row-mask 0.8 (std over 3 seeds)            & 0.0006 (std)   & 0.0027 (std)   \\
 \midrule
-C: chrom-LOO audit & train $\cap$ test rows across 19--22 folds  & 0 overlap & 0 overlap \\
+C: chrom-LOO audit & train $\cap$ test, folds 19--22            & 0 overlap      & 0 overlap      \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -139,22 +140,22 @@ All experiments on a single machine with 4$\times$ NVIDIA T4 GPUs (SM 7.5, no BF
 \begin{table}[h]
 \centering
 \small
-\caption{Wall-clock cost of the full HCCP pipeline and main baselines, single chrom-LOO sweep on TraitGym. CPU times on 16-core Xeon; GPU on a single T4. Memory peak excludes Python overhead. The $B = 200$ chromosome-level bootstrap (Tab.~\ref{tab:main}) uses the cached calibration scores and adds $\sim 30$ CPU-min total.}
+\caption{Wall-clock cost of the full HCCP pipeline and main baselines, single chrom-LOO sweep on TraitGym. CPU times on 16-core Xeon; GPU on a single T4. Memory peak excludes Python overhead. $\phat$ training is per feature set; $\shat$ training is on chrom-LOO OOF residuals; Mondrian calibration is reported per $K$. DEGU-lite shares the $\phat$ backbone. The $B = 200$ chromosome-level bootstrap (Tab.~\ref{tab:main}) reuses cached calibration scores and adds $\sim 30$ CPU-min total.}
 \label{tab:compute}
-\setlength{\tabcolsep}{6pt}
-\begin{tabular}{llrrrr}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llrrr}
 \toprule
-Stage & Backend & Mendelian time & Complex time & Mem peak & Notes \\
+Stage & Backend & Mendelian & Complex & Mem peak \\
 \midrule
-$\phat$ training (HistGB) & CPU 16-core & $\approx 20$ min & $\approx 60$ min & 4 GB & per feature set \\
-$\shat$ training (HistGB Gaussian-NLL) & CPU 16-core & $\approx 15$ min & $\approx 45$ min & 4 GB & on chrom-LOO OOF residuals \\
-Mondrian conformal calibration & CPU single-thread & $< 5$ min & $< 5$ min & 1 GB & per $K$ \\
-Total HCCP (single feature set, all chroms) & CPU 16-core & $< 4$ CPU-h & $< 4$ CPU-h & 4 GB & --- \\
+$\phat$ training (HistGB)                    & CPU 16-core       & $\approx 20$ min & $\approx 60$ min & 4 GB \\
+$\shat$ training (HistGB Gaussian-NLL)        & CPU 16-core       & $\approx 15$ min & $\approx 45$ min & 4 GB \\
+Mondrian conformal calibration                & CPU single-thread & $< 5$ min        & $< 5$ min        & 1 GB \\
+Total HCCP (single feature set, all chroms)   & CPU 16-core       & $< 4$ CPU-h      & $< 4$ CPU-h      & 4 GB \\
 \midrule
-DEGU-lite ($M = 10$ bootstrap GBM) & CPU 16-core & $\approx 35$ min & $\approx 75$ min & 6 GB & shared $\phat$ backbone \\
+DEGU-lite ($M = 10$ bootstrap GBM)            & CPU 16-core       & $\approx 35$ min & $\approx 75$ min & 6 GB \\
 \midrule
-$B = 200$ chrom-bootstrap & CPU single-thread & $\approx 12$ min & $\approx 18$ min & 1 GB & cached scores reused \\
-Multi-seed sweep ($\{42, 7, 2024\}$) & CPU 16-core & $\approx 12$ min & $\approx 18$ min & 4 GB & per Tab.~\ref{tab:main} \\
+$B = 200$ chrom-bootstrap                     & CPU single-thread & $\approx 12$ min & $\approx 18$ min & 1 GB \\
+Multi-seed sweep ($\{42, 7, 2024\}$)          & CPU 16-core       & $\approx 12$ min & $\approx 18$ min & 4 GB \\
 \bottomrule
 \end{tabular}
 \end{table}
