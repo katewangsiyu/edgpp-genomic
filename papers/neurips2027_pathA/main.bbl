@@ -26,12 +26,13 @@ Anastasios~N. Angelopoulos and Stephen Bates.
 {\v{Z}}iga Avsec, Natasha Latysheva, Jun Cheng, Guido Novati, Kyle~R. Taylor,
   Tom Ward, Clare Bycroft, Lauren Nicolaisen, Eirini Arvaniti, Joshua Pan,
   Demis Hassabis, and Pushmeet Kohli.
-\newblock {AlphaGenome}: a unified foundation model for genomics.
-\newblock \emph{Nature}, 2026.
+\newblock Advancing regulatory variant effect prediction with {AlphaGenome}.
+\newblock \emph{Nature}, 649:\penalty0 1206--1218, 2026.
+\newblock \doi{10.1038/s41586-025-10014-0}.
 
 \bibitem[Bairaktari et~al.(2025)Bairaktari, Wu, and
   Wu]{bairaktari2025kandinsky}
-Konstantina Bairaktari, Jiayun Wu, and Steven Wu.
+Konstantina Bairaktari, Jiayun Wu, and Zhiwei~Steven Wu.
 \newblock Kandinsky conformal prediction: Beyond class- and
   covariate-conditional coverage.
 \newblock In \emph{ICML}, 2025.
@@ -264,7 +265,7 @@ Chen Wang, Fan Wang, Malgorzata Bogdan, Marco Masala, Edoardo Fiorillo,
 
 \bibitem[Xie et~al.(2025)Xie, Zhou, Liang, Favaro, and
   Sesia]{xie2025imbalancedcp}
-Tianmin Xie, Yixuan Zhou, Tengyuan Liang, Stefano Favaro, and Matteo Sesia.
+Tianmin Xie, Yanfei Zhou, Ziyi Liang, Stefano Favaro, and Matteo Sesia.
 \newblock Conformal inference for open-set and imbalanced classification.
 \newblock \emph{arXiv preprint arXiv:2510.13037}, 2025.
 
@@ -276,7 +277,7 @@ Yunzhen Yao, Lie He, and Michael Gastpar.
 
 \bibitem[Zhou et~al.(2026)Zhou, Rizzo, Christensen, Tang, and
   Koo]{zhou2026degu}
-Jessica Zhou, Anthony Rizzo, Peter Christensen, Xiao Tang, and Peter~K. Koo.
+Jessica Zhou, Kaeli Rizzo, Trevor Christensen, Ziqi Tang, and Peter~K. Koo.
 \newblock Uncertainty-aware genomic deep learning with knowledge distillation.
 \newblock \emph{npj Artificial Intelligence}, 2\penalty0 (3), 2026.
 \newblock URL \url{https://www.nature.com/articles/s44387-025-00053-3}.
