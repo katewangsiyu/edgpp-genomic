@@ -24,10 +24,16 @@ def main() -> None:
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
 
-    # Panel A: AUPRC vs coverage
+    # Panel A: AUPRC vs coverage. Inliers grey, outliers (cov<0.85) red so the
+    # §6.5 6-outlier set is the visual anchor — not lost in a sea of red dots.
     ax = axes[0]
-    ax.scatter(auprcs, covs, s=60, color="#cc3311", alpha=0.75,
-               edgecolor="black", linewidth=0.5)
+    is_outlier = covs < 0.85
+    ax.scatter(auprcs[~is_outlier], covs[~is_outlier], s=50,
+               color="#9a9a9a", alpha=0.65, edgecolor="black",
+               linewidth=0.4, label=f"in-band (n={(~is_outlier).sum()})")
+    ax.scatter(auprcs[is_outlier], covs[is_outlier], s=70,
+               color="#cc3311", alpha=0.9, edgecolor="black",
+               linewidth=0.6, label=f"under-cover (n={is_outlier.sum()})")
     ax.axhline(0.90, color="#444", ls="--", lw=1, label=r"target $1-\alpha = 0.90$")
     ax.axhspan(0.88, 0.92, color="#9a9a9a", alpha=0.15,
                label=r"$\pm 0.02$ band")
@@ -35,7 +41,7 @@ def main() -> None:
     ax.set_ylabel("Marginal coverage on target assay")
     ax.set_title(f"ProteinGym assay-LOO (n={len(valid)} held-out assays)")
     ax.grid(ls="--", lw=0.3, alpha=0.4)
-    ax.legend(fontsize=8, loc="lower right")
+    ax.legend(fontsize=7.5, loc="lower right")
     ax.set_xlim(0.15, 1.0)
     ax.set_ylim(0.75, 0.97)
 
@@ -57,24 +63,20 @@ def main() -> None:
                     arrowprops=dict(arrowstyle="-", color="#882200",
                                     lw=0.5, alpha=0.6))
 
-    # Panel B: distribution of σ̂-bin gap
+    # Panel B: distribution of σ̂-bin gap. Two reference lines (assay mean and
+    # TraitGym chrom-LOO) — median + trait-LOO floor were redundant clutter.
     ax2 = axes[1]
     ax2.hist(gaps, bins=12, color="#4477aa", alpha=0.8,
              edgecolor="black", linewidth=0.5)
-    ax2.axvline(gaps.mean(), color="#cc3311", ls="--", lw=1.5,
-                label=f"mean = {gaps.mean():.3f}")
-    ax2.axvline(np.median(gaps), color="#006000", ls="--", lw=1.5,
-                label=f"median = {np.median(gaps):.3f}")
-    # TraitGym benchmarks (thicker dotted lines so they're visible)
-    ax2.axvline(0.004, color="#aa7700", ls=":", lw=1.8,
-                label="TraitGym trait-LOO floor (0.004)")
-    ax2.axvline(0.077, color="#550055", ls=":", lw=1.8,
-                label="TraitGym chrom-LOO (0.077)")
+    ax2.axvline(gaps.mean(), color="#cc3311", ls="-", lw=1.5,
+                label=fr"ProteinGym assay mean $= {gaps.mean():.3f}$")
+    ax2.axvline(0.077, color="#222222", ls=(0, (5, 3)), lw=1.5,
+                label=r"TraitGym chrom-LOO $= 0.077$")
     ax2.set_xlabel(r"$\hat\sigma$-bin coverage gap")
     ax2.set_ylabel("number of assays")
     ax2.set_title(rf"HCCP $\hat\sigma$-bin gap across {len(valid)} assays")
     ax2.grid(ls="--", lw=0.3, alpha=0.4)
-    ax2.legend(fontsize=7, loc="upper right")
+    ax2.legend(fontsize=7.5, loc="upper right")
 
     fig.suptitle("HCCP cross-domain stress test on ProteinGym (App.~E)", y=1.02)
     fig.tight_layout()

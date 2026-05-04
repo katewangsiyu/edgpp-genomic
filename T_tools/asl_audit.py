@@ -221,18 +221,30 @@ def _plot_diagnostic(
 
     ax_h.hist(ratios, bins=40, color="#4477AA", alpha=0.85,
               edgecolor="white", linewidth=0.4)
+    # Truncate x-axis to p99 + 20% so the four reference lines (median / p95 /
+    # p99 / LCLS) are visually separable. The max ratio is dominated by
+    # KS-saturation noise on the smallest sigma-gaps and would compress every
+    # other marker into one pixel — we report it as text instead of a vline.
+    x_cap = p99 * 1.20
+    ax_h.set_xlim(0, x_cap)
     for x, lab, c, ls in [
-        (median, f"median = {median:.2f}", "#222222", "--"),
-        (p95,    f"p95 = {p95:.2f}",       "#DDAA33", "--"),
-        (p99,    f"p99 = {p99:.2f}",       "#EE6677", "-."),
-        (rmax,   f"max = {rmax:.2f}",      "#CC3311", "-"),
+        (median,   f"median = {median:.2f}",          "#222222", "--"),
+        (p95,      f"p95 = {p95:.2f}",                "#DDAA33", "--"),
+        (p99,      f"p99 = {p99:.2f}",                "#EE6677", "-."),
         (beta_lcls, f"LCLS $\\hat L_F$ = {beta_lcls:.2f}", "#117733", ":"),
     ]:
         ax_h.axvline(x, color=c, linestyle=ls, linewidth=1.2, label=lab)
+    # Max as annotation in the top-right corner (off-axis, not a vline).
+    ax_h.text(0.97, 0.97, f"max = {rmax:.1f}\n(KS-saturation;\nout of plotted range)",
+              transform=ax_h.transAxes, ha="right", va="top",
+              fontsize=7, color="#CC3311",
+              bbox=dict(boxstyle="round,pad=0.25", fc="white",
+                        ec="#CC3311", lw=0.5, alpha=0.9))
     ax_h.set_xlabel(r"per-pair ratio $\rho = \mathrm{KS} / |\bar\sigma_a - \bar\sigma_b|$")
     ax_h.set_ylabel("count")
     ax_h.set_title(f"(a) ratio distribution: {dataset}", fontsize=10)
-    ax_h.legend(loc="upper right", fontsize=7, frameon=False)
+    ax_h.legend(loc="upper left", fontsize=7, frameon=False,
+                bbox_to_anchor=(0.30, 0.98))
     ax_h.grid(axis="y", alpha=0.3)
 
     clean_kk = np.maximum(k - floor, 0.0)

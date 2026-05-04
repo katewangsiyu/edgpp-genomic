@@ -55,13 +55,18 @@ def fig_lf_forest():
         ax.set_xscale("log")
         ax.set_xlabel(r"$\hat L_F$ (log scale)")
         ax.set_title(f"{dataset}")
-        ax.grid(True, axis="x", which="both", alpha=0.3)
-        # K_CV reference (top-left to avoid overlapping K* annotations on the right)
-        K_cv = 3 if dataset == "Mendelian" else 2
-        ax.axvline(0.4, color="k", linestyle=":", alpha=0)  # invisible spacer
-        ax.text(0.03, 0.95, fr"$\hat K_{{\mathrm{{CV}}}}={K_cv}$",
-                transform=ax.transAxes, ha="left", va="top",
-                fontsize=10, fontweight="bold",
+        # Major-only grid; minor ticks were too dense and looked like a prison.
+        ax.grid(True, axis="x", which="major", alpha=0.3)
+        ax.tick_params(axis="x", which="minor", length=0)
+        # Modal nested-CV K (post-Phase-6) shown for comparison vs asymptotic K*.
+        # Legacy K_CV (test-set tuning) values 3 / 2 are deprecated.
+        # Box placed bottom-left (no marker there) so it never occludes K* labels.
+        K_modal = r"\{5, 8\}" if dataset == "Mendelian" else r"5"
+        ax.text(0.03, 0.06,
+                fr"modal $\hat K(c_{{\mathrm{{outer}}}}) \in {K_modal}$"
+                "\n(nested chrom-LOO; finite-sample binding)",
+                transform=ax.transAxes, ha="left", va="bottom",
+                fontsize=8.0,
                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="k", alpha=0.8))
     fig.suptitle(r"$L_F$ estimator 95% CIs and resulting $K^\star$ "
                  r"(LCLS gives tight CIs; legacy max-of-ratios saturates)",
@@ -94,11 +99,14 @@ def fig_bootstrap_density():
         bs_std = float(d["summary"]["sigma_cov_range"]["std"])
         # Histogram + KDE
         ax.hist(gaps, bins=30, density=False, color="C0", alpha=0.5, edgecolor="k", linewidth=0.4)
-        # Mean / point reference lines
-        ax.axvline(bs_mean, color="C0", linestyle="-", lw=2,
+        # Reference lines: bootstrap mean (solid, thin) vs single-seed point
+        # estimate (dashed, thin, distinct color). They should NOT overlap —
+        # if they did, the bootstrap would carry no information beyond the
+        # point estimate, contradicting our chrom-LOO variability claim.
+        ax.axvline(bs_mean, color="#2c6e49", linestyle="-", lw=1.4,
                    label=fr"bootstrap mean $= {bs_mean:.3f}$")
-        ax.axvline(point_estimates[label], color="C3", linestyle="--", lw=2,
-                   label=fr"all-chrom point $= {point_estimates[label]:.3f}$")
+        ax.axvline(point_estimates[label], color="#c53b3b", linestyle=(0, (5, 3)),
+                   lw=1.4, label=fr"all-chrom point $= {point_estimates[label]:.3f}$")
         ax.set_xlabel(r"per-resample max-bin coverage gap")
         ax.set_ylabel("count")
         ax.set_title(label, fontsize=10)
