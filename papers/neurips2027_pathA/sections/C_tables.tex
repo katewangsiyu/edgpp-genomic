@@ -75,6 +75,36 @@ B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
 \end{tabular}
 \end{table}
 
+\subsection{Paired bootstrap test (deferred from \S\ref{sec:experiments:h2h})}
+\label{app:tables:paired_bootstrap}
+
+The marginal $\pm 1\sigma$ bands in Tab.~\ref{tab:cp_baselines} are computed independently per method, so two methods' bands can overlap even when their per-resample diff is consistently negative (the noise is correlated across methods through the shared chrom resample). We therefore re-run the bootstrap with a single seeded RNG drawing chrom indices once per replicate, computing the $\shat$-bin gap for HCCP and each baseline on the \emph{same} subsample, and recording the paired diff $\Delta_b = \mathrm{gap}_{\mathrm{HCCP},b} - \mathrm{gap}_{\mathrm{baseline},b}$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Paired bootstrap: HCCP $\shat$-bin gap minus baseline $\shat$-bin gap, computed on the same $B = 200$ chrom-resamples per replicate (seed $42$, identical to Tab.~\ref{tab:cp_baselines}). Negative paired mean $\Rightarrow$ HCCP narrower; ``Win\,\%'' is the share of resamples on which HCCP attained a strictly smaller gap; $p_{\mathrm{one}}$ is the one-sided bootstrap $p$-value (floor $1/(B+1) \approx 0.005$). Complex shows decisive HCCP wins; on Mendelian, HCCP wins the majority of resamples but the paired CI crosses zero, so we cannot reject equivalence with weighted CP at the $95\%$ level.}
+\label{tab:paired_bootstrap}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccc}
+\toprule
+Dataset & Comparison & Paired mean & Paired std & CI low & CI high & Win\,\% & $p_{\mathrm{one}}$ \\
+\midrule
+\multirow{3}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
+ & HCCP $-$ RLCP        & $-0.760$ & $0.043$ & $-0.845$ & $-0.678$ & $\mathbf{100.0\%}$ & $\mathbf{0.005}$ \\
+ & HCCP $-$ Weighted CP & $-0.760$ & $0.043$ & $-0.845$ & $-0.678$ & $\mathbf{100.0\%}$ & $\mathbf{0.005}$ \\
+ & HCCP $-$ SC-CP       & $-0.756$ & $0.047$ & $-0.845$ & $-0.663$ & $\mathbf{100.0\%}$ & $\mathbf{0.005}$ \\
+\midrule
+\multirow{3}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
+ & HCCP $-$ RLCP        & $-0.187$ & $0.141$ & $-0.450$ & $0.000$  & $82.0\%$ & $0.184$ \\
+ & HCCP $-$ Weighted CP & $-0.078$ & $0.073$ & $-0.191$ & $+0.065$ & $74.5\%$ & $0.259$ \\
+ & HCCP $-$ SC-CP       & $-0.231$ & $0.168$ & $-0.556$ & $0.000$  & $84.5\%$ & $0.159$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Interpretation.} On Complex, every paired comparison reaches the bootstrap floor ($p \approx 0.005$, $100\%$ wins, paired CIs disjoint from zero), confirming that the marginal-CI disjoint claim of Tab.~\ref{tab:cp_baselines} understates the strength of the H2H signal. On Mendelian, the paired std (e.g.\ $0.073$ for HCCP-vs-wCP) is roughly one-third of the marginal std on either method individually ($0.192$ and $0.153$), so the marginal-CI overlap was largely a marginal-noise artefact; nevertheless, the paired CI still crosses zero on all three Mendelian comparisons. Operationally we interpret the Mendelian result as: HCCP \emph{tilts} toward narrower gaps on the majority of resamples ($74$--$85\%$) but does not formally reject equivalence at $\alpha = 0.05$ within $B = 200$. This is consistent with the regime-boundary argument of \S\ref{sec:experiments:h2h}: at the per-cell minority floor on Mendelian ($n_{k,b} \approx 100$), the variance term in Eq.~\eqref{eq:gap_decomp} is large and erodes finite-sample power for paired tests.
+
 \subsection{HCCP decoupled from the GBM aggregator (deferred from \S\ref{sec:experiments:h2h})}
 \label{app:tables:hccp_logreg}
 
