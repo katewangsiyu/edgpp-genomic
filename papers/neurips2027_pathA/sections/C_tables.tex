@@ -105,6 +105,36 @@ Dataset & Comparison & Paired mean & Paired std & CI low & CI high & Win\,\% & $
 
 \paragraph{Interpretation.} On Complex, every paired comparison reaches the bootstrap floor ($p \approx 0.005$, $100\%$ wins, paired CIs disjoint from zero), confirming that the marginal-CI disjoint claim of Tab.~\ref{tab:cp_baselines} understates the strength of the H2H signal. On Mendelian, the paired std (e.g.\ $0.073$ for HCCP-vs-wCP) is roughly one-third of the marginal std on either method individually ($0.192$ and $0.153$), so the marginal-CI overlap was largely a marginal-noise artefact; nevertheless, the paired CI still crosses zero on all three Mendelian comparisons. Operationally we interpret the Mendelian result as: HCCP \emph{tilts} toward narrower gaps on the majority of resamples ($74$--$85\%$) but does not formally reject equivalence at $\alpha = 0.05$ within $B = 200$. This is consistent with the regime-boundary argument of \S\ref{sec:experiments:h2h}: at the per-cell minority floor on Mendelian ($n_{k,b} \approx 100$), the variance term in Eq.~\eqref{eq:gap_decomp} is large and erodes finite-sample power for paired tests.
 
+\subsection{Threshold sensitivity for the ``Pareto-uniqueness'' claim (deferred from \S\ref{sec:experiments:h2h})}
+\label{app:tables:threshold_sensitivity}
+
+\S\ref{sec:experiments:h2h} claims HCCP is the only single-fold partition we evaluated that simultaneously meets $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ at the recommended $K_{\mathrm{eval}}$. The thresholds $(0.85, 0.20)$ are not unique; we evaluate uniqueness across a $3 \times 4$ grid of $(T_1, T_2)$ where $T_1 \in \{0.80, 0.85, 0.90\}$ (minority-coverage floor) and $T_2 \in \{0.15, 0.20, 0.25, 0.30\}$ (cell-level gap ceiling), using the Tab.~\ref{tab:h2h} and Tab.~\ref{tab:cp_baselines} bootstrap means across 7 methods (B1 split, B2 $\shat$-Mond, B3 class-Mond, HCCP, RLCP, wCP, SC-CP).
+
+\begin{table}[h]
+\centering
+\small
+\caption{Methods that meet $(\mathrm{cov}_{|Y=1} \geq T_1,\ \shat\text{-bin gap} \leq T_2)$ at the recommended $K_{\mathrm{eval}}$, across a $T_1 \times T_2$ grid. ``H'' = HCCP only; ``H, $X$, \dots'' = HCCP plus other methods also pass; ``---'' = no method passes (the ceiling is below HCCP's own performance). Complex: HCCP is uniquely Pareto-frontier across the entire reasonable grid (gap separation $0.060$ vs.\ $\geq 0.805$ is order-of-magnitude). Mendelian: HCCP is uniquely Pareto-frontier in a $2 \times 2$ window around the paper's $(0.85, 0.20)$ choice; $T_2 \geq 0.30$ lets B1 (gap $0.265$) and wCP (gap $0.252$) through, and $T_1 \geq 0.90$ or $T_2 \leq 0.15$ excludes HCCP itself --- the operating window is narrow but the choice is not at the boundary.}
+\label{tab:threshold_sensitivity}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{llcccc}
+\toprule
+Dataset & $T_1$ \textbackslash\ $T_2$ & $0.15$ & $0.20$ & $0.25$ & $0.30$ \\
+\midrule
+\multirow{3}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
+ & $\geq 0.80$ & H & H & H & H \\
+ & $\geq 0.85$ & H & H & H & H \\
+ & $\geq 0.90$ & H & H & H & H \\
+\midrule
+\multirow{3}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
+ & $\geq 0.80$ & ---     & \textbf{H} & \textbf{H} & H, B1, wCP \\
+ & $\geq 0.85$ & ---     & \textbf{H} & \textbf{H} & H, B1, wCP \\
+ & $\geq 0.90$ & ---     & ---        & ---        & B1, wCP \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The honest reading: on Complex, HCCP's Pareto-uniqueness is robust to all reasonable threshold choices we considered; the order-of-magnitude gap separation makes any threshold above $T_2 = 0.10$ select HCCP alone. On Mendelian, the threshold window is narrower --- HCCP is unique on a $2 \times 2$ rectangle of $\{0.80, 0.85\} \times \{0.20, 0.25\}$, fails the floor at $T_2 \leq 0.15$ (HCCP's own $0.173$ gap), and loses uniqueness at $T_2 \geq 0.30$ (where B1 split and wCP also satisfy the relaxed gap). The paper's $(0.85, 0.20)$ choice is at the lower-right corner of the unique region, not at its boundary; the claim is not knife-edge but is dataset-asymmetric, consistent with the asymmetric H2H signal we report throughout.
+
 \subsection{HCCP decoupled from the GBM aggregator (deferred from \S\ref{sec:experiments:h2h})}
 \label{app:tables:hccp_logreg}
 
