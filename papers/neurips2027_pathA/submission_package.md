@@ -20,11 +20,33 @@ HCCP — heteroscedastic class-conditional conformal prediction with a tight fin
 
 ---
 
-## 3. Abstract (OpenReview-friendly, markdown + LaTeX math)
+## 3. Abstract — 三选一版本
+
+OpenReview abstract 字段渲染规则: 先跑 markdown parser, 再跑 KaTeX. `_` (markdown italic) 和 LaTeX `\mathrm{cov}_{|Y=1}` 中的 `_` 会冲突, 导致后半段公式漏出 raw LaTeX. 给出 3 版从安全到激进供选:
+
+### v1 (推荐, LaTeX 简化版 — 删 markdown + 用文字替代不等号 + 简单 LaTeX)
+
+```
+We introduce HCCP (Heteroscedastic Class-Conditional Conformal Prediction): a post-hoc framework pairing a learned variance head $\hat\sigma(x)$ with Mondrian $(y, \hat\sigma\text{-bin})$ calibration via a feature-dependent nonconformity score. For binary conformal classification under joint class imbalance and heteroscedasticity, existing variants trade class-conditional coverage against bin-local coverage, a Pareto wall sharpened by the finite-sample pointwise impossibility of Barber et al. (2020). The gap binds in variant effect prediction (VEP), where TraitGym minority prevalence is $\pi_{\min} \approx 0.10$. Within the equi-bin Mondrian-$K$ family we prove a tight finite-sample $O(n^{-1/2})$ rate on the worst-cell coverage gap, matched within this family by an $\Omega(n^{-1/2})$ lower bound with $\pi_{\min}^{-1/2}$ explicit in the constant (Theorems 5.1, 5.2); the bound is dimension-free given $\hat\sigma$ is 1-D Lipschitz. On TraitGym (Benegas et al., 2025), at the recommended operating point ($K_{eval} = 3$ Mendelian, $5$ Complex; per-cell minority at least 100), HCCP is the only single-fold partition we evaluated (across split CP, $\hat\sigma$-Mondrian (Bostrom and Johansson, 2020), class-Mondrian, RLCP, weighted CP, and SC-CP at matched $(\hat p, \hat\sigma)$) that holds minority-class coverage at least 0.85 and $\hat\sigma$-bin gap at most 0.20 on both Mendelian (n = 3380) and Complex (n = 11400) under B = 200 chromosome-bootstrap CIs. A $K_{eval}$ sweep shows the Complex advantage is robust across $K_{eval} \in [2, 10]$, while on Mendelian weighted CP overtakes HCCP for $K_{eval} \geq 5$ (per-cell minority below 70); we replicate on ProteinGym (Notin et al., 2023) for cross-domain validation.
+```
+
+### v2 (备选, 纯文字版 — 完全不依赖 LaTeX 渲染, 用 ASCII / Unicode)
+
+```
+We introduce HCCP (Heteroscedastic Class-Conditional Conformal Prediction): a post-hoc framework pairing a learned variance head sigma-hat(x) with Mondrian (y, sigma-hat-bin) calibration via a feature-dependent nonconformity score. For binary conformal classification under joint class imbalance and heteroscedasticity, existing variants trade class-conditional coverage against bin-local coverage, a Pareto wall sharpened by the finite-sample pointwise impossibility of Barber et al. (2020). The gap binds in variant effect prediction (VEP), where TraitGym minority prevalence is approximately 0.10. Within the equi-bin Mondrian-K family we prove a tight finite-sample O(n^(-1/2)) rate on the worst-cell coverage gap, matched within this family by an Omega(n^(-1/2)) lower bound with pi-min^(-1/2) explicit in the constant (Theorems 5.1, 5.2); the bound is dimension-free given sigma-hat is 1-D Lipschitz. On TraitGym (Benegas et al., 2025), at the recommended operating point (K-eval = 3 Mendelian, 5 Complex; per-cell minority at least 100), HCCP is the only single-fold partition we evaluated (across split CP, sigma-hat-Mondrian (Bostrom and Johansson, 2020), class-Mondrian, RLCP, weighted CP, and SC-CP at matched p-hat, sigma-hat) that holds minority-class coverage at least 0.85 and sigma-hat-bin gap at most 0.20 on both Mendelian (n = 3380) and Complex (n = 11400) under B = 200 chromosome-bootstrap CIs. A K-eval sweep shows the Complex advantage is robust across K-eval in [2, 10], while on Mendelian weighted CP overtakes HCCP for K-eval at least 5 (per-cell minority below 70); we replicate on ProteinGym (Notin et al., 2023) for cross-domain validation.
+```
+
+### v3 (旧版, markdown + 完整 LaTeX — 不推荐, 已知后半段渲染失败)
 
 ```
 We introduce **HCCP** (Heteroscedastic Class-Conditional Conformal Prediction): a post-hoc framework pairing a learned variance head $\hat\sigma(x)$ with Mondrian-$(y \times \hat\sigma\text{-bin})$ calibration via a feature-dependent nonconformity score. For binary conformal classification under joint class imbalance and heteroscedasticity, existing variants trade class-conditional coverage against bin-local coverage (a Pareto wall sharpened by Barber et al. [2020]'s finite-sample pointwise impossibility); the gap binds for variant effect prediction (VEP), where TraitGym minority prevalence sits at $\pi_{\min} \approx 0.10$. Within the equi-bin Mondrian-$K$ family we prove a tight finite-sample $O(n^{-1/2})$ rate on the worst-cell coverage gap, matched *within this family* by an $\Omega(n^{-1/2})$ lower bound with $\pi_{\min}^{-1/2}$ explicit in the constant (Theorems 5.1, 5.2); the bound is dimension-free given $\hat\sigma$ is 1-D Lipschitz. On TraitGym [Benegas et al., 2025] at the recommended operating point ($K_{\mathrm{eval}} = 3$ / $5$ for Mendelian / Complex; per-cell minority $\geq 100$), HCCP is the only single-fold partition we evaluated --- across split CP, $\hat\sigma$-Mondrian [Boström & Johansson, 2020], class-Mondrian, RLCP, weighted CP, and SC-CP at matched $(\hat p, \hat\sigma)$ --- that holds $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\hat\sigma$-bin gap $\leq 0.20$ on both Mendelian ($n = 3{,}380$) and Complex ($n = 11{,}400$) under $B = 200$ chromosome-bootstrap CIs. A $K_{\mathrm{eval}}$ sweep shows the Complex advantage is robust across $K_{\mathrm{eval}} \in [2, 10]$, while on Mendelian weighted CP overtakes HCCP for $K_{\mathrm{eval}} \geq 5$ (per-cell minority $< 70$); cross-domain replication on ProteinGym [Notin et al., 2023].
 ```
+
+### 选择策略
+
+1. 先粘 **v1** (LaTeX 简化版) → 切 Preview 看渲染
+2. 如果 v1 公式仍有问题 → 退到 **v2** (纯文字)
+3. 只有 v1 完美渲染才用 v1; 任何 raw LaTeX 漏出 → 立即退 v2
 
 ---
 
