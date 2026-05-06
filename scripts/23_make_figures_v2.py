@@ -549,19 +549,59 @@ def fig8_pareto():
                    label=flat_label, zorder=5)
         all_points.append((singleton, worst_gap, flat_label, color, is_hccp))
 
+    # Iso-cost diagonals: L = gap + λ·(1 − efficiency), with λ = 0.05.
+    # Smaller L = better. Lines have positive slope λ in (eff, gap):
+    # gap = (L − λ) + λ·eff. Points BELOW a line beat that L.
+    #
+    # Why λ = 0.05: at the headline α = 0.10 op point, the appendix targets
+    # singleton fraction ≈ 0.80 (Mendelian) and ≤ 0.04 worst-bin gap. The
+    # ratio 0.04 / 0.80 ≈ 0.05 makes a 1-pp swap of efficiency cost-equal
+    # to a 0.0005 swap of gap, the implicit operational tradeoff.
+    LAMBDA_ISO = 0.05
+    iso_levels = [0.04, 0.06, 0.08, 0.10]
+    eff_grid = np.linspace(0.05, 1.0, 50)
+    for L in iso_levels:
+        gap_iso = (L - LAMBDA_ISO) + LAMBDA_ISO * eff_grid
+        ax.plot(eff_grid, gap_iso, ls="--", lw=0.7, color="#888888",
+                alpha=0.55, zorder=1)
+        # Inline label on the LEFT side (less cluttered than right; matches
+        # the diagonal-iso-line convention in operations-research plots).
+        x_lbl = 0.13
+        y_lbl = (L - LAMBDA_ISO) + LAMBDA_ISO * x_lbl
+        if 0 < y_lbl < 0.078:
+            ax.text(x_lbl, y_lbl + 0.001, rf"$L{{=}}{L:.2f}$",
+                    fontsize=6.0, color="#666", ha="left", va="bottom",
+                    rotation=np.degrees(np.arctan(LAMBDA_ISO * 6)))  # ≈ visual slope
+
+    # Per-point iso-cost annotation, so reviewers can rank them numerically.
+    for x, y, lbl, color, is_hccp in all_points:
+        L_pt = y + LAMBDA_ISO * (1 - x)
+        dx, dy = (0.018, 0.0018) if is_hccp else (0.018, -0.0035)
+        ax.annotate(rf"$L{{=}}{L_pt:.3f}$",
+                    xy=(x, y), xytext=(x + dx, y + dy),
+                    fontsize=6.4, color=color, alpha=0.9,
+                    ha="left", va="center")
+
     # Use legend instead of inline labels (avoids overlap)
     ax.legend(loc="upper left", fontsize=7, ncol=2, frameon=True,
               framealpha=0.9, edgecolor="0.7")
 
-    # Ideal region
+    # Ideal region (kept; the iso-lines and the band tell complementary stories).
     ax.axhspan(0, 0.03, color="#2ca02c", alpha=0.08, zorder=0)
-    ax.text(0.78, 0.0015, "ideal zone", fontsize=7, color="#2ca02c",
-            alpha=0.85, style="italic", ha="right")
+    ax.text(0.78, 0.0015, "ideal zone (gap $\\leq$ 0.03)", fontsize=7,
+            color="#2ca02c", alpha=0.85, style="italic", ha="right")
+    # Iso-cost legend caption — placed in the dead space at lower-right
+    # (above the "ideal zone" italics, below the data legend).
+    ax.text(0.96, 0.069,
+            rf"iso-cost: $L = \mathrm{{gap}} + {LAMBDA_ISO}\,(1-\mathrm{{eff}})$",
+            fontsize=6.4, color="#444", ha="right", va="top",
+            bbox=dict(facecolor="white", edgecolor="#cccccc",
+                      boxstyle="round,pad=0.25", linewidth=0.4, alpha=0.9))
 
     ax.set_xlabel("Singleton fraction (efficiency →)")
     ax.set_ylabel("Worst $\\hat\\sigma$-bin gap (← coverage)")
-    ax.set_xlim(0.1, 0.95)
-    ax.set_ylim(-0.005, 0.08)
+    ax.set_xlim(0.1, 0.98)
+    ax.set_ylim(-0.005, 0.085)
 
     fig.tight_layout()
     fig.savefig(OUT / "fig8_pareto.pdf")
