@@ -61,7 +61,9 @@ def in_set_for(in0: np.ndarray, in1: np.ndarray, y: np.ndarray) -> np.ndarray:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dataset", choices=["mendelian", "complex"], required=True)
+    ap.add_argument("--dataset",
+                    choices=["mendelian", "complex", "open_targets"],
+                    required=True)
     ap.add_argument("--K-eval", type=int, required=True)
     ap.add_argument("--K-grid", type=str, default="2,3,5,8,10")
     ap.add_argument("--B", type=int, default=200)

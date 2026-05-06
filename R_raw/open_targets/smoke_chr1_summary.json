@@ -1,0 +1,19 @@
+{
+  "n_total": 552095,
+  "n_credible_sets": 13505,
+  "n_studies": 4602,
+  "pi_pos_overall": 0.0025140600802398137,
+  "per_chromosome": {
+    "1": {
+      "n": 552095,
+      "pi_pos": 0.0025140600802398137
+    }
+  },
+  "filters": {
+    "studytype": "gwas",
+    "pip_pos_threshold": 0.5,
+    "pip_neg_threshold": 0.05,
+    "min_set_size": 5,
+    "max_set_size": 200
+  }
+}

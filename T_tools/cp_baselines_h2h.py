@@ -42,9 +42,16 @@ EPS = 1e-6
 
 
 def load_scores(dataset: str) -> pd.DataFrame:
-    name = "complex" if dataset == "complex" else "mendelian"
-    suffix = "complex" if name == "complex" else "mendelian"
-    path = REPO / "outputs" / "hetero_head" / f"CADD+GPN-MSA+Borzoi_{suffix}_abs" / "scores_with_sigma.parquet"
+    if dataset == "open_targets":
+        # OT-native scores from scripts/42_open_targets_train_scores.py.
+        # Schema matches TraitGym (chrom, p_hat, sigma, label) plus pass-through
+        # id columns ignored by the H2H pipeline.
+        path = REPO / "outputs" / "hetero_head" / "open_targets" / "scores_with_sigma.parquet"
+    elif dataset in ("complex", "mendelian"):
+        suffix = dataset
+        path = REPO / "outputs" / "hetero_head" / f"CADD+GPN-MSA+Borzoi_{suffix}_abs" / "scores_with_sigma.parquet"
+    else:
+        raise ValueError(f"unknown --dataset {dataset!r}")
     df = pd.read_parquet(path)
     df["chrom"] = df["chrom"].astype(str)
     return df
@@ -431,7 +438,9 @@ def compute_metric_bin_idx(sigma: np.ndarray, chroms: np.ndarray, K_eval: int) -
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dataset", choices=["mendelian", "complex"], required=True)
+    ap.add_argument("--dataset",
+                    choices=["mendelian", "complex", "open_targets"],
+                    required=True)
     ap.add_argument("--K-mode", choices=["fixed", "nested-cv"], default="fixed",
                     help="K-selection protocol. fixed: legacy (CLI --K). "
                          "nested-cv: proper inner-CV K per outer fold.")

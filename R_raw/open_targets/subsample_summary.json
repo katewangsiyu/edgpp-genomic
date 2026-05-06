@@ -1,0 +1,25 @@
+{
+  "n_total": 11409,
+  "n_credible_sets": 1653,
+  "n_train": 9309,
+  "n_test": 2100,
+  "pi_pos_train": 0.1444838328499302,
+  "pi_pos_test": 0.14666666666666667,
+  "test_chroms": [
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "X"
+  ],
+  "filters": {
+    "n_target": 11400,
+    "target_pi_pos": 0.1,
+    "pos_pip_threshold": 0.5,
+    "neg_pip_threshold": 0.05,
+    "neg_per_pos": 9,
+    "seed": 42
+  }
+}

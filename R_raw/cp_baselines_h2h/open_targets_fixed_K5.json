@@ -1,0 +1,44 @@
+{
+  "K_eval": 10,
+  "K_mode": "fixed",
+  "HCCP": {
+    "label": "HCCP",
+    "marginal_coverage": 0.8999912273006404,
+    "coverage_pos": 0.8991228070175439,
+    "coverage_neg": 0.9000877278487182,
+    "sigma_bin_gap": 0.16666666666666674,
+    "per_chrom_gap": 0.09342515592515588,
+    "n_test": 11399,
+    "frac_singleton": 0.3982805509255198
+  },
+  "RLCP": {
+    "label": "RLCP",
+    "marginal_coverage": 0.9528906044389859,
+    "coverage_pos": 0.8149122807017544,
+    "coverage_neg": 0.9682230236865191,
+    "sigma_bin_gap": 0.9,
+    "per_chrom_gap": 0.04949916026871404,
+    "n_test": 11399,
+    "frac_singleton": 0.6105798754276691
+  },
+  "WeightedCP": {
+    "label": "WeightedCP",
+    "marginal_coverage": 0.9009562242301956,
+    "coverage_pos": 0.9017543859649123,
+    "coverage_neg": 0.9008675309484355,
+    "sigma_bin_gap": 0.9,
+    "per_chrom_gap": 0.06392357487429123,
+    "n_test": 11399,
+    "frac_singleton": 0.5065356610228967
+  },
+  "SCCP": {
+    "label": "SCCP",
+    "marginal_coverage": 0.8996403193262567,
+    "coverage_pos": 0.8728070175438597,
+    "coverage_neg": 0.9026220879227995,
+    "sigma_bin_gap": 0.65,
+    "per_chrom_gap": 0.0805830410821643,
+    "n_test": 11399,
+    "frac_singleton": 0.5244319677164664
+  }
+}
