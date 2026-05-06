@@ -1,6 +1,35 @@
 % Appendix C: Detailed per-partition results
 % Order matches §6 narrative: §6.2 H2H → §6.3 OOD → §6.5 failure → §6.6 ablations → §3 audits.
 
+\subsection{Subsumption table: HCCP vs.\ contemporary / closest CP work}
+\label{app:tables:subsumption}
+
+Tab.~\ref{tab:subsumption} crystallises the prose comparison in \S\ref{sec:related} into a single per-axis grid. Each row marks whether the method explicitly addresses (a) a learned heteroscedastic head $\shat(x)$ with finite-sample local guarantee, (b) class-conditional coverage, (c) coverage local on the $\shat$ axis (rather than a different feature axis or kernel), (d) an $\pi_{\min}$-explicit term in the worst-cell rate, (e) a matching within-class lower bound, and (f) a data-dependent partition (i.e., the partition itself is computed from data rather than pre-specified). HCCP is the only row marked $\checkmark$ on all six axes. The Yao 2026 / Bairaktari 2025 / Plassier 2025 concurrent works each cover a strict subset.
+
+\begin{table}[h]
+\centering
+\footnotesize
+\caption{HCCP vs.\ closest / concurrent CP work, by guarantee axis. $\checkmark$ = method explicitly addresses the axis with a finite-sample guarantee; $\circ$ = handled but without a finite-sample bound, or on a different axis (e.g., RLCP: kernel localisation in feature space, not the $\shat$ axis); $\times$ = not addressed. ``Lower bound'' refers to a matching within-class minimax lower bound that pairs with the upper-bound rate; Yao 2026 / xie 2025 do not provide one for their respective rates. ``Data-dep.\ partition'' refers to a Mondrian-style partition computed from data; class-conditional CP \citep{sadinle2019lac} and Boström 2020 use pre-specified groups (label / $\shat$-quantile bins fixed before calibration). \citet{bairaktari2025kandinsky} subsume class-conditional and Mondrian as static-group special cases but require pre-specified groups, hence $\times$ on the partition column. SC-CP \citep{vanderlaan2024sccp} uses an isotonic recalibration on the $\hat\mu$ axis (different from $\shat$).}
+\label{tab:subsumption}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccc}
+\toprule
+Method & Hetero.\ $\shat$ & Class-cond.\ & Local on $\shat$ & $\pi_{\min}$ in rate & Lower bound & Data-dep.\ partition \\
+\midrule
+\citet{sadinle2019lac} (LAC)              & $\times$ & $\checkmark$ & $\times$ & $\times$ & $\times$ & $\times$ \\
+\citet{bostrom2020mondrian}               & $\checkmark$ & $\times$ & $\checkmark$ & $\times$ & $\times$ & $\times$ \\
+\citet{hore2025rlcp} (RLCP)               & $\circ$ & $\times$ & $\circ$ kernel $\mathbf{x}$ & $\times$ & $\times$ & $\times$ \\
+\citet{vanderlaan2024sccp} (SC-CP)        & $\circ$ & $\times$ & $\circ$ $\hat\mu$-axis & $\times$ & $\times$ & $\checkmark$ (isotonic) \\
+\citet{xie2025imbalancedcp}               & $\times$ & $\checkmark$ & $\times$ & $\circ$ marginal & $\times$ & $\times$ \\
+\citet{bairaktari2025kandinsky} (Kandinsky) & $\times$ & $\checkmark$ & $\circ$ overlapping & $\times$ & $\times$ & $\times$ \\
+\citet{yao2026nonasymp}                   & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ \\
+\citet{plassier2025cp2hpd} (CP$^2$-HPD)   & $\circ$ & $\times$ & TV-density-ratio & $\times$ & $\times$ & $\times$ \\
+\midrule
+\textbf{HCCP (ours)} & $\checkmark$ & $\checkmark$ & $\checkmark$ $\shat$-bin & $\checkmark$ T5.1 & $\checkmark$ T5.2 & $\checkmark$ $(y \times \shat)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Single-axis CP head-to-head and contemporary CP comparison (deferred from \S\ref{sec:experiments:h2h})}
 \label{app:tables:h2h}
 
@@ -74,6 +103,66 @@ B3 (class-Mond) & 0.904 & 0.902 & 0.902 & 0.902 & 0.902 & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{Paired bootstrap test (deferred from \S\ref{sec:experiments:h2h})}
+\label{app:tables:paired_bootstrap}
+
+The marginal $\pm 1\sigma$ bands in Tab.~\ref{tab:cp_baselines} are computed independently per method, so two methods' bands can overlap even when their per-resample diff is consistently negative (the noise is correlated across methods through the shared chrom resample). We therefore re-run the bootstrap with a single seeded RNG drawing chrom indices once per replicate, computing the $\shat$-bin gap for HCCP and each baseline on the \emph{same} subsample, and recording the paired diff $\Delta_b = \mathrm{gap}_{\mathrm{HCCP},b} - \mathrm{gap}_{\mathrm{baseline},b}$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Paired bootstrap: HCCP $\shat$-bin gap minus baseline $\shat$-bin gap, computed on the same $B = 200$ chrom-resamples per replicate (seed $42$, identical to Tab.~\ref{tab:cp_baselines}). Negative paired mean $\Rightarrow$ HCCP narrower; ``Win\,\%'' is the share of resamples on which HCCP attained a strictly smaller gap; $p_{\mathrm{one}}$ is the one-sided bootstrap $p$-value (floor $1/(B+1) \approx 0.005$). Complex shows decisive HCCP wins; on Mendelian, HCCP wins the majority of resamples but the paired CI crosses zero, so we cannot reject equivalence with weighted CP at the $95\%$ level.}
+\label{tab:paired_bootstrap}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccc}
+\toprule
+Dataset & Comparison & Paired mean & Paired std & CI low & CI high & Win\,\% & $p_{\mathrm{one}}$ \\
+\midrule
+\multirow{3}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
+ & HCCP $-$ RLCP        & $-0.760$ & $0.043$ & $-0.845$ & $-0.678$ & $\mathbf{100.0\%}$ & $\mathbf{0.005}$ \\
+ & HCCP $-$ Weighted CP & $-0.760$ & $0.043$ & $-0.845$ & $-0.678$ & $\mathbf{100.0\%}$ & $\mathbf{0.005}$ \\
+ & HCCP $-$ SC-CP       & $-0.756$ & $0.047$ & $-0.845$ & $-0.663$ & $\mathbf{100.0\%}$ & $\mathbf{0.005}$ \\
+\midrule
+\multirow{3}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
+ & HCCP $-$ RLCP        & $-0.187$ & $0.141$ & $-0.450$ & $0.000$  & $82.0\%$ & $0.184$ \\
+ & HCCP $-$ Weighted CP & $-0.078$ & $0.073$ & $-0.191$ & $+0.065$ & $74.5\%$ & $0.259$ \\
+ & HCCP $-$ SC-CP       & $-0.231$ & $0.168$ & $-0.556$ & $0.000$  & $84.5\%$ & $0.159$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Interpretation.} On Complex, every paired comparison reaches the bootstrap floor ($p \approx 0.005$, $100\%$ wins, paired CIs disjoint from zero), confirming that the marginal-CI disjoint claim of Tab.~\ref{tab:cp_baselines} understates the strength of the H2H signal. On Mendelian, the paired std (e.g.\ $0.073$ for HCCP-vs-wCP) is roughly one-third of the marginal std on either method individually ($0.192$ and $0.153$), so the marginal-CI overlap was largely a marginal-noise artefact; nevertheless, the paired CI still crosses zero on all three Mendelian comparisons. Operationally we interpret the Mendelian result as: HCCP \emph{tilts} toward narrower gaps on the majority of resamples ($74$--$85\%$) but does not formally reject equivalence at $\alpha = 0.05$ within $B = 200$. This is consistent with the regime-boundary argument of \S\ref{sec:experiments:h2h}: at the per-cell minority floor on Mendelian ($n_{k,b} \approx 100$), the variance term in Eq.~\eqref{eq:gap_decomp} is large and erodes finite-sample power for paired tests. The Open Targets cross-platform replication (App.~\ref{app:open_targets}) reproduces this regime structure: $200/200$ paired wins ($p = 0.005$) at $K_{\mathrm{eval}} = 2$ in the deeply bias-dominated regime, $186/200$ ($p = 0.075$) at the recommended $K_{\mathrm{eval}} = 5$, and $16/200$ ($p = 0.92$) at $K_{\mathrm{eval}} = 10$ where HCCP loses (per-cell minority $\approx 114$).
+
+\subsection{Threshold sensitivity for the ``Pareto-uniqueness'' claim (deferred from \S\ref{sec:experiments:h2h})}
+\label{app:tables:threshold_sensitivity}
+
+\S\ref{sec:experiments:h2h} claims HCCP is the only single-fold partition we evaluated that simultaneously meets $\mathrm{cov}_{|Y=1} \geq 0.85$ and $\shat$-bin gap $\leq 0.20$ at the recommended $K_{\mathrm{eval}}$. The thresholds $(0.85, 0.20)$ are not unique; we evaluate uniqueness across a $3 \times 4$ grid of $(T_1, T_2)$ where $T_1 \in \{0.80, 0.85, 0.90\}$ (minority-coverage floor) and $T_2 \in \{0.15, 0.20, 0.25, 0.30\}$ (cell-level gap ceiling), using the Tab.~\ref{tab:h2h} and Tab.~\ref{tab:cp_baselines} bootstrap means across 7 methods (B1 split, B2 $\shat$-Mond, B3 class-Mond, HCCP, RLCP, wCP, SC-CP).
+
+\begin{table}[h]
+\centering
+\small
+\caption{Methods that meet $(\mathrm{cov}_{|Y=1} \geq T_1,\ \shat\text{-bin gap} \leq T_2)$ at the recommended $K_{\mathrm{eval}}$, across a $T_1 \times T_2$ grid. ``H'' = HCCP only; ``H, $X$, \dots'' = HCCP plus other methods also pass; ``---'' = no method passes (the ceiling is below HCCP's own performance). Complex: HCCP is uniquely Pareto-frontier across the entire reasonable grid (gap separation $0.060$ vs.\ $\geq 0.805$ is order-of-magnitude). Mendelian: HCCP is uniquely Pareto-frontier in a $2 \times 2$ window around the paper's $(0.85, 0.20)$ choice; $T_2 \geq 0.30$ lets B1 (gap $0.265$) and wCP (gap $0.252$) through, and $T_1 \geq 0.90$ or $T_2 \leq 0.15$ excludes HCCP itself --- the operating window is narrow but the choice is not at the boundary.}
+\label{tab:threshold_sensitivity}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{llcccc}
+\toprule
+Dataset & $T_1$ \textbackslash\ $T_2$ & $0.15$ & $0.20$ & $0.25$ & $0.30$ \\
+\midrule
+\multirow{3}{*}{Complex ($K_{\mathrm{eval}} = 5$)}
+ & $\geq 0.80$ & H & H & H & H \\
+ & $\geq 0.85$ & H & H & H & H \\
+ & $\geq 0.90$ & H & H & H & H \\
+\midrule
+\multirow{3}{*}{Mendelian ($K_{\mathrm{eval}} = 3$)}
+ & $\geq 0.80$ & ---     & \textbf{H} & \textbf{H} & H, B1, wCP \\
+ & $\geq 0.85$ & ---     & \textbf{H} & \textbf{H} & H, B1, wCP \\
+ & $\geq 0.90$ & ---     & ---        & ---        & B1, wCP \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The honest reading: on Complex, HCCP's Pareto-uniqueness is robust to all reasonable threshold choices we considered; the order-of-magnitude gap separation makes any threshold above $T_2 = 0.10$ select HCCP alone. On Mendelian, the threshold window is narrower --- HCCP is unique on a $2 \times 2$ rectangle of $\{0.80, 0.85\} \times \{0.20, 0.25\}$, fails the floor at $T_2 \leq 0.15$ (HCCP's own $0.173$ gap), and loses uniqueness at $T_2 \geq 0.30$ (where B1 split and wCP also satisfy the relaxed gap). The paper's $(0.85, 0.20)$ choice is at the lower-right corner of the unique region, not at its boundary; the claim is not knife-edge but is dataset-asymmetric, consistent with the asymmetric H2H signal we report throughout.
 
 \subsection{HCCP decoupled from the GBM aggregator (deferred from \S\ref{sec:experiments:h2h})}
 \label{app:tables:hccp_logreg}
