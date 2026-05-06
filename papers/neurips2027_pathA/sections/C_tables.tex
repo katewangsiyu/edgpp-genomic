@@ -377,7 +377,7 @@ The oracle bin count $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ depends
 \begin{table}[h]
 \centering
 \small
-\caption{Four $L_F$ estimators and their oracle $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ and $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$ bounds. The modal nested-CV $\hat K(c_{\mathrm{outer}})$ (§\ref{sec:theory:t5}) is reported for comparison; the legacy non-nested $K_{\mathrm{CV}}$ (test-gap argmin) values $3$ Mendelian and $2$ Complex are deprecated.}
+\caption{Four $L_F$ estimators and their oracle $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ and $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$ bounds. CIs are 95\% bootstrap percentile intervals over $B = 500$ chrom-level resamples. The modal nested-CV $\hat K(c_{\mathrm{outer}})$ (§\ref{sec:theory:t5}) is reported for comparison; the legacy non-nested $K_{\mathrm{CV}}$ (test-gap argmin) values $3$ Mendelian and $2$ Complex are deprecated. $^\dagger$On Complex, the full-data legacy point estimate $53.3$ lies just below CI lower bound: under bootstrap resampling the legacy max-of-ratios is consistently larger (median $72.1$, mean $73.8$), reflecting its instability under repeated extreme-pair concentration.}
 \label{tab:LF_estimators}
 \begin{tabular}{llrcrr}
 \toprule
@@ -385,13 +385,13 @@ Estimator & Dataset & $\hat L_F$ & 95\% CI & $K^\star$ & $G(K^\star)$ bound \\
 \midrule
 \textbf{LCLS regression} \citep{lcls2024lipschitz} & \textbf{Mendelian} & \textbf{2.97} & $[2.89, 3.45]$ & \textbf{22} & \textbf{0.130} \\
 isotonic envelope          & Mendelian & 26.9 & $[6.85, 93.2]$ & 61   & 0.388 \\
-legacy max-of-ratios       & Mendelian & 183  & --- & 169  & 1.011 \\
+legacy max-of-ratios       & Mendelian & 183  & $[138, 299]$ & 169  & 1.011 \\
 \midrule
 \multicolumn{4}{l}{\emph{modal nested-CV} $\hat K(c_{\mathrm{outer}})$ (Mendelian)} & \textbf{5--8} & 0.100 (observed) \\
 \midrule
 \textbf{LCLS regression} \citep{lcls2024lipschitz} & \textbf{Complex}  & \textbf{4.51} & $[4.47, 4.69]$ & \textbf{50} & \textbf{0.088} \\
 isotonic envelope          & Complex   & 8.02 & $[4.48, 33.1]$ & 67  & 0.118 \\
-legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
+legacy max-of-ratios       & Complex   & 53.3 & $[54, 103]^{\dagger}$ & 173  & 0.303 \\
 \midrule
 \multicolumn{4}{l}{\emph{modal nested-CV} $\hat K(c_{\mathrm{outer}})$ (Complex)}   & \textbf{5} & 0.024 (observed) \\
 \bottomrule
@@ -401,7 +401,7 @@ legacy max-of-ratios       & Complex   & 53.3 & --- & 173  & 0.303 \\
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_lf_forest.pdf}
-\caption{$L_F$ estimator 95\% bootstrap CIs and resulting $K^\star$. LCLS gives a tight CI ($\hat L_F \approx 3$ Mendelian, $\approx 4.5$ Complex) and a realisable $K^\star$ (22 / 50). Isotonic envelope is loose. Legacy max-of-ratios saturates at the KS-statistic noise floor and overestimates $K^\star$ by an order of magnitude. The modal nested-CV $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ (Mendelian) and $5$ (Complex) is the binding finite-sample constraint, well below all three asymptotic $K^\star$ predictions.}
+\caption{Three $L_F$ estimators paired with their implied asymptotic $K^\star$, with the empirical modal nested-CV $\hat K(c_{\mathrm{outer}})$ overlaid as the operative reference. \textbf{Left:} forest of $\hat L_F$ on log scale, 95\% bootstrap CIs ($B = 500$ chrom-resamples); marker size encodes precision ($1/\log_{10}$ of CI ratio). LCLS yields a tight CI ($1.19\times$ on Mendelian, $1.05\times$ on Complex); isotonic envelope is order-of-magnitude wider; legacy max-of-ratios sits at the KS-statistic noise floor. \textbf{Right:} horizontal bar of the implied oracle $K^\star = \lfloor\sqrt{L_F R \pi_{\min} n}\rfloor$ (linear axis); the red dashed band/line marks the modal nested-CV $\hat K(c_{\mathrm{outer}}) \in \{5, 8\}$ (Mendelian) and $= 5$ (Complex) per §\ref{sec:theory:t5}. \textbf{Punchline:} every asymptotic $K^\star$ exceeds $\hat K_{\mathrm{modal}}$ by $3\text{--}10\times$ on the trustworthy LCLS estimator and by orders of magnitude on the loose ones, identifying the App~\ref{app:tables:ksweep} fallback-dominated regime as the binding finite-sample constraint at $n \leq 11{,}400$. On Complex, the legacy marker uses bootstrap median $72.1$ rather than the unstable full-data point $53.3$ (see Tab.~\ref{tab:LF_estimators} footnote).}
 \label{fig:lf_forest}
 \end{figure}
 

@@ -26,59 +26,134 @@ FIG.mkdir(parents=True, exist_ok=True)
 
 
 def fig_lf_forest():
-    """L_F estimator forest plot from tab:LF_estimators numbers."""
+    """Two-panel forest of L_F + bar of implied K* with K_modal reference line.
+
+    Left panel: log-scale forest of L_F estimators with bootstrap 95% CIs.
+    Right panel: horizontal bar of asymptotic K* with vertical K_modal reference
+    line per dataset block. The visual punchline is that even the most reliable
+    estimator (LCLS) implies K* ~3-10x larger than the modal nested-CV K_modal,
+    confirming the App C "fallback-dominated" finite-sample regime.
+    """
+    # Each row: (estimator, dataset, L_F point, (CI lo, CI hi), K*).
+    # Legacy CI from bootstrap_raw in outputs/L_F_audit/*_LF_LCLS.json (B=500
+    # chrom-resamples). On Complex, the full-data point estimate (53.3) lies
+    # below CI_lo (54.2): this reflects max-ratio's instability under repeated
+    # extreme pairs in bootstrap; we display the bootstrap median (72.1) as the
+    # marker so the geometric "point in CI" invariant holds and document the
+    # substitution in the caption.
     rows = [
-        ("LCLS regression",   "Mendelian", 2.97, (2.89, 3.45),  22),
-        ("isotonic envelope", "Mendelian", 26.9, (6.85, 93.2),  61),
-        ("legacy max-of-ratios", "Mendelian", 183, (183, 183),  169),  # no CI
-        ("LCLS regression",   "Complex",  4.51, (4.47, 4.69),  50),
-        ("isotonic envelope", "Complex",  8.02, (4.48, 33.1),  67),
-        ("legacy max-of-ratios", "Complex",  53.3, (53.3, 53.3), 173),
+        ("LCLS regression",      "Mendelian", 2.97,   (2.89,   3.45),   22),
+        ("isotonic envelope",    "Mendelian", 26.9,   (6.85,   93.24),  61),
+        ("legacy max-of-ratios", "Mendelian", 184.88, (137.86, 298.81), 169),
+        ("LCLS regression",      "Complex",   4.51,   (4.47,   4.69),   50),
+        ("isotonic envelope",    "Complex",   8.02,   (4.48,   33.13),  67),
+        ("legacy max-of-ratios", "Complex",   72.11,  (54.17,  102.96), 173),
     ]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.6), sharex=True)
-    for ax, dataset in zip(axes, ("Mendelian", "Complex")):
-        sub = [r for r in rows if r[1] == dataset]
-        ys = np.arange(len(sub))[::-1]
-        for i, (name, _, point, (lo, hi), Kstar) in enumerate(zip(
-                [r[0] for r in sub], [r[1] for r in sub],
-                [r[2] for r in sub], [r[3] for r in sub], [r[4] for r in sub])):
-            color = "C0" if "LCLS" in name else ("C1" if "isotonic" in name else "C3")
-            y = ys[i]
-            ax.plot([lo, hi], [y, y], color=color, lw=3, alpha=0.6)
-            ax.plot([point], [y], "o", color=color, markersize=8)
-            # Cap text x-position so K* annotation stays inside axis on log scale
-            txt_x = min(max(point, hi) * 1.15, 350)
-            ax.text(txt_x, y, f"$K^\\star\\!=\\!{Kstar}$",
-                    fontsize=8, va="center", clip_on=False)
-        ax.set_yticks(ys)
-        ax.set_yticklabels([r[0] for r in sub], fontsize=9)
-        ax.set_xscale("log")
-        ax.set_xlabel(r"$\hat L_F$ (log scale)")
-        ax.set_title(f"{dataset}")
-        # Major-only grid; minor ticks were too dense and looked like a prison.
-        ax.grid(True, axis="x", which="major", alpha=0.3)
-        ax.tick_params(axis="x", which="minor", length=0)
-        # Modal nested-CV K (post-Phase-6) shown for comparison vs asymptotic K*.
-        # Legacy K_CV (test-set tuning) values 3 / 2 are deprecated.
-        # Box placed bottom-left (no marker there) so it never occludes K* labels.
-        K_modal = r"\{5, 8\}" if dataset == "Mendelian" else r"5"
-        ax.text(0.03, 0.06,
-                fr"modal $\hat K(c_{{\mathrm{{outer}}}}) \in {K_modal}$"
-                "\n(nested chrom-LOO; finite-sample binding)",
-                transform=ax.transAxes, ha="left", va="bottom",
-                fontsize=8.0,
-                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="k", alpha=0.8))
-    fig.suptitle(r"$L_F$ estimator 95% CIs and resulting $K^\star$ "
-                 r"(LCLS gives tight CIs; legacy max-of-ratios saturates)",
-                 fontsize=10)
-    # Expand x-axis to fit K* annotations on the right
-    for ax in axes:
-        xmin, xmax = ax.get_xlim()
-        ax.set_xlim(xmin, xmax * 2.5)
+    K_modal = {"Mendelian": (5, 8), "Complex": (5, 5)}
+    color_of = {
+        "LCLS regression":      "#1b9e77",  # teal — the recommended estimator
+        "isotonic envelope":    "#d95f02",  # orange — looser
+        "legacy max-of-ratios": "#7570b3",  # purple — biased high
+    }
+
+    # Layout: 2 panels (forest | K* bar), 6 rows with a vertical gap between
+    # the two dataset blocks. Top block = Mendelian, bottom block = Complex.
+    y_positions = [6.0, 5.0, 4.0, 2.0, 1.0, 0.0]  # gap of 1 between blocks
+    block_y_range = {"Mendelian": (3.5, 6.5), "Complex": (-0.5, 2.5)}
+
+    fig, (axL, axR) = plt.subplots(
+        1, 2, figsize=(8.6, 3.2),
+        gridspec_kw={"width_ratios": [1.5, 1.0], "wspace": 0.18},
+    )
+
+    # ---- Left panel: forest plot of L_F (log x) ----
+    for y, (name, dataset, point, (lo, hi), _) in zip(y_positions, rows):
+        c = color_of[name]
+        # Marker size proportional to precision: 1 / log10(CI ratio).
+        ci_ratio = hi / lo
+        ms = 5.5 + 4.0 / max(np.log10(ci_ratio) + 0.05, 0.05)
+        ms = float(np.clip(ms, 5.5, 11.0))
+        axL.plot([lo, hi], [y, y], color=c, lw=2.4, alpha=0.55, solid_capstyle="round")
+        axL.plot([point], [y], "o", color=c, markersize=ms,
+                 markeredgecolor="white", markeredgewidth=0.6, zorder=5)
+
+    # Y axis: estimator labels (left) + dataset block label (further left, rotated).
+    axL.set_yticks(y_positions)
+    axL.set_yticklabels([r[0] for r in rows], fontsize=8.5)
+    for label, (y_lo, y_hi) in block_y_range.items():
+        axL.text(-0.34, (y_lo + y_hi) / 2, label, transform=axL.get_yaxis_transform(),
+                 fontsize=9, fontweight="bold", rotation=90,
+                 ha="center", va="center")
+
+    axL.set_xscale("log")
+    axL.set_xlim(2, 400)
+    axL.set_xlabel(r"$\hat L_F$  (log scale, 95% bootstrap CI)")
+    axL.grid(True, axis="x", which="major", alpha=0.35, ls="-", lw=0.4)
+    axL.grid(False, axis="y")
+    axL.tick_params(axis="x", which="minor", length=0)
+    axL.set_ylim(-0.7, 7.0)
+    # Soft separator between dataset blocks.
+    axL.axhline(3.0, color="0.75", lw=0.5, ls="-", zorder=0)
+
+    # ---- Right panel: K* bar + K_modal reference line per block ----
+    for y, (name, dataset, _, _, Kstar) in zip(y_positions, rows):
+        c = color_of[name]
+        axR.barh(y, Kstar, height=0.65, color=c, alpha=0.85,
+                 edgecolor="white", linewidth=0.6, zorder=3)
+        axR.text(Kstar + 4, y, f"{Kstar}", fontsize=8, va="center", ha="left")
+
+    # K_modal vertical reference inside each block (band when range, line when single).
+    # Annotation text placed near the band but outside any bar (top of block, slight
+    # x offset) to avoid collision with K* numerical labels at bar tips.
+    for dataset, (kmin, kmax) in K_modal.items():
+        y_lo, y_hi = block_y_range[dataset]
+        if kmin == kmax:
+            axR.vlines(kmin, y_lo, y_hi, color="#c53b3b", lw=1.4,
+                       linestyle=(0, (4, 2)), zorder=4)
+            kmodal_text = fr"$\hat K_{{\mathrm{{modal}}}} = {kmin}$"
+        else:
+            axR.fill_betweenx([y_lo, y_hi], kmin, kmax, color="#c53b3b",
+                              alpha=0.18, zorder=2)
+            axR.vlines([kmin, kmax], y_lo, y_hi, color="#c53b3b", lw=1.0,
+                       linestyle=(0, (4, 2)), zorder=4)
+            kmodal_text = fr"$\hat K_{{\mathrm{{modal}}}} \in \{{{kmin},\,{kmax}\}}$"
+        # Place K_modal label slightly to the right of the band, vertically
+        # centered on the gap above the top bar so it never overlaps a bar.
+        axR.text(max(kmin, kmax) + 8, y_hi + 0.05, kmodal_text,
+                 fontsize=7.5, color="#c53b3b", ha="left", va="bottom",
+                 fontweight="bold")
+
+    axR.set_yticks(y_positions)
+    axR.set_yticklabels([])
+    axR.set_xlim(0, 220)
+    axR.set_xlabel(r"$K^\star$  (asymptotic, oracle from $\hat L_F$)")
+    axR.set_ylim(-0.7, 7.0)
+    axR.grid(True, axis="x", which="major", alpha=0.35, ls="-", lw=0.4)
+    axR.grid(False, axis="y")
+    axR.axhline(3.0, color="0.75", lw=0.5, ls="-", zorder=0)
+
+    # Figure-level horizontal legend below both panels. Reserve bottom margin
+    # via fig.subplots_adjust so the legend never collides with x-axis labels.
+    from matplotlib.lines import Line2D
+    legend_handles = [
+        Line2D([0], [0], marker="o", color=color_of["LCLS regression"],
+               linestyle="-", lw=2.0, markersize=5.5, label="LCLS regression"),
+        Line2D([0], [0], marker="o", color=color_of["isotonic envelope"],
+               linestyle="-", lw=2.0, markersize=5.5, label="isotonic envelope"),
+        Line2D([0], [0], marker="o", color=color_of["legacy max-of-ratios"],
+               linestyle="-", lw=2.0, markersize=5.5, label="legacy max-of-ratios"),
+        Line2D([0], [0], color="#c53b3b", lw=1.4, linestyle=(0, (4, 2)),
+               label=r"modal nested-CV $\hat K(c_{\mathrm{outer}})$"),
+    ]
+    fig.legend(handles=legend_handles, loc="lower center", ncol=4,
+               bbox_to_anchor=(0.5, -0.02), frameon=False, fontsize=7.8,
+               handlelength=1.8, columnspacing=1.6, handletextpad=0.5)
+
     fig.tight_layout()
+    fig.subplots_adjust(bottom=0.20)
     out = FIG / "fig_lf_forest.pdf"
     fig.savefig(out, bbox_inches="tight")
-    fig.savefig(FIG / "fig_lf_forest.png", dpi=120, bbox_inches="tight")
+    fig.savefig(FIG / "fig_lf_forest.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out}")
 

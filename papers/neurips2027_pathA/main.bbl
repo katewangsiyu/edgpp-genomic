@@ -1,4 +1,4 @@
-\begin{thebibliography}{39}
+\begin{thebibliography}{40}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -172,6 +172,14 @@ Pascal Notin, Aaron Kollasch, Daniel Ritter, Lood van Niekerk, Steffanie Paul,
 \newblock {ProteinGym}: Large-scale benchmarks for protein fitness prediction
   and design.
 \newblock In \emph{NeurIPS Datasets and Benchmarks}, 2023.
+
+\bibitem[Ochoa et~al.(2023)Ochoa, Hercules, Carmona, Suveges,
+  et~al.]{ochoa2023opentargets}
+David Ochoa, Andrew Hercules, Miguel Carmona, Daniel Suveges, et~al.
+\newblock The next-generation open targets platform: reimagined, redesigned,
+  rebuilt.
+\newblock \emph{Nucleic Acids Research}, 51\penalty0 (D1):\penalty0
+  D1353--D1359, 2023.
 
 \bibitem[Papadopoulos et~al.(2008)Papadopoulos, Gammerman, and
   Vovk]{papadopoulos2008normalized}
