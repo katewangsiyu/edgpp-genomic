@@ -1,0 +1,39 @@
+% B4 DRAFT — honest reframe of §1 contributions for path B (ICLR 2027 retarget).
+% Rationale: ρ lock-down (R_raw/regime_verification/rho_lockdown.json) shows
+% ρ = K²/(L_F R π_min n) < 0.21 across the entire observed (TraitGym, K_eval)
+% grid — Eq.(3)'s asymptotic K* boundary at ρ=1 is never crossed in practice.
+% The operational boundary is the per-cell-minority floor (~70), not ρ=1.
+% This draft replaces the proposed §1 contributions with the honest version.
+
+% --- ORIGINAL §1 contributions (HEAD) for reference ---
+% C1: tight finite-sample rate within equi-bin Mondrian-K class with π_min explicit
+% C2: HCCP framework + T3' robustness corollary
+% C3: empirical validation on TraitGym + ProteinGym + synthetic
+
+% --- B4 honest draft (ρ-aware, drops over-claim) ---
+
+\paragraph{Contributions.}
+\begin{enumerate}
+    \item \textbf{Bias-variance decomposition of joint class-conditional + heteroscedastic-local Mondrian CP.}
+    Equation~\eqref{eq:gap_decomp} is the first finite-sample decomposition of the worst-cell coverage gap into a Lipschitz-bias term $L_F R / K$ and a per-cell-minority variance term $K / (\pi_{\min} n)$. T5.1 derives the asymptotic minimiser $K^\star = \sqrt{L_F R \pi_{\min} n}$ with $G(K^\star) \leq 2\sqrt{L_F R / (\pi_{\min} n)}$ (dimension-free under a 1-D Lipschitz assumption); T5.2 proves a matching $\Omega(\sqrt{L_F R/(\pi_{\min} n)})$ within-class lower bound on the equi-bin Mondrian-$K$ family with $\pi_{\min}^{-1/2}$ explicit in the constant. Concurrent split-CP rate analyses \citep{yao2026nonasymp} establish dim-free $O(n^{-1/2})$ on a different procedure class without the $\pi_{\min}$-local product; \citet{xie2025imbalancedcp} obtain $O(n^{-1/2})$ marginal-coverage bounds without the bin-local product. To our knowledge, Eq.~\eqref{eq:gap_decomp} is the first finite-sample decomposition that exposes both terms simultaneously and identifies the partition-granularity $K$ as the lever between them.
+
+    \item \textbf{HCCP, a post-hoc framework with an exchangeability-robust corollary.}
+    HCCP transfers the heteroscedastic head of DEGU \citep{zhou2026degu} from MPRA regression to binary variant classification with finite-sample local coverage, pairing a nonconformity score $s(x,y) = |y - \phat(x)| / \shat(x)$ with Mondrian-$(y \times \shat\text{-bin})$ calibration. T3 gives exact bin-conditional coverage at rate $1/(n_{k,b}+1)$; T3$'$ (via \citet{barber2023exchangeability} Thm.~2 at the cell level) supplies a uniform finite-sample lower bound when our per-chromosome KS audit detects cell-level exchangeability violations on Mendelian.
+
+    \item \textbf{Empirical verification of the decomposition's two operational regimes.} Eq.~\eqref{eq:gap_decomp} predicts that HCCP's worst-cell gap is bias-dominated when $K^2 \ll L_F R \pi_{\min} n$ and variance-dominated otherwise; in the bias regime smoother methods (weighted CP) carry no advantage, in the variance regime they avoid the hard-bin penalty. On TraitGym Complex ($\pi_+=0.10$, $n=11{,}400$; $\rho := K^2/(L_F R \pi_{\min} n) \in [0.002, 0.040]$ across $K_{\mathrm{eval}} \in [2, 10]$, deeply bias-dominated), HCCP's $\shat$-bin gap is $0.060 \pm 0.031$ vs.\ $\geq 0.805$ across all six matched-$(\phat, \shat)$ baselines we evaluated ($B = 200$ chrom-bootstrap CIs disjoint, paired bootstrap $200/200$ wins at $p = 0.005$, App.~\ref{app:tables:paired_bootstrap}). On TraitGym Mendelian ($n = 3{,}380$, smaller pool), the asymptotic regime boundary $\rho = 1$ at $K^\star \approx 22$ is far above the per-cell-minority floor $K \leq \lfloor \pi_{\min} n / 100\rfloor \approx 3$ that binds at this $n$; we operate at $K_{\mathrm{eval}} = 3$ (per-cell minority $\geq 100$, paired bootstrap $149/200$ wins, $p = 0.26$ — HCCP narrower on the majority of resamples but not formally distinguishable from weighted CP). The $K_{\mathrm{eval}} \in \{2,3,5,8,10\}$ sweep (App.~\ref{app:tables:keval_sensitivity}) shows weighted CP catches up once per-cell minority drops below $\approx 70$, consistent with Eq.~\eqref{eq:gap_decomp}'s variance term scaling $K / (\pi_{\min} n)$ but with the operational threshold set by the per-cell quantile-estimator floor rather than Eq.~\eqref{eq:gap_decomp}'s asymptotic $\rho = 1$.
+
+    \emph{Cross-domain replication}: 50 ProteinGym \citep{notin2023proteingym} assays at balanced $\pi_{\min} \approx 0.5$ sit deeply in the bias regime ($\rho \approx 0.009$ at $K = 5$, per-cell minority $\approx 280$); HCCP holds marginal coverage $0.887 \pm 0.028$. Predicted-vs-observed Spearman correlations across the 50 assays are $\rho \in [-0.26, 0.27]$ (App.~\ref{app:proteingym:phase1}, scores $\in$ \texttt{R\_raw/proteingym\_predict\_verify/scores.json}): Eq.~\eqref{eq:gap_decomp}'s upper bound is loose by $5$--$15\times$ at this operating point, an honest diagnostic that the bound is asymptotic in $K^\star$ rather than a calibrated point predictor. The conformal gain is decoupled from base-predictor accuracy (App.~\ref{app:tables:hccp_logreg}); a synthetic $n$-sweep verifies the dimension-free $O(n^{-1/2})$ rate on $K^\star$ \citep{ourcode}.
+\end{enumerate}
+
+% --- B4 draft ends here. ---
+%
+% Notes for full B implementation:
+%   1. The per-cell-minority floor framing replaces the failed "ρ = 1 boundary" claim.
+%      Empirical thresholds ≈ 70 (HCCP→wCP catch-up) and ≈ 100 (HCCP recommended)
+%      are documented in §6.2 already; this just elevates them to §1.
+%   2. Phase 1 ProteinGym predict-verify is repositioned as an honest looseness
+%      diagnostic, not a verification claim. Spearman ρ ∈ [-0.26, +0.27] is
+%      reported with scope ("Eq.(3) asymptotic, not point predictor").
+%   3. Paired bootstrap restoration in App C.1 is referenced inline (cf51bb6
+%      undeletion). Subsumption table can sit in §2 unchanged.
+%   4. Page budget: this draft adds ~3 lines vs current §1 ⟶ §1 still ≤ 1.5 pp.
