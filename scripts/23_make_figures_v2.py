@@ -504,110 +504,115 @@ def fig7_three_axis_summary():
 # Fig 8: Coverage vs Set-size Pareto (NeurIPS CP standard)
 # ================================================================
 def fig8_pareto():
-    """X = singleton fraction (efficiency), Y = σ̂-bin gap (local coverage).
-    Each point = one method × one dataset. Top CP papers always show this."""
-    fig, ax = plt.subplots(figsize=(NEURIPS_COL + 0.5, 2.6))
-
-    all_points = []
-    configs = [
-        # (label, path, marker, dataset_suffix)
-        ("HCCP\n(Mendelian)", "CADD+GPN-MSA+Borzoi_mendelian_abs_mondrian", "o", "M"),
-        ("DEGU\n(Mendelian)", "DEGU_lite_CADD+GPN-MSA+Borzoi_mendelian_mondrian", "s", "M"),
-        ("HCCP\n(Complex)", "CADD+GPN-MSA+Borzoi_complex_abs_mondrian", "o", "C"),
-        ("DEGU\n(Complex)", "DEGU_lite_CADD+GPN-MSA+Borzoi_complex_mondrian", "s", "C"),
+    """Horizontal dumbbell of HCCP vs DEGU-lite worst sigma-bin gap, paired
+    by dataset. Single-metric design: efficiency (singleton fraction) and
+    iso-cost L are reported in the companion table (Tab in App C); the
+    figure's job is the visual punchline that gap differs by 4x on Complex
+    while the methods near-tie on Mendelian.
+    """
+    pulls = [
+        ("Mendelian", "CADD+GPN-MSA+Borzoi_mendelian_abs_mondrian",
+                      "DEGU_lite_CADD+GPN-MSA+Borzoi_mendelian_mondrian"),
+        ("Complex",   "CADD+GPN-MSA+Borzoi_complex_abs_mondrian",
+                      "DEGU_lite_CADD+GPN-MSA+Borzoi_complex_mondrian"),
     ]
 
-    for label, subdir, marker, ds in configs:
+    def _worst_gap(subdir):
         p = Path(f"outputs/conformal_hetero/{subdir}/conformal_hetero_results.json")
         if not p.exists():
-            continue
+            return np.nan
         d = load_json(p)
+        for key in ["mondrian_y_sigma", "hetero_class_cond", "homosc_class_cond"]:
+            if key in d:
+                bins = d[key].get("coverage_by_sigma_bin", [])
+                covs = [b["coverage"] for b in bins if b.get("n", 0) >= 5]
+                return max(abs(c - 0.9) for c in covs) if covs else np.nan
+        return np.nan
 
-        # Try mondrian first, then hetero
-        for method_key in ["mondrian_y_sigma", "hetero_class_cond", "homosc_class_cond"]:
-            if method_key in d:
-                m = d[method_key]
-                break
+    rows = []
+    for ds, hccp_sd, degu_sd in pulls:
+        rows.append((ds, _worst_gap(hccp_sd), _worst_gap(degu_sd)))
+
+    fig, ax = plt.subplots(figsize=(NEURIPS_COL + 1.6, 2.0))
+
+    # Ideal-zone vertical band: gap <= 0.03 is the operational target.
+    # Label placed bottom-left of the band where there are no markers.
+    ax.axvspan(0, 0.03, color="#2ca02c", alpha=0.10, zorder=0)
+    ax.text(0.0017, -0.55, r"ideal zone (gap $\leq 0.03$)", fontsize=6.8,
+            color="#2c8a30", style="italic", ha="left", va="bottom")
+
+    y_pos = {"Mendelian": 1.0, "Complex": 0.0}
+
+    for ds, hccp_g, degu_g in rows:
+        y = y_pos[ds]
+        # Dumbbell connector: horizontal segment from min to max of the pair.
+        x_lo, x_hi = sorted([hccp_g, degu_g])
+        ax.plot([x_lo, x_hi], [y, y], color="0.55", lw=2.0, alpha=0.55,
+                solid_capstyle="round", zorder=2)
+
+        # Markers
+        ax.scatter([hccp_g], [y], s=110, marker="o",
+                   facecolor=COLORS["hccp"], edgecolor="white", lw=1.0,
+                   zorder=4)
+        ax.scatter([degu_g], [y], s=90, marker="s",
+                   facecolor=COLORS["degu"], edgecolor="white", lw=1.0,
+                   zorder=4)
+
+        # Per-point numeric annotations: place HCCP / DEGU labels on the
+        # outer side of each marker so they never collide with each other.
+        for label, val, color in [("HCCP", hccp_g, COLORS["hccp"]),
+                                   ("DEGU", degu_g, COLORS["degu"])]:
+            on_left = (val == x_lo) and (x_lo != x_hi)
+            ax.annotate(f"{label}\n{val:.3f}",
+                        xy=(val, y),
+                        xytext=(val + (-0.0025 if on_left else 0.0025),
+                                y + 0.18),
+                        fontsize=7, color=color, fontweight="bold",
+                        ha="right" if on_left else "left", va="bottom")
+
+        # Centred ratio annotation between markers (or "tie" if too close).
+        if x_lo > 0:
+            ratio = x_hi / x_lo
         else:
-            continue
+            ratio = float("inf")
+        winner = "HCCP" if hccp_g < degu_g else "DEGU"
+        if ratio < 1.5:
+            mid_text = fr"near tie ($\times{ratio:.2f}$, {winner})"
+            mid_color = "0.30"
+        else:
+            mid_text = fr"$\times{ratio:.2f}$  {winner} wins"
+            mid_color = COLORS["hccp"] if winner == "HCCP" else COLORS["degu"]
+        ax.text((x_lo + x_hi) / 2, y - 0.20, mid_text,
+                fontsize=7.5, color=mid_color, ha="center", va="top",
+                fontweight="bold")
 
-        bins = m.get("coverage_by_sigma_bin", [])
-        if not bins:
-            continue
-        coverages = [b["coverage"] for b in bins if b.get("n", 0) >= 5]
-        worst_gap = max(abs(c - 0.9) for c in coverages) if coverages else np.nan
-        singleton = m.get("frac_singleton", np.nan)
+    ax.set_yticks(list(y_pos.values()))
+    ax.set_yticklabels(list(y_pos.keys()), fontsize=9, fontweight="bold")
+    ax.set_xlabel(r"Worst $\hat\sigma$-bin coverage gap (lower is better)")
+    ax.set_xlim(-0.003, 0.072)
+    ax.set_ylim(-0.7, 1.85)
+    ax.grid(True, axis="x", which="major", alpha=0.3)
+    ax.grid(False, axis="y")
 
-        is_hccp = "HCCP" in label
-        is_mendelian = ds == "M"
-        color = COLORS["hccp"] if is_hccp else (COLORS["degu"] if "DEGU" in label else COLORS["homosc"])
-        facecolor = color if is_mendelian else "white"
-
-        flat_label = label.replace("\n", " ")
-        ax.scatter(singleton, worst_gap, s=70, marker=marker,
-                   facecolors=facecolor, edgecolors=color, linewidths=1.5,
-                   label=flat_label, zorder=5)
-        all_points.append((singleton, worst_gap, flat_label, color, is_hccp))
-
-    # Iso-cost diagonals: L = gap + λ·(1 − efficiency), with λ = 0.05.
-    # Smaller L = better. Lines have positive slope λ in (eff, gap):
-    # gap = (L − λ) + λ·eff. Points BELOW a line beat that L.
-    #
-    # Why λ = 0.05: at the headline α = 0.10 op point, the appendix targets
-    # singleton fraction ≈ 0.80 (Mendelian) and ≤ 0.04 worst-bin gap. The
-    # ratio 0.04 / 0.80 ≈ 0.05 makes a 1-pp swap of efficiency cost-equal
-    # to a 0.0005 swap of gap, the implicit operational tradeoff.
-    LAMBDA_ISO = 0.05
-    iso_levels = [0.04, 0.06, 0.08, 0.10]
-    eff_grid = np.linspace(0.05, 1.0, 50)
-    for L in iso_levels:
-        gap_iso = (L - LAMBDA_ISO) + LAMBDA_ISO * eff_grid
-        ax.plot(eff_grid, gap_iso, ls="--", lw=0.7, color="#888888",
-                alpha=0.55, zorder=1)
-        # Inline label on the LEFT side (less cluttered than right; matches
-        # the diagonal-iso-line convention in operations-research plots).
-        x_lbl = 0.13
-        y_lbl = (L - LAMBDA_ISO) + LAMBDA_ISO * x_lbl
-        if 0 < y_lbl < 0.078:
-            ax.text(x_lbl, y_lbl + 0.001, rf"$L{{=}}{L:.2f}$",
-                    fontsize=6.0, color="#666", ha="left", va="bottom",
-                    rotation=np.degrees(np.arctan(LAMBDA_ISO * 6)))  # ≈ visual slope
-
-    # Per-point iso-cost annotation, so reviewers can rank them numerically.
-    for x, y, lbl, color, is_hccp in all_points:
-        L_pt = y + LAMBDA_ISO * (1 - x)
-        dx, dy = (0.018, 0.0018) if is_hccp else (0.018, -0.0035)
-        ax.annotate(rf"$L{{=}}{L_pt:.3f}$",
-                    xy=(x, y), xytext=(x + dx, y + dy),
-                    fontsize=6.4, color=color, alpha=0.9,
-                    ha="left", va="center")
-
-    # Use legend instead of inline labels (avoids overlap)
-    ax.legend(loc="upper left", fontsize=7, ncol=2, frameon=True,
-              framealpha=0.9, edgecolor="0.7")
-
-    # Ideal region (kept; the iso-lines and the band tell complementary stories).
-    ax.axhspan(0, 0.03, color="#2ca02c", alpha=0.08, zorder=0)
-    ax.text(0.78, 0.0015, "ideal zone (gap $\\leq$ 0.03)", fontsize=7,
-            color="#2ca02c", alpha=0.85, style="italic", ha="right")
-    # Iso-cost legend caption — placed in the dead space at lower-right
-    # (above the "ideal zone" italics, below the data legend).
-    ax.text(0.96, 0.069,
-            rf"iso-cost: $L = \mathrm{{gap}} + {LAMBDA_ISO}\,(1-\mathrm{{eff}})$",
-            fontsize=6.4, color="#444", ha="right", va="top",
-            bbox=dict(facecolor="white", edgecolor="#cccccc",
-                      boxstyle="round,pad=0.25", linewidth=0.4, alpha=0.9))
-
-    ax.set_xlabel("Singleton fraction (efficiency →)")
-    ax.set_ylabel("Worst $\\hat\\sigma$-bin gap (← coverage)")
-    ax.set_xlim(0.1, 0.98)
-    ax.set_ylim(-0.005, 0.085)
+    # Compact legend top-left where there is whitespace.
+    from matplotlib.lines import Line2D
+    handles = [
+        Line2D([0], [0], marker="o", color=COLORS["hccp"], linestyle="",
+               markersize=8, label="HCCP (learned $\\hat\\sigma$)"),
+        Line2D([0], [0], marker="s", color=COLORS["degu"], linestyle="",
+               markersize=7, label="DEGU-lite (ensemble $\\hat\\sigma$)"),
+    ]
+    ax.legend(handles=handles, loc="upper left", fontsize=7.5,
+              ncol=2, frameon=False, handletextpad=0.4, columnspacing=1.4,
+              bbox_to_anchor=(0.0, 1.18))
 
     fig.tight_layout()
     fig.savefig(OUT / "fig8_pareto.pdf")
     fig.savefig(OUT / "fig8_pareto.png")
     plt.close(fig)
     print("  fig8_pareto ✓")
+    for ds, hg, dg in rows:
+        print(f"    {ds:10s}: HCCP gap={hg:.4f}  DEGU gap={dg:.4f}  ratio={max(hg,dg)/min(hg,dg):.2f}x")
 
 
 # ================================================================
