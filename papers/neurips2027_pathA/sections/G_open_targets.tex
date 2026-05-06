@@ -51,7 +51,13 @@ for TraitGym (\S\ref{sec:experiments:h2h}, Tab.~\ref{tab:cp_baselines}).
 HCCP partition $K_{\mathrm{HCCP}}$ selected per outer fold by nested
 chrom-LOO. Paired bootstrap on $B = 200$ chrom-resamples (seed 42); win\,\%
 counts resamples on which HCCP attained a strictly smaller $\shat$-bin gap
-than the baseline. Source: \texttt{R\_raw/cp\_baselines\_h2h/open\_targets\_*.json}.}
+than the baseline. The three baselines all hit $\shat$-bin gap $0.900$, the
+worst-cell maximum-deviation ceiling (one minority cell at near-zero
+coverage); the $16.7\times$ ratio is therefore better read as ``HCCP holds
+the gap floor while the baselines saturate the ceiling'' than as a
+multiplicative effect-size claim — the binding signal is the absolute gap
+of $0.054$ vs.\ $0.900$ on the worst cell, plus the $93\%$ paired-resample
+win rate. Source: \texttt{R\_raw/cp\_baselines\_h2h/open\_targets\_*.json}.}
 \label{tab:open_targets_h2h}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lcccccc}
@@ -97,8 +103,11 @@ small-cell pooled fallback. The bias-variance crossover boundary on OT
 sits at per-cell-minority $\approx 100$--$120$, consistent with the
 $\approx 70$ floor we report on TraitGym Mendelian
 (\S\ref{sec:experiments:h2h}). The minority-floor argument of
-Eq.~\eqref{eq:gap_decomp} therefore predicts the regime boundary across
-two completely independent benchmarks.
+Eq.~\eqref{eq:gap_decomp}'s variance-term scaling is therefore consistent
+with the regime boundary observed across two completely independent
+benchmarks; the asymptotic $K^\star \approx 22$ from Eq.~\eqref{eq:gap_decomp}
+itself is well above the partition granularities that bind in finite samples
+(see also \S\ref{sec:theory:t5}).
 
 \begin{table}[h]
 \centering
@@ -109,7 +118,10 @@ favour HCCP. Per-cell minority $= \pi_{+} n / K_{\mathrm{eval}}$ with
 $\pi_{+} = 0.10$, $n = 11{,}400$. The $K_{\mathrm{eval}} = 3$ row reflects
 a $K_{\mathrm{HCCP}} \neq K_{\mathrm{eval}}$ partition--metric mismatch
 (see text); all other rows have $K_{\mathrm{HCCP}}$ modal $\in
-\{5, 8, 10\}$ aligned with $K_{\mathrm{eval}}$.}
+\{5, 8, 10\}$ aligned with $K_{\mathrm{eval}}$. Excluding the $K_{\mathrm{eval}}
+= 3$ mismatch row, the win ratio is monotone non-increasing in
+$K_{\mathrm{eval}}$ (equivalently, in per-cell minority count), tracking
+the variance-term scaling.}
 \label{tab:open_targets_keval}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{ccccccc}
