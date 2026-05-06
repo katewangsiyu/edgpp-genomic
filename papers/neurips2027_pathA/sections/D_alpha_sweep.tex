@@ -5,7 +5,7 @@ Figure~\ref{fig:alpha_sweep} and Tab.~\ref{tab:alpha_sweep} report HCCP's empiri
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/figD_alpha_sweep.pdf}
-\caption{Top row: empirical coverage vs nominal $1 - \alpha$ for Split CP (homoscedastic class-cond), HCCP class-cond, and HCCP Mondrian $(y \times \shat\text{-bin})$. All three variants track the target to within $\pm 0.015$. Bottom row: $\shat$-bin coverage range $\max_b \mathrm{cov}_b - \min_b \mathrm{cov}_b$ for HCCP Mondrian; the paper's $\alpha = 0.10$ headline 0.04 threshold (dashed) is respected across all $\alpha$.}
+\caption{Compact 2$\times$3 $\alpha$-sweep: rows $=$ \{Mendelian, Complex\}, columns $=$ three diagnostics. \textbf{(a)} Calibration residual $\mathrm{cov} - (1{-}\alpha)$ for Split CP (homoscedastic class-cond), HCCP class-cond, and HCCP Mondrian $(y \times \shat\text{-bin})$; the shaded band is the finite-sample slack $\pm 1/(n_{\min}{+}1)$. All three methods track target to within the slack on both datasets. \textbf{(b)} $\shat$-bin coverage range $\max_b \mathrm{cov}_b - \min_b \mathrm{cov}_b$ for HCCP Mondrian, vs the dashed $\alpha{=}0.10$ headline threshold ($0.04$); respected at every $\alpha$ on both datasets. \textbf{(c)} Singleton fraction (the operational knob), with the three benchmarked operating points $\alpha \in \{0.10, 0.20, 0.30\}$ marked by vertical guides — high-stakes / triage / hypothesis (see body text).}
 \label{fig:alpha_sweep}
 \end{figure}
 
