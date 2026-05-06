@@ -219,54 +219,91 @@ def _plot_diagnostic(
 
     fig, (ax_h, ax_s) = plt.subplots(1, 2, figsize=(9.5, 3.4))
 
+    # ---- (a) Histogram of per-pair ratios ----
     ax_h.hist(ratios, bins=40, color="#4477AA", alpha=0.85,
               edgecolor="white", linewidth=0.4)
     # Truncate x-axis to p99 + 20% so the four reference lines (median / p95 /
     # p99 / LCLS) are visually separable. The max ratio is dominated by
-    # KS-saturation noise on the smallest sigma-gaps and would compress every
-    # other marker into one pixel — we report it as text instead of a vline.
+    # KS-saturation noise on the smallest sigma-gaps; we report it as a
+    # text-only legend row instead of stretching the axis.
     x_cap = p99 * 1.20
     ax_h.set_xlim(0, x_cap)
-    for x, lab, c, ls in [
-        (median,   f"median = {median:.2f}",          "#222222", "--"),
-        (p95,      f"p95 = {p95:.2f}",                "#DDAA33", "--"),
-        (p99,      f"p99 = {p99:.2f}",                "#EE6677", "-."),
-        (beta_lcls, f"LCLS $\\hat L_F$ = {beta_lcls:.2f}", "#117733", ":"),
-    ]:
-        ax_h.axvline(x, color=c, linestyle=ls, linewidth=1.2, label=lab)
-    # Max as annotation in the top-right corner (off-axis, not a vline).
-    ax_h.text(0.97, 0.97, f"max = {rmax:.1f}\n(KS-saturation;\nout of plotted range)",
-              transform=ax_h.transAxes, ha="right", va="top",
-              fontsize=7, color="#CC3311",
-              bbox=dict(boxstyle="round,pad=0.25", fc="white",
-                        ec="#CC3311", lw=0.5, alpha=0.9))
+    # Reference vlines drawn (without legend labels; the legend below uses
+    # explicit Line2D handles so each entry's colour swatch matches its vline).
+    vline_specs = [
+        (beta_lcls, "#117733", ":",  fr"$\hat L_F^{{\mathrm{{LCLS}}}}$ = {beta_lcls:.2f}"),
+        (median,    "#222222", "--", fr"median = {median:.2f}"),
+        (p95,       "#DDAA33", "--", fr"p95 = {p95:.2f}"),
+        (p99,       "#EE6677", "-.", fr"p99 = {p99:.2f}"),
+    ]
+    for x, c, ls, _ in vline_specs:
+        ax_h.axvline(x, color=c, linestyle=ls, linewidth=1.4)
+    # Custom legend with line-style swatches matching each vline; "max" row
+    # uses an invisible handle (gives a text-only row inside the same box).
+    from matplotlib.lines import Line2D
+    handles = [Line2D([0], [0], color=c, linestyle=ls, linewidth=1.6)
+               for _, c, ls, _ in vline_specs]
+    labels = [lab for _, _, _, lab in vline_specs]
+    handles.append(Line2D([0], [0], color="white", linewidth=0))
+    labels.append(fr"max = {rmax:.0f} (off-axis)")
+    ax_h.legend(handles, labels, loc="upper right", fontsize=6.8,
+                frameon=True, framealpha=0.94, edgecolor="0.7",
+                handlelength=2.0, handletextpad=0.6, borderpad=0.4,
+                labelspacing=0.45)
     ax_h.set_xlabel(r"per-pair ratio $\rho = \mathrm{KS} / |\bar\sigma_a - \bar\sigma_b|$")
     ax_h.set_ylabel("count")
     ax_h.set_title(f"(a) ratio distribution: {dataset}", fontsize=10)
-    ax_h.legend(loc="upper left", fontsize=7, frameon=False,
-                bbox_to_anchor=(0.30, 0.98))
     ax_h.grid(axis="y", alpha=0.3)
 
+    # ---- (b) KS vs sigma-gap scatter with LCLS slope reference ----
     clean_kk = np.maximum(k - floor, 0.0)
     is_viol = clean_kk > beta_lcls * g
     ax_s.scatter(g[~is_viol], k[~is_viol], s=8, c="#4477AA", alpha=0.55,
-                 label=f"within LCLS bound (n={int((~is_viol).sum())})", edgecolor="none")
+                 label=f"within LCLS bound (n={int((~is_viol).sum())})",
+                 edgecolor="none")
     ax_s.scatter(g[is_viol], k[is_viol], s=14, c="#CC3311", alpha=0.85,
-                 label=f"above LCLS bound  (n={int(is_viol.sum())})", edgecolor="none")
+                 label=f"above LCLS bound (n={int(is_viol.sum())})",
+                 edgecolor="none")
     grid_g = np.linspace(g.min(), g.max(), 200)
     ax_s.plot(grid_g, beta_lcls * grid_g, color="#117733", linewidth=1.5,
-              label=f"LCLS slope $\\hat L_F$={beta_lcls:.2f}")
-    ax_s.plot(grid_g, p95_clean * grid_g, color="#AA3377", linewidth=1.5, linestyle="--",
-              label=f"$L_F^{{(95\\%)}}$={p95_clean:.2f} (noise-adj. p95)")
+              label=fr"LCLS slope $\hat L_F$={beta_lcls:.2f}")
+    ax_s.plot(grid_g, p95_clean * grid_g, color="#AA3377", linewidth=1.5,
+              linestyle="--",
+              label=fr"$L_F^{{(95\%)}}$={p95_clean:.2f} (noise-adj. p95)")
+
+    # CRITICAL FIX: KS distance is mathematically bounded in [0, 1]. The
+    # slope reference lines (LCLS and noise-adj p95) extend beyond y=1 if
+    # auto-scaled (p95 line at sigma-gap=0.25 would be 13.78*0.25=3.4),
+    # which compressed real data into the bottom strip and violated the
+    # KS upper bound visually. Clip to [0, 1.05] and annotate where the
+    # noise-adj p95 reference line exits the panel.
+    ax_s.set_ylim(0, 1.05)
+    if p95_clean > 0:
+        x_p95_exit = 1.0 / p95_clean
+        if g.min() < x_p95_exit < g.max():
+            # Annotation positioned INSIDE the panel, slightly to the right
+            # of the line exit point, with a downward arrow to the line.
+            ax_s.annotate(
+                fr"$L_F^{{(95\%)}}$ exits y=1" + "\n"
+                fr"at $\sigma$-gap=${x_p95_exit:.3f}$",
+                xy=(x_p95_exit, 0.99),
+                xytext=(x_p95_exit + 0.012, 0.78),
+                ha="left", va="top", fontsize=6.4, color="#AA3377",
+                arrowprops=dict(arrowstyle="->", color="#AA3377", lw=0.8,
+                                shrinkA=0, shrinkB=2),
+            )
     ax_s.set_xlabel(r"$\sigma$-gap $|\bar\sigma_a - \bar\sigma_b|$")
     ax_s.set_ylabel(r"KS distance $\hat F_{k,a}$ vs $\hat F_{k,b}$")
-    ax_s.set_title(f"(b) KS vs σ-gap: {dataset}", fontsize=10)
-    ax_s.legend(loc="upper left", fontsize=7, frameon=False)
+    ax_s.set_title(f"(b) KS vs $\\sigma$-gap: {dataset}", fontsize=10)
+    ax_s.legend(loc="upper right", fontsize=6.6, frameon=True,
+                framealpha=0.92, borderpad=0.3, handletextpad=0.3)
     ax_s.grid(alpha=0.3)
 
     fig.tight_layout()
     fig_out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(fig_out, bbox_inches="tight")
+    # Also write a PNG companion (same stem) for inline preview / git diffing.
+    fig.savefig(fig_out.with_suffix(".png"), bbox_inches="tight", dpi=170)
     plt.close(fig)
 
 

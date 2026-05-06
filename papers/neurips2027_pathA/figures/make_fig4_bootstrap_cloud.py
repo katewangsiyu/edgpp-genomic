@@ -116,10 +116,14 @@ def make_panel(fig, gs_root, dataset: str, replicates_path: Path):
                     facecolor=C_HCCP, edgecolor="white", linewidth=1.0,
                     zorder=4, label=f"bootstrap mean")
 
-    # All-chrom (single-seed) point estimate (star). Larger, with an outline
-    # halo, so it stays visible inside the dense replicate cloud.
-    ax_main.scatter([pe["cov_pos"]], [pe["gap"]], marker="*", s=320,
-                    facecolor=C_POINT, edgecolor="white", linewidth=1.6,
+    # All-chrom (single-seed) point estimate (star). Bright gold + white halo
+    # circle behind it so the marker stays visible inside the dense replicate
+    # cloud regardless of how the bootstrap mean lands.
+    ax_main.scatter([pe["cov_pos"]], [pe["gap"]], marker="o", s=560,
+                    facecolor="white", edgecolor="white", linewidth=0,
+                    zorder=5)
+    ax_main.scatter([pe["cov_pos"]], [pe["gap"]], marker="*", s=470,
+                    facecolor="#f2c14e", edgecolor="#222", linewidth=1.4,
                     zorder=6, label=r"all-chrom point ($K{=}5$)")
 
     # Reference lines: cov_pos = 0.90 target.
@@ -159,7 +163,8 @@ def make_panel(fig, gs_root, dataset: str, replicates_path: Path):
         ax_right.spines[s].set_visible(False)
     ax_right.tick_params(axis="y", length=0)
 
-    # CI annotation in main panel.
+    # CI annotation in main panel — placed lower-left so it never collides
+    # with the legend in the upper-right corner of the Mendelian panel.
     ci_xlo, ci_xhi = np.quantile(cov_pos, [0.025, 0.975])
     ci_ylo, ci_yhi = np.quantile(gap, [0.025, 0.975])
     txt = (
@@ -167,8 +172,8 @@ def make_panel(fig, gs_root, dataset: str, replicates_path: Path):
         rf"  Cov$|Y{{=}}1 \in [{ci_xlo:.3f},\ {ci_xhi:.3f}]$" + "\n"
         rf"  gap $\in [{ci_ylo:.3f},\ {ci_yhi:.3f}]$"
     )
-    ax_main.text(0.02, 0.98, txt, transform=ax_main.transAxes,
-                 ha="left", va="top", fontsize=7.0,
+    ax_main.text(0.02, 0.04, txt, transform=ax_main.transAxes,
+                 ha="left", va="bottom", fontsize=6.8,
                  bbox=dict(facecolor="white", edgecolor="#cccccc",
                            linewidth=0.4, boxstyle="round,pad=0.3", alpha=0.92))
 
