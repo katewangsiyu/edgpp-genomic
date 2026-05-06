@@ -24,7 +24,7 @@ We sweep $n \in \{500, 1k, 2k, 4k, 8k, 16k, 32k\}$, $\pi_{\min} \in \{0.1, 0.5\}
 \begin{table}[h]
 \centering
 \small
-\caption{Worst-cell coverage gap $G(\hat K_{\mathrm{CV}})$ (mean $\pm$ SE over 5 replicates) on synthetic data, $L_F = 4$. The dimension-free claim of T5.1 is visible as approximately matching values across $d$ at fixed $(n, \pi_{\min})$; the $\pi_{\min}^{-1/2}$ constant is visible as the $\pi_{\min} = 0.50$ rows being roughly $\sqrt{5} \approx 2.24\times$ smaller than $\pi_{\min} = 0.10$ at matched $n$.}
+\caption{Worst-cell coverage gap $G(\hat K_{\mathrm{CV}})$ (mean $\pm$ SE over 5 replicates) on synthetic data, $L_F = 4$. The dimension-free claim of T5.1 is visible as approximately matching values across $d$ at fixed $(n, \pi_{\min})$; the $\pi_{\min} = 0.50$ rows are smaller than $\pi_{\min} = 0.10$ at matched $n$, with empirical compensated-constant ratio $\bar C_{0.10} / \bar C_{0.50} = 1.62$ vs the T5.1 asymptotic upper bound $\sqrt{5} \approx 2.24$ (T5.1 bounds $G$ from above, so empirical ratios below $\sqrt{5}$ are consistent with the bound).}
 \label{tab:synthetic_t5}
 \begin{tabular}{rrrrrrr}
 \toprule
@@ -43,12 +43,12 @@ $n$ & $d{=}8$ & $d{=}32$ & $d{=}128$ & $d{=}8$ & $d{=}32$ & $d{=}128$ \\
 \end{tabular}
 \end{table}
 
-The log-log slope of $G(\hat K_{\mathrm{CV}})$ versus $n$, fit across $n \geq 1{,}000$ to avoid the small-sample fallback regime, is $-0.50 \pm 0.05$ (averaged over $d \in \{8, 32, 128\}$ and $\pi_{\min} \in \{0.1, 0.5\}$), within bootstrap CI of the predicted $-1/2$. Figure~\ref{fig:n_sweep} visualises the result.
+The log-log slope of $G(\hat K_{\mathrm{CV}})$ versus $n$, fit per-curve across $n \geq 1{,}000$ to avoid the small-sample fallback regime, is $-0.44 \pm 0.08$ (mean $\pm$ std over the 6 fits across $d \in \{8, 32, 128\}$ and $\pi_{\min} \in \{0.1, 0.5\}$); the T5.1 prediction of $-0.50$ lies within $1$ standard deviation of the empirical mean, consistent with the predicted rate. Figure~\ref{fig:n_sweep} visualises the result. Figure~\ref{fig:n_sweep}(b) additionally compensates for the rate by plotting $G(n) \cdot \sqrt{n}$, which T5.1 predicts to be approximately constant in $n$; the empirical constants are $\bar C_{0.10} = 3.00$ and $\bar C_{0.50} = 1.86$, with ratio $1.62$ versus the T5.1 asymptotic upper bound ratio $\sqrt{5} \approx 2.24$ (T5.1 is an upper bound, so empirical ratios $\leq \sqrt{5}$ are consistent).
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_n_sweep.pdf}
-\caption{Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem~\ref{thm:t5oracle}. Each panel: empirical worst-cell gap $G(\hat K_{\mathrm{CV}})$ vs calibration size $n$, with $\pm 1$ SE error bars over 5 replicates. Three coloured curves: feature dimensions $d \in \{8, 32, 128\}$. Black dashed: theoretical $O(n^{-1/2})$ slope anchored at $n = 4{,}000, d = 32$. The three dimension curves overlap inside each panel (dimension-free rate); the right panel sits below the left by a factor of $\approx 2$ at matched $n$ (the $\pi_{\min}^{-1/2}$ constant of T5.1).}
+\caption{Synthetic $n$-sweep validating the $O(n^{-1/2})$ rate of Theorem~\ref{thm:t5oracle}. \textbf{(a) Log-log empirical rate.} Worst-cell gap $G(\hat K_{\mathrm{CV}})$ vs $n$ on log-log axes; six curves cover $d \in \{8, 32, 128\}$ (color) $\times$ $\pi_{\min} \in \{0.1, 0.5\}$ (linestyle); $\pm 1$ SE bars over 5 replicates. Black dashed lines: $G = \bar C(\pi_{\min}) / \sqrt{n}$ with empirical constants from panel (b), so the dashed reference is purely descriptive of the compensated mean. The empirical fit on $n \geq 1{,}000$ across all 6 curves gives slope $-0.44 \pm 0.08$ (mean $\pm$ std); T5.1 predicts $-0.50$, within $1$\,SD. The dimension-free claim is visible as overlapping $d$-curves at matched $\pi_{\min}$. \textbf{(b) Compensated plot.} $G(\hat K_{\mathrm{CV}}) \cdot \sqrt{n}$ vs $n$ on log-x linear-y axes: under T5.1's $O(n^{-1/2})$ rate this product should be approximately constant in $n$. Red dashed lines mark empirical means $\bar C(\pi_{\min})$ over $n \geq 1{,}000$; their ratio $1.62$ is below the T5.1 asymptotic upper-bound ratio $\sqrt{5} \approx 2.24$, consistent with T5.1 (which bounds $G$ from above). Gray bands flag the $n < 1{,}000$ small-sample fallback regime excluded from the fit.}
 \label{fig:n_sweep}
 \end{figure}
 
