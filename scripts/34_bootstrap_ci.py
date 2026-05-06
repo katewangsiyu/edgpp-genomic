@@ -53,6 +53,9 @@ def one_bootstrap(p, sigma, y, chroms, alpha, n_bins, rng) -> dict:
         "coverage_pos": float(covered[yb == 1].mean()) if (yb == 1).any() else float("nan"),
         "sigma_cov_range": float(max(b["coverage"] for b in cov_by_bin)
                                   - min(b["coverage"] for b in cov_by_bin)),
+        # max-bin deviation from target (matches Tab 2 / Fig 1(b) metric).
+        "sigma_bin_gap": float(max(abs(b["coverage"] - (1.0 - alpha))
+                                    for b in cov_by_bin)),
         "frac_singleton": float((sizes == 1).mean()),
     }
 
@@ -84,7 +87,7 @@ def main() -> None:
         reps.append(one_bootstrap(p, sigma, y, chroms,
                                    args.alpha, args.n_bins, rng))
 
-    metrics = ["coverage", "coverage_pos", "sigma_cov_range", "frac_singleton"]
+    metrics = ["coverage", "coverage_pos", "sigma_cov_range", "sigma_bin_gap", "frac_singleton"]
     summary = {"B": args.B, "alpha": args.alpha, "n_bins": args.n_bins}
     for m in metrics:
         vals = np.array([r[m] for r in reps if not np.isnan(r[m])])
