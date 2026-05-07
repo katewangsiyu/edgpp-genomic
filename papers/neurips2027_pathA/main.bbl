@@ -199,8 +199,10 @@ Christina Papangelou, Konstantinos Kyriakidis, Pantelis Natsiavas, Ioanna
 \newblock \emph{Frontiers in Bioinformatics}, 2025.
 \newblock \doi{10.3389/fbinf.2025.1507448}.
 
-\bibitem[Plassier et~al.(2025)]{plassier2025cp2hpd}
-Vincent Plassier et~al.
+\bibitem[Plassier et~al.(2025)Plassier, Fishkov, Guizani, Panov, and
+  Moulines]{plassier2025cp2hpd}
+Vincent Plassier, Alexander Fishkov, Mohsen Guizani, Maxim Panov, and Eric
+  Moulines.
 \newblock Probabilistic conformal prediction with approximate conditional
   validity.
 \newblock In \emph{ICLR}, 2025.
