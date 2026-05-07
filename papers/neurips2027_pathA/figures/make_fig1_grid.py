@@ -39,18 +39,18 @@ plt.rcParams.update({
 })
 
 C_HCCP = "#d1495b"
-C_BASE = "#4a6fa5"
+C_BASE = "#4477aa"  # aligned with figD / fig_asl_audit baseline blue
 C_IDEAL = "#a4c293"
 
-# Diverging colormap centered at TARGET = 0.90.
-# Below 0.90: red (under-coverage); at 0.90: pale; above 0.90: blue (over-coverage).
+# Diverging colormap for coverage deviation centered at 0 (cov - 0.90).
+# Negative (under-coverage) -> red; 0 (target) -> pale; positive (over) -> blue.
 _cmap = LinearSegmentedColormap.from_list(
-    "miscov",
-    [(0.0, "#a83232"),   # 0.40 -> deep red
+    "miscov_dev",
+    [(0.0, "#a83232"),   # -0.50 (or below) -> deep red
      (0.4, "#e89090"),
-     (0.5, "#f5f5f5"),   # target -> off-white
+     (0.5, "#f5f5f5"),   # 0 deviation -> off-white
      (0.6, "#9fbfdf"),
-     (1.0, "#1f4e79")],  # 1.00 -> deep blue
+     (1.0, "#1f4e79")],  # +0.10 (or above) -> deep blue
 )
 
 
@@ -82,21 +82,29 @@ def load_data(K: int = K):
 # Panel (a) — three side-by-side y x sigma-bin grids.
 # ============================================================================
 def draw_grid(ax, cov: np.ndarray, title: str, partition_label: str, K: int):
-    """cov: shape (2, K). Row 0 = Y=0, row 1 = Y=1."""
-    vmin, vmax = 0.40, 1.00
-    # Flip rows so Y=1 is on top (visual priority on the minority class).
-    cov_disp = cov[::-1]  # row 0 -> Y=1, row 1 -> Y=0
+    """cov: shape (2, K). Row 0 = Y=0, row 1 = Y=1.
 
-    im = ax.imshow(cov_disp, cmap=_cmap, vmin=vmin, vmax=vmax,
+    Cell values display **deviation from target** (cov - 0.90), centered
+    diverging colormap, so reader gets direct miscoverage reading without
+    mentally subtracting 0.90.
+    """
+    # Asymmetric range: most deviations are negative (under-coverage); a small
+    # positive overshoot (~+0.10 = perfect coverage) is OK.
+    vmin, vmax = -0.50, 0.10
+    cov_disp = cov[::-1]  # row 0 -> Y=1 (visual priority on minority class)
+    dev = cov_disp - TARGET
+
+    im = ax.imshow(dev, cmap=_cmap, vmin=vmin, vmax=vmax,
                    aspect="auto", interpolation="nearest")
 
     for i in range(2):
         for j in range(K):
-            v = cov_disp[i, j]
+            v = dev[i, j]
             if np.isnan(v):
                 continue
-            tcol = "white" if (v < 0.65 or v > 0.97) else "#222222"
-            ax.text(j, i, f"{v:.2f}", ha="center", va="center",
+            sign = "+" if v > 0.005 else ("" if v < -0.005 else "±")
+            tcol = "white" if abs(v) > 0.30 else "#222222"
+            ax.text(j, i, f"{sign}{v:.2f}", ha="center", va="center",
                     fontsize=8.0, color=tcol, weight="bold")
 
     ax.set_xticks(range(K))
@@ -105,17 +113,16 @@ def draw_grid(ax, cov: np.ndarray, title: str, partition_label: str, K: int):
     ax.set_yticklabels([r"$Y{=}1$", r"$Y{=}0$"], fontsize=8.0)
     ax.set_xlabel(r"$\hat\sigma$-bin (low $\to$ high)", fontsize=8.0, labelpad=3)
 
-    # Title block: stacked title + partition spec on two lines.
-    ax.set_title(f"{title}\n" + r"$\mathrm{partition:}$ " + partition_label,
-                 fontsize=9.0, pad=4)
-
+    # Single-line title with worst-cell gap inline (was 2-line + below text).
     valid = cov[~np.isnan(cov)]
     worst = np.max(np.abs(valid - TARGET))
-    ax.text(0.5, -0.42, f"worst cell gap = {worst:.2f}",
-            transform=ax.transAxes, ha="center", va="top",
-            fontsize=8.0,
-            color=("#a83232" if worst > 0.10 else "#3d6a45"),
-            weight="bold")
+    worst_color = "#a83232" if worst > 0.10 else "#3d6a45"
+    title_with_partition = f"{title}, partition: {partition_label}"
+    ax.set_title(title_with_partition, fontsize=9.0, pad=4, loc="left")
+    # Worst-cell gap as compact bottom-right annotation in panel coordinates.
+    ax.text(0.99, -0.32, fr"worst $|\Delta|={worst:.2f}$",
+            transform=ax.transAxes, ha="right", va="top",
+            fontsize=7.6, color=worst_color, weight="bold")
 
     for s in ax.spines.values():
         s.set_visible(False)
@@ -143,28 +150,21 @@ def panel_a(fig, gs_left):
 
     draw_grid(ax1, cov_split,
               "(i) Split CP",
-              r"none ($\emptyset$)", K)
+              r"$\emptyset$", K)
     draw_grid(ax2, cov_class,
               "(ii) class-Mondrian",
-              r"$Y$ only", K)
+              r"$Y$", K)
     im = draw_grid(ax3, cov_hccp,
               "(iii) HCCP (ours)",
               r"$Y \times \hat\sigma$-bin", K)
 
     cb = fig.colorbar(im, cax=cax, orientation="horizontal")
     cb.ax.tick_params(labelsize=7.0, length=2)
-    cb.set_label(r"empirical coverage  (target $1-\alpha = 0.90$)",
+    cb.set_label(r"coverage deviation $\mathrm{cov} - 0.90$  "
+                 r"(red: under-coverage, blue: over-coverage)",
                  fontsize=7.6, labelpad=2)
     cb.outline.set_linewidth(0.4)
-    cb.ax.axvline(TARGET, color="#222222", linestyle="--", linewidth=0.8)
-
-    # Panel-level header (placed via fig.text after layout settles).
-    fig.text(
-        0.015, 0.965,
-        "(a) Per-cell empirical coverage  "
-        r"(TraitGym Complex, CADD+GPN-MSA+Borzoi, $\pi_{+}{=}0.10$, $K{=}5$)",
-        fontsize=9.5, weight="bold",
-    )
+    cb.ax.axvline(0.0, color="#222222", linestyle="--", linewidth=0.8)
 
 
 # ============================================================================
@@ -204,6 +204,12 @@ def panel_b(ax):
             face = color if is_complex else "white"
             edge = color
             lw = 1.6 if label == "HCCP (ours)" else 1.0
+            # White halo behind HCCP star so it stays visible (matches
+            # fig_bootstrap_density's all-chrom-point treatment).
+            if label == "HCCP (ours)":
+                ax.scatter(cov, gap, marker="o", s=sz * 1.3,
+                           facecolor="white", edgecolor="white",
+                           linewidth=0, zorder=2)
             ax.scatter(cov, gap, marker=mk, s=sz, facecolor=face,
                        edgecolor=edge, linewidth=lw, zorder=3,
                        label=label if label not in plotted else None)
@@ -254,11 +260,20 @@ def main():
     fig = plt.figure(figsize=(11.0, 3.5))
     gs = fig.add_gridspec(
         1, 2, width_ratios=[1.85, 1.00], wspace=0.16,
-        top=0.84, bottom=0.13, left=0.045, right=0.985,
+        top=0.86, bottom=0.13, left=0.045, right=0.985,
     )
     panel_a(fig, gs[0, 0])
     ax_b = fig.add_subplot(gs[0, 1])
     panel_b(ax_b)
+
+    # Panel (a) header via fig.suptitle (replaces the previous fig.text
+    # absolute-positioning hack which was fragile under tight_layout).
+    fig.suptitle(
+        "(a) Per-cell empirical coverage on TraitGym Complex "
+        r"(CADD+GPN-MSA+Borzoi, $\pi_{+}{=}0.10$, $K{=}5$). "
+        r"Cells: deviation from target.",
+        x=0.045, y=0.985, ha="left", fontsize=9.0, weight="bold",
+    )
 
     fig.savefig(OUT_PDF, bbox_inches="tight")
     fig.savefig(OUT_PNG, bbox_inches="tight", dpi=200)

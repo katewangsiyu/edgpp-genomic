@@ -255,13 +255,21 @@ def _plot_diagnostic(
     ax_h.set_title(f"(a) ratio distribution: {dataset}", fontsize=10)
     ax_h.grid(axis="y", alpha=0.3)
 
-    # ---- (b) KS vs sigma-gap scatter with LCLS slope reference ----
+    # ---- (b) Noise-adjusted KS vs sigma-gap, with LCLS slope reference ----
+    # Plot noise-adjusted KS = max(KS - noise_floor, 0) on y-axis so that the
+    # geometric position of each point matches the noise-adjusted color
+    # coding (red = above LCLS bound after noise correction). Plotting raw KS
+    # would put many small-n red points visually above the p95 envelope even
+    # though noise-adjusted ratios are below it, creating apparent
+    # contradiction.
     clean_kk = np.maximum(k - floor, 0.0)
     is_viol = clean_kk > beta_lcls * g
-    ax_s.scatter(g[~is_viol], k[~is_viol], s=8, c="#4477AA", alpha=0.55,
+    ax_s.scatter(g[~is_viol], clean_kk[~is_viol], s=8, c="#4477AA",
+                 alpha=0.55,
                  label=f"within LCLS bound (n={int((~is_viol).sum())})",
                  edgecolor="none")
-    ax_s.scatter(g[is_viol], k[is_viol], s=14, c="#CC3311", alpha=0.85,
+    ax_s.scatter(g[is_viol], clean_kk[is_viol], s=14, c="#CC3311",
+                 alpha=0.85,
                  label=f"above LCLS bound (n={int(is_viol.sum())})",
                  edgecolor="none")
     grid_g = np.linspace(g.min(), g.max(), 200)
@@ -293,8 +301,9 @@ def _plot_diagnostic(
                                 shrinkA=0, shrinkB=2),
             )
     ax_s.set_xlabel(r"$\sigma$-gap $|\bar\sigma_a - \bar\sigma_b|$")
-    ax_s.set_ylabel(r"KS distance $\hat F_{k,a}$ vs $\hat F_{k,b}$")
-    ax_s.set_title(f"(b) KS vs $\\sigma$-gap: {dataset}", fontsize=10)
+    ax_s.set_ylabel(r"noise-adjusted KS  $\max(\mathrm{KS} - \mathrm{floor},\,0)$")
+    ax_s.set_title(f"(b) noise-adjusted KS vs $\\sigma$-gap: {dataset}",
+                   fontsize=10)
     ax_s.legend(loc="upper right", fontsize=6.6, frameon=True,
                 framealpha=0.92, borderpad=0.3, handletextpad=0.3)
     ax_s.grid(alpha=0.3)
