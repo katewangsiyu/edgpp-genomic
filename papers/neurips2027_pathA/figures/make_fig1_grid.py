@@ -148,7 +148,7 @@ def panel_a(fig, gs_left):
 
     inner = gs_left.subgridspec(
         2, 3, width_ratios=[1, 1, 1],
-        height_ratios=[1.0, 0.06], hspace=1.40, wspace=0.40,
+        height_ratios=[1.0, 0.06], hspace=0.55, wspace=0.40,
     )
     ax1 = fig.add_subplot(inner[0, 0])
     ax2 = fig.add_subplot(inner[0, 1])
@@ -275,7 +275,7 @@ def main():
     fig = plt.figure(figsize=(11.0, 3.5))
     gs = fig.add_gridspec(
         1, 2, width_ratios=[1.85, 1.00], wspace=0.16,
-        top=0.86, bottom=0.13, left=0.045, right=0.985,
+        top=0.80, bottom=0.13, left=0.045, right=0.985,
     )
     panel_a(fig, gs[0, 0])
     ax_b = fig.add_subplot(gs[0, 1])
@@ -287,7 +287,7 @@ def main():
         "(a) Per-cell empirical coverage on TraitGym Complex "
         r"(CADD+GPN-MSA+Borzoi, $\pi_{+}{=}0.10$, $K{=}5$). "
         r"Cells: deviation from target.",
-        x=0.045, y=0.985, ha="left", fontsize=9.0, weight="bold",
+        x=0.045, y=0.95, ha="left", fontsize=9.0, weight="bold",
     )
 
     fig.savefig(OUT_PDF, bbox_inches="tight")
