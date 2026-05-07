@@ -50,10 +50,13 @@ def fig_lf_forest():
         ("legacy max-of-ratios", "Complex",   72.11,  (54.17,  102.96), 173),
     ]
     K_modal = {"Mendelian": (5, 8), "Complex": (5, 5)}
+    # Semantic palette: LCLS rose red matches HCCP family in fig9 / bootstrap;
+    # isotonic Set2 salmon for intermediate; legacy gray signals deprecation.
+    # K_modal reference line uses #8b3a3a to align with fig9 T3' line color.
     color_of = {
-        "LCLS regression":      "#1b9e77",  # teal — the recommended estimator
-        "isotonic envelope":    "#d95f02",  # orange — looser
-        "legacy max-of-ratios": "#7570b3",  # purple — biased high
+        "LCLS regression":      "#d1495b",  # rose red — HCCP family (fig9, fig_bootstrap_density)
+        "isotonic envelope":    "#fc8d62",  # Set2 salmon — intermediate
+        "legacy max-of-ratios": "#888888",  # gray — deprecated
     }
 
     # Layout: 2 panels (forest | K* bar), 6 rows with a vertical gap between
@@ -108,19 +111,19 @@ def fig_lf_forest():
     for dataset, (kmin, kmax) in K_modal.items():
         y_lo, y_hi = block_y_range[dataset]
         if kmin == kmax:
-            axR.vlines(kmin, y_lo, y_hi, color="#c53b3b", lw=1.4,
+            axR.vlines(kmin, y_lo, y_hi, color="#8b3a3a", lw=1.4,
                        linestyle=(0, (4, 2)), zorder=4)
             kmodal_text = fr"$\hat K_{{\mathrm{{modal}}}} = {kmin}$"
         else:
-            axR.fill_betweenx([y_lo, y_hi], kmin, kmax, color="#c53b3b",
+            axR.fill_betweenx([y_lo, y_hi], kmin, kmax, color="#8b3a3a",
                               alpha=0.18, zorder=2)
-            axR.vlines([kmin, kmax], y_lo, y_hi, color="#c53b3b", lw=1.0,
+            axR.vlines([kmin, kmax], y_lo, y_hi, color="#8b3a3a", lw=1.0,
                        linestyle=(0, (4, 2)), zorder=4)
             kmodal_text = fr"$\hat K_{{\mathrm{{modal}}}} \in \{{{kmin},\,{kmax}\}}$"
         # Place K_modal label slightly to the right of the band, vertically
         # centered on the gap above the top bar so it never overlaps a bar.
         axR.text(max(kmin, kmax) + 8, y_hi + 0.05, kmodal_text,
-                 fontsize=7.5, color="#c53b3b", ha="left", va="bottom",
+                 fontsize=7.5, color="#8b3a3a", ha="left", va="bottom",
                  fontweight="bold")
 
     axR.set_yticks(y_positions)
@@ -142,7 +145,7 @@ def fig_lf_forest():
                linestyle="-", lw=2.0, markersize=5.5, label="isotonic envelope"),
         Line2D([0], [0], marker="o", color=color_of["legacy max-of-ratios"],
                linestyle="-", lw=2.0, markersize=5.5, label="legacy max-of-ratios"),
-        Line2D([0], [0], color="#c53b3b", lw=1.4, linestyle=(0, (4, 2)),
+        Line2D([0], [0], color="#8b3a3a", lw=1.4, linestyle=(0, (4, 2)),
                label=r"modal nested-CV $\hat K(c_{\mathrm{outer}})$"),
     ]
     fig.legend(handles=legend_handles, loc="lower center", ncol=4,
@@ -180,7 +183,7 @@ def fig_bootstrap_density():
         # point estimate, contradicting our chrom-LOO variability claim.
         ax.axvline(bs_mean, color="#2c6e49", linestyle="-", lw=1.4,
                    label=fr"bootstrap mean $= {bs_mean:.3f}$")
-        ax.axvline(point_estimates[label], color="#c53b3b", linestyle=(0, (5, 3)),
+        ax.axvline(point_estimates[label], color="#8b3a3a", linestyle=(0, (5, 3)),
                    lw=1.4, label=fr"all-chrom point $= {point_estimates[label]:.3f}$")
         ax.set_xlabel(r"per-resample max-bin coverage gap")
         ax.set_ylabel("count")
