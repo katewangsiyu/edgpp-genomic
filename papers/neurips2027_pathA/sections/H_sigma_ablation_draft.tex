@@ -1,0 +1,104 @@
+% ============================================================================
+% App C — σ̂ class ablation (FILLED). Slot in at end of C_tables.tex.
+% ============================================================================
+
+\subsection{$\hat\sigma$ class ablation: GBM vs.\ MLP vs.\ Random Forest}
+\label{app:tables:sigma_ablation}
+
+T5.1's dimension-free $O(n^{-1/2})$ rate (Theorem~\ref{thm:t5oracle})
+builds on \ref{ass:ASL}: $\shat$ is a 1-D Lipschitz summary with
+$L_F < \infty$. The headline LCLS estimate $\hat L_F^{\mathrm{GBM}} = 2.97 / 4.51$
+(Mendelian / Complex) was computed on the single GBM-based $\shat$ used
+throughout the paper. Reviewers reasonably ask whether the dimension-free
+property depends on a smoothness property of the GBM architecture rather
+than a property of the conformal construction.
+
+To stress-test this, we re-train two alternative $\shat$ heads on identical
+features (CADD+GPN-MSA+Borzoi, $d \approx 8500$), identical chrom-LOO
+protocol, and identical Day~10 GBM aggregator $\phat$:
+\begin{itemize}
+\item \textbf{MLP}: 3-layer $64\text{-}32\text{-}1$ with softplus output and
+AdamW training on the absolute-residual target ($80$ epochs, lr $5{\cdot}10^{-3}$,
+weight decay $10^{-4}$, batch $256$, dropout $0.1$).
+\item \textbf{Random Forest}: $50$-tree ensemble with
+\texttt{max\_features="sqrt"} (a non-smooth, piecewise-constant $\shat$ used
+as the worst-case stress test for \ref{ass:ASL}).
+\end{itemize}
+Both heads share the same supervised target $|r_i| = |y_i - \phat^{(-C_i)}(x_i)|$
+as the GBM head. Per-head LCLS $\hat L_F$ (regression slope of pairwise KS
+on $\sigma$-gap), HCCP single-seed worst-cell $\shat$-bin gap at the
+recommended $K_{\mathrm{eval}}$, and Spearman$(\shat, |r|)$ are reported below.
+
+\begin{table}[h]
+\centering
+\small
+\caption{$\shat$ class ablation. Single-seed point estimates from
+\texttt{T\_tools/sigma\_ablation.py}; cross-method-fair worst-cell gap with
+$\min$-cell-count $5$ (paper convention, Tab.~\ref{tab:cp_baselines}).
+$L_F^{\mathrm{LCLS}}$ is the regression slope of pairwise KS on $\sigma$-gap;
+larger $L_F$ indicates a less smooth $\shat \to F_{k,\sigma}$ map. Spearman
+quantifies how well $\shat$ tracks the magnitude of the actual residual
+$|y - \phat(x)|$ on chrom-LOO.}
+\label{tab:sigma_ablation}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrr}
+\toprule
+Dataset & $\shat$ class & $\hat L_F^{\mathrm{LCLS}}$ & Worst-cell gap & Cov$|Y{=}1$ & Spearman$(\shat, |r|)$ \\
+\midrule
+\multirow{3}{*}{Mendelian ($n = 3{,}380$)}
+ & \textbf{GBM (paper)}            & $2.97$  & $0.047$ & $0.891$ & $0.754$ \\
+ & MLP                              & $73.96$ & $0.017$ & $0.888$ & $0.125$ \\
+ & Random Forest                    & $2.31$  & $0.900$ & $0.876$ & $0.575$ \\
+\midrule
+\multirow{3}{*}{Complex ($n = 11{,}400$)}
+ & \textbf{GBM (paper)}            & $4.51$  & $0.015$ & $0.905$ & $0.689$ \\
+ & MLP                              & $2.59$  & $0.011$ & $0.904$ & $0.630$ \\
+ & Random Forest                    & $4.67$  & $0.011$ & $0.903$ & $0.605$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading the ablation.}
+\textbf{On Complex} ($n = 11{,}400$, per-cell minority $\approx 200$): all three
+$\shat$ classes give worst-cell gap $\in [0.011, 0.015]$ and minority-coverage
+within $\pm 0.005$ of target. $\hat L_F$ varies by less than $2\times$ across
+classes ($2.59$ to $4.67$). The dimension-free claim of T5.1 is empirically
+robust to $\shat$ architecture once $n$ is large enough to keep per-cell
+minority above the variance-stable floor.
+
+\textbf{On Mendelian} ($n = 3{,}380$, per-cell minority $\in [3, 316]$): the
+worst-cell gaps span three orders of magnitude ($0.017, 0.047, 0.900$). Two
+diagnostics resolve this:
+\begin{itemize}
+\item The MLP's nominal $\hat L_F = 74$ is an artifact of $\shat$-collapse:
+the 64-channel projection cannot capture the $d \approx 8500$ feature space at
+$n = 3{,}380$, and the MLP's output collapses to near-zero ($\shat$ q05/q95 $=
+4{\cdot}10^{-5} / 3{\cdot}10^{-5}$, Spearman $= 0.125$). The pairwise
+$\sigma$-gaps in the LCLS estimator collapse to numerical floor, inflating the
+KS/gap ratio. Operationally HCCP degenerates to class-conditional split CP via
+the small-cell pooled fallback (Alg.~\ref{alg:hccp}, line 6); the gap of
+$0.017$ is a class-cond split CP property, not an HCCP property.
+\item The Random Forest's nominal worst-cell gap of $0.900$ is driven by a
+single minority cell ($y = 1$, $b = 0$, $n = 5$, coverage $= 0/5$): RF's
+heavy-tailed $\shat$ distribution puts $5$ minority variants in the lowest
+$\shat$-bin where the per-chrom calibration quantile is misspecified. The
+\emph{second}-worst cell of Mendelian/RF has gap $0.013$. With a stricter
+$\min$-cell threshold ($\geq 10$) the worst-cell gap drops to $0.013$,
+comparable to GBM. Sample-size noise drives the $0.900$ figure, not a
+violation of \ref{ass:ASL}.
+\end{itemize}
+
+The Mendelian discrepancies are consistent with Eq.~\eqref{eq:gap_decomp}:
+the variance term $K / (\pi_{\min} n)$ dominates at $n = 3{,}380$, $K = 3$,
+$\pi_{\min} = 0.10$, putting the empirical worst-cell gap floor at
+$\sim K / (\pi_{\min} n) \approx 0.009$ even before any $\shat$-related bias,
+plus a small-cell binomial tail that adds variant-count outliers. T5.1's
+upper bound $G(K^\star) \leq 2 \sqrt{L_F R / (\pi_{\min} n)}$ remains valid for
+all three $\shat$ classes, but at small $n$ the empirical gap is dominated by
+the small-cell variance regime that $\shat$ choice cannot cure --- precisely
+the regime boundary already documented in \S\ref{sec:experiments:h2h} (R1) and
+Tab.~\ref{tab:keval_sensitivity}. \textbf{Take-away: the dimension-free
+property of T5.1 is architecture-agnostic on Complex (where the rate regime
+binds); on Mendelian, the small-cell variance regime binds, and we recommend
+GBM as the operational $\shat$ class because it gives the best Spearman fit
+(less small-cell noise) at finite $L_F$.}

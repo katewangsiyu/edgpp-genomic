@@ -51,3 +51,6 @@ wandb/
 # Open Targets bulk caches (regeneratable from data/raw/open_targets)
 R_raw/open_targets/credible_ids_cache.json
 R_raw/open_targets/*.log
+
+# NeurIPS submission packaging (53MB+, regeneratable from paper source)
+_supplementary_neurips2026/
