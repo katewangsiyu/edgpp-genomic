@@ -105,7 +105,7 @@ def draw_grid(ax, cov: np.ndarray, title: str, partition_label: str, K: int):
             sign = "+" if v > 0.005 else ("" if v < -0.005 else "±")
             tcol = "white" if abs(v) > 0.30 else "#222222"
             ax.text(j, i, f"{sign}{v:.2f}", ha="center", va="center",
-                    fontsize=8.0, color=tcol, weight="bold")
+                    fontsize=7.5, color=tcol)
 
     ax.set_xticks(range(K))
     ax.set_xticklabels([f"$b_{{{j+1}}}$" for j in range(K)], fontsize=7.5)
@@ -113,22 +113,29 @@ def draw_grid(ax, cov: np.ndarray, title: str, partition_label: str, K: int):
     ax.set_yticklabels([r"$Y{=}1$", r"$Y{=}0$"], fontsize=8.0)
     ax.set_xlabel(r"$\hat\sigma$-bin (low $\to$ high)", fontsize=8.0, labelpad=3)
 
-    # Single-line title with worst-cell gap inline (was 2-line + below text).
+    # Compact 2-line title: index + method on line 1, partition + worst-gap
+    # on line 2. partition_label is a raw string that may include both math
+    # ($..$) and text segments (e.g., "$Y \times \hat\sigma$-bin").
     valid = cov[~np.isnan(cov)]
     worst = np.max(np.abs(valid - TARGET))
     worst_color = "#a83232" if worst > 0.10 else "#3d6a45"
-    title_with_partition = f"{title}, partition: {partition_label}"
-    ax.set_title(title_with_partition, fontsize=9.0, pad=4, loc="left")
-    # Worst-cell gap as compact bottom-right annotation in panel coordinates.
-    ax.text(0.99, -0.32, fr"worst $|\Delta|={worst:.2f}$",
-            transform=ax.transAxes, ha="right", va="top",
-            fontsize=7.6, color=worst_color, weight="bold")
+    title_line = f"{title}"
+    sub_line = (
+        fr"part. {partition_label}"
+        fr"  ·  worst $|\Delta|={worst:.2f}$"
+    )
+    ax.set_title(f"{title_line}\n" + sub_line, fontsize=8.5, pad=4,
+                 loc="center")
+    # The bottom-right inline `worst gap` annotation is now redundant.
 
     for s in ax.spines.values():
         s.set_visible(False)
     ax.set_xticks(np.arange(-0.5, K, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, 2, 1), minor=True)
-    ax.grid(which="minor", color="white", linestyle="-", linewidth=1.8)
+    # Cleaner cells: thinner white grid lines, lighter colour to reduce
+    # "boxy/ugly" feel. Cells now read as continuous heatmap with subtle
+    # separators rather than chunky tile blocks.
+    ax.grid(which="minor", color="white", linestyle="-", linewidth=1.0)
     ax.tick_params(which="minor", length=0)
     ax.tick_params(axis="both", length=0)
 
@@ -155,16 +162,24 @@ def panel_a(fig, gs_left):
               "(ii) class-Mondrian",
               r"$Y$", K)
     im = draw_grid(ax3, cov_hccp,
-              "(iii) HCCP (ours)",
+              "(iii) HCCP",
               r"$Y \times \hat\sigma$-bin", K)
 
     cb = fig.colorbar(im, cax=cax, orientation="horizontal")
     cb.ax.tick_params(labelsize=7.0, length=2)
-    cb.set_label(r"coverage deviation $\mathrm{cov} - 0.90$  "
-                 r"(red: under-coverage, blue: over-coverage)",
+    cb.set_label(r"coverage deviation $\mathrm{cov} - 0.90$",
                  fontsize=7.6, labelpad=2)
     cb.outline.set_linewidth(0.4)
     cb.ax.axvline(0.0, color="#222222", linestyle="--", linewidth=0.8)
+    # Endpoint annotations: explicit "under-coverage" / "over-coverage" text
+    # at the two colorbar extremes, so direction is parseable without reading
+    # the caption (Whitesides "self-contained figure" rule).
+    cax.annotate("under-coverage", xy=(0.0, 1.05), xycoords="axes fraction",
+                 ha="left", va="bottom", fontsize=7.0, color="#a83232",
+                 weight="bold")
+    cax.annotate("over-coverage", xy=(1.0, 1.05), xycoords="axes fraction",
+                 ha="right", va="bottom", fontsize=7.0, color="#1f4e79",
+                 weight="bold")
 
 
 # ============================================================================
@@ -194,7 +209,7 @@ def panel_b(ax):
         "B1 split CP":              ("o", C_BASE, 56),
         "B2 $\\hat\\sigma$-Mond.":   ("s", C_BASE, 56),
         "B3 class-Mond.":           ("^", C_BASE, 60),
-        "HCCP (ours)":              ("*", C_HCCP, 240),
+        "HCCP (ours)":              ("*", C_HCCP, 80),  # 3x smaller (was 240)
     }
 
     plotted = set()
