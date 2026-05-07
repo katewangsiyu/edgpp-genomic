@@ -119,11 +119,11 @@ def make_panel(fig, gs_root, dataset: str, replicates_path: Path):
     # All-chrom (single-seed) point estimate (star). Bright gold + white halo
     # circle behind it so the marker stays visible inside the dense replicate
     # cloud regardless of how the bootstrap mean lands.
-    ax_main.scatter([pe["cov_pos"]], [pe["gap"]], marker="o", s=280,
+    ax_main.scatter([pe["cov_pos"]], [pe["gap"]], marker="o", s=140,
                     facecolor="white", edgecolor="white", linewidth=0,
                     zorder=5)
-    ax_main.scatter([pe["cov_pos"]], [pe["gap"]], marker="*", s=235,
-                    facecolor="#f2c14e", edgecolor="#222", linewidth=1.0,
+    ax_main.scatter([pe["cov_pos"]], [pe["gap"]], marker="*", s=118,
+                    facecolor="#f2c14e", edgecolor="#222", linewidth=0.7,
                     zorder=6, label=r"all-chrom point ($K{=}5$)")
 
     # Reference lines: cov_pos = 0.90 target.
