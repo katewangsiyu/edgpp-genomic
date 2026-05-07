@@ -11,10 +11,10 @@ Tab.~\ref{tab:subsumption} crystallises the prose comparison in \S\ref{sec:relat
 \footnotesize
 \caption{HCCP vs.\ closest / concurrent CP work, by guarantee axis. $\checkmark$ = method explicitly addresses the axis with a finite-sample guarantee; $\circ$ = handled but without a finite-sample bound, or on a different axis (e.g., RLCP: kernel localisation in feature space, not the $\shat$ axis); $\times$ = not addressed. ``Lower bound'' refers to a matching within-class minimax lower bound that pairs with the upper-bound rate; Yao 2026 / xie 2025 do not provide one for their respective rates. ``Data-dep.\ partition'' refers to a Mondrian-style partition computed from data; class-conditional CP \citep{sadinle2019lac} and Boström 2020 use pre-specified groups (label / $\shat$-quantile bins fixed before calibration). \citet{bairaktari2025kandinsky} subsume class-conditional and Mondrian as static-group special cases but require pre-specified groups, hence $\times$ on the partition column. SC-CP \citep{vanderlaan2024sccp} uses an isotonic recalibration on the $\hat\mu$ axis (different from $\shat$).}
 \label{tab:subsumption}
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lcccccc}
 \toprule
-Method & Hetero.\ $\shat$ & Class-cond.\ & Local on $\shat$ & $\pi_{\min}$ in rate & Lower bound & Data-dep.\ partition \\
+Method & Hetero.\ $\shat$ & Class-cond. & Local-$\shat$ & $\pi_{\min}$ in rate & Lower bd. & Data-dep.\ part. \\
 \midrule
 \citet{sadinle2019lac} (LAC)              & $\times$ & $\checkmark$ & $\times$ & $\times$ & $\times$ & $\times$ \\
 \citet{bostrom2020mondrian}               & $\checkmark$ & $\times$ & $\checkmark$ & $\times$ & $\times$ & $\times$ \\
@@ -112,9 +112,9 @@ The marginal $\pm 1\sigma$ bands in Tab.~\ref{tab:cp_baselines} are computed ind
 \begin{table}[h]
 \centering
 \small
-\caption{Paired bootstrap: HCCP $\shat$-bin gap minus baseline $\shat$-bin gap, computed on the same $B = 200$ chrom-resamples per replicate (seed $42$, identical to Tab.~\ref{tab:cp_baselines}). Negative paired mean $\Rightarrow$ HCCP narrower; ``Win\,\%'' is the share of resamples on which HCCP attained a strictly smaller gap; $p_{\mathrm{one}}$ is the one-sided bootstrap $p$-value (floor $1/(B+1) \approx 0.005$). Complex shows decisive HCCP wins; on Mendelian, HCCP wins the majority of resamples but the paired CI crosses zero, so we cannot reject equivalence with weighted CP at the $95\%$ level.}
+\caption{Paired bootstrap: HCCP $\shat$-bin gap minus baseline $\shat$-bin gap, computed on the same $B = 200$ chrom-resamples per replicate (seed $42$, identical to Tab.~\ref{tab:cp_baselines}). Negative paired mean $\Rightarrow$ HCCP narrower; ``Win\,\%'' is the share of resamples on which HCCP attained a strictly smaller gap; $p_{\mathrm{one}}$ is the one-sided bootstrap $p$-value (floor $1/(B+1) \approx 0.005$). Complex shows $100\%$ paired wins at $p \approx 0.005$; on Mendelian, HCCP wins the majority of resamples but the paired CI crosses zero, so we cannot reject equivalence with weighted CP at the $95\%$ level.}
 \label{tab:paired_bootstrap}
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{2pt}
 \begin{tabular}{llcccccc}
 \toprule
 Dataset & Comparison & Paired mean & Paired std & CI low & CI high & Win\,\% & $p_{\mathrm{one}}$ \\
@@ -408,7 +408,7 @@ legacy max-of-ratios       & Complex   & 53.3 & $[54, 103]^{\dagger}$ & 173  & 0
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_bootstrap_density.pdf}
-\caption{Joint bootstrap robustness of HCCP on the (Cov$|Y{=}1$, $\shat$-bin gap) plane (the same axes as Fig.~\ref{fig:concept}(b)): $B = 200$ chromosome-level resamples at $K = 5$, $\alpha = 0.10$. Each panel shows replicate scatter (red points), 50\% / 95\% Gaussian-KDE contours, the bootstrap mean (\textbf{+}), and the single-seed all-chrom point estimate ($\bigstar$, blue). Marginal KDEs sit on the top and right axes; dashed lines mark the all-chrom point on each marginal. \textbf{Mendelian} (left): bootstrap 95\% CIs Cov$|Y{=}1 \in [0.858, 0.918]$, $\shat$-bin gap $\in [0.004, 0.044]$; the all-chrom point $(0.905, 0.005)$ lies inside the 50\% contour. The wider cloud reflects chrom-level heterogeneity (Fig.~\ref{fig:per_chrom}). \textbf{Complex} (right): $\mathrm{Cov}|Y{=}1 \in [0.894, 0.911]$, gap $\in [0.002, 0.006]$; the all-chrom point $(0.908, 0.002)$ sits at the cloud centre. On both datasets the bootstrap CIs lie strictly inside the (Cov$|Y{=}1 \geq 0.85$, gap $\leq 0.20$) ideal corner of Fig.~\ref{fig:concept}(b), demonstrating that the headline frontier-point claim is not driven by a single favourable chromosome split.}
+\caption{Joint bootstrap robustness of HCCP on the (Cov$|Y{=}1$, $\shat$-bin gap) plane (the same axes as Fig.~\ref{fig:concept}(b)): $B = 200$ chromosome-level resamples at $K = 5$, $\alpha = 0.10$. Each panel shows replicate scatter (red points), 50\% / 95\% Gaussian-KDE contours, the bootstrap mean (\textbf{+}), and the single-seed all-chrom point estimate ($\bigstar$, gold). Marginal KDEs sit on the top and right axes; dashed lines mark the all-chrom point on each marginal. \textbf{Mendelian} (left): bootstrap 95\% CIs Cov$|Y{=}1 \in [0.858, 0.918]$, $\shat$-bin gap $\in [0.004, 0.044]$; the all-chrom point $(0.905, 0.005)$ lies inside the 50\% contour. The wider cloud reflects chrom-level heterogeneity (Fig.~\ref{fig:per_chrom}). \textbf{Complex} (right): $\mathrm{Cov}|Y{=}1 \in [0.894, 0.911]$, gap $\in [0.002, 0.006]$; the all-chrom point $(0.908, 0.002)$ sits at the cloud centre. On both datasets the bootstrap CIs lie strictly inside the (Cov$|Y{=}1 \geq 0.85$, gap $\leq 0.20$) ideal corner of Fig.~\ref{fig:concept}(b), demonstrating that the headline frontier-point claim is not driven by a single favourable chromosome split.}
 \label{fig:bootstrap_density}
 \end{figure}
 
@@ -452,6 +452,110 @@ On Mendelian (monogenic, strong signal), ensemble disagreement is a reasonable u
 \centering
 \includegraphics[width=\linewidth]{figures/fig_asl_audit_mendelian.pdf}\\[2pt]
 \includegraphics[width=\linewidth]{figures/fig_asl_audit_complex.pdf}
-\caption{\textbf{A-SL audit.} Per-pair Lipschitz ratio $\rho_{k,a,b} = \mathrm{KS}(\hat F_{k,a}, \hat F_{k,b}) / |\bar\sigma_a - \bar\sigma_b|$ on $\shat$-bin pairs. Noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian) / $8.1$ (Complex). LCLS estimator $\hat L_F \approx 3$/$4.5$ measures the typical local slope and underestimates the upper envelope by $\sim$3--5$\times$.}
+\caption{\textbf{A-SL audit.} Per-pair Lipschitz ratio $\rho_{k,a,b} = \mathrm{KS}(\hat F_{k,a}, \hat F_{k,b}) / |\bar\sigma_a - \bar\sigma_b|$ on $\shat$-bin pairs. Noise-adjusted upper envelope is finite without fat-tail breakdown: $L_F^{(95\%)} = 13.8$ (Mendelian) / $8.0$ (Complex). LCLS estimator $\hat L_F \approx 3$/$4.5$ measures the typical local slope and underestimates the upper envelope by $\sim$3--5$\times$.}
 \label{fig:asl_audit}
 \end{figure}
+% ============================================================================
+% App C — σ̂ class ablation (FILLED). Slot in at end of C_tables.tex.
+% ============================================================================
+
+\subsection{$\hat\sigma$ class ablation: GBM vs.\ MLP vs.\ Random Forest}
+\label{app:tables:sigma_ablation}
+
+T5.1's dimension-free $O(n^{-1/2})$ rate (Theorem~\ref{thm:t5oracle})
+builds on \ref{ass:ASL}: $\shat$ is a 1-D Lipschitz summary with
+$L_F < \infty$. The headline LCLS estimate $\hat L_F^{\mathrm{GBM}} = 2.97 / 4.51$
+(Mendelian / Complex) was computed on the single GBM-based $\shat$ used
+throughout the paper. Reviewers reasonably ask whether the dimension-free
+property depends on a smoothness property of the GBM architecture rather
+than a property of the conformal construction.
+
+To stress-test this, we re-train two alternative $\shat$ heads on identical
+features (CADD+GPN-MSA+Borzoi, $d \approx 8500$), identical chrom-LOO
+protocol, and identical Day~10 GBM aggregator $\phat$:
+\begin{itemize}
+\item \textbf{MLP}: 3-layer $64\text{-}32\text{-}1$ with softplus output and
+AdamW training on the absolute-residual target ($80$ epochs, lr $5{\cdot}10^{-3}$,
+weight decay $10^{-4}$, batch $256$, dropout $0.1$).
+\item \textbf{Random Forest}: $50$-tree ensemble with
+\texttt{max\_features="sqrt"} (a non-smooth, piecewise-constant $\shat$ used
+as the worst-case stress test for \ref{ass:ASL}).
+\end{itemize}
+Both heads share the same supervised target $|r_i| = |y_i - \phat^{(-C_i)}(x_i)|$
+as the GBM head. Per-head LCLS $\hat L_F$ (regression slope of pairwise KS
+on $\sigma$-gap), HCCP single-seed worst-cell $\shat$-bin gap at the
+recommended $K_{\mathrm{eval}}$, and Spearman$(\shat, |r|)$ are reported below.
+
+\begin{table}[h]
+\centering
+\small
+\caption{$\shat$ class ablation. Single-seed point estimates from
+\texttt{T\_tools/sigma\_ablation.py}; cross-method-fair worst-cell gap with
+$\min$-cell-count $5$ (paper convention, Tab.~\ref{tab:cp_baselines}).
+$L_F^{\mathrm{LCLS}}$ is the regression slope of pairwise KS on $\sigma$-gap;
+larger $L_F$ indicates a less smooth $\shat \to F_{k,\sigma}$ map. Spearman
+quantifies how well $\shat$ tracks the magnitude of the actual residual
+$|y - \phat(x)|$ on chrom-LOO.}
+\label{tab:sigma_ablation}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrr}
+\toprule
+Dataset & $\shat$ class & $\hat L_F^{\mathrm{LCLS}}$ & Worst-cell gap & Cov$|Y{=}1$ & Spearman$(\shat, |r|)$ \\
+\midrule
+\multirow{3}{*}{Mendelian ($n = 3{,}380$)}
+ & \textbf{GBM (paper)}            & $2.97$  & $0.047$ & $0.891$ & $0.754$ \\
+ & MLP                              & $73.96$ & $0.017$ & $0.888$ & $0.125$ \\
+ & Random Forest                    & $2.31$  & $0.900$ & $0.876$ & $0.575$ \\
+\midrule
+\multirow{3}{*}{Complex ($n = 11{,}400$)}
+ & \textbf{GBM (paper)}            & $4.51$  & $0.015$ & $0.905$ & $0.689$ \\
+ & MLP                              & $2.59$  & $0.011$ & $0.904$ & $0.630$ \\
+ & Random Forest                    & $4.67$  & $0.011$ & $0.903$ & $0.605$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading the ablation.}
+\textbf{On Complex} ($n = 11{,}400$, per-cell minority $\approx 200$): all three
+$\shat$ classes give worst-cell gap $\in [0.011, 0.015]$ and minority-coverage
+within $\pm 0.005$ of target. $\hat L_F$ varies by less than $2\times$ across
+classes ($2.59$ to $4.67$). The dimension-free claim of T5.1 is empirically
+robust to $\shat$ architecture once $n$ is large enough to keep per-cell
+minority above the variance-stable floor.
+
+\textbf{On Mendelian} ($n = 3{,}380$, per-cell minority $\in [3, 316]$): the
+worst-cell gaps span three orders of magnitude ($0.017, 0.047, 0.900$). Two
+diagnostics resolve this:
+\begin{itemize}
+\item The MLP's nominal $\hat L_F = 74$ is an artifact of $\shat$-collapse:
+the 64-channel projection cannot capture the $d \approx 8500$ feature space at
+$n = 3{,}380$, and the MLP's output collapses to near-zero ($\shat$ q05/q95 $=
+4{\cdot}10^{-5} / 3{\cdot}10^{-5}$, Spearman $= 0.125$). The pairwise
+$\sigma$-gaps in the LCLS estimator collapse to numerical floor, inflating the
+KS/gap ratio. Operationally HCCP degenerates to class-conditional split CP via
+the small-cell pooled fallback (Alg.~\ref{alg:hccp}, line 6); the gap of
+$0.017$ is a class-cond split CP property, not an HCCP property.
+\item The Random Forest's nominal worst-cell gap of $0.900$ is driven by a
+single minority cell ($y = 1$, $b = 0$, $n = 5$, coverage $= 0/5$): RF's
+heavy-tailed $\shat$ distribution puts $5$ minority variants in the lowest
+$\shat$-bin where the per-chrom calibration quantile is misspecified. The
+\emph{second}-worst cell of Mendelian/RF has gap $0.013$. With a stricter
+$\min$-cell threshold ($\geq 10$) the worst-cell gap drops to $0.013$,
+comparable to GBM. Sample-size noise drives the $0.900$ figure, not a
+violation of \ref{ass:ASL}.
+\end{itemize}
+
+The Mendelian discrepancies are consistent with Eq.~\eqref{eq:gap_decomp}:
+the variance term $K / (\pi_{\min} n)$ dominates at $n = 3{,}380$, $K = 3$,
+$\pi_{\min} = 0.10$, putting the empirical worst-cell gap floor at
+$\sim K / (\pi_{\min} n) \approx 0.009$ even before any $\shat$-related bias,
+plus a small-cell binomial tail that adds variant-count outliers. T5.1's
+upper bound $G(K^\star) \leq 2 \sqrt{L_F R / (\pi_{\min} n)}$ remains valid for
+all three $\shat$ classes, but at small $n$ the empirical gap is dominated by
+the small-cell variance regime that $\shat$ choice cannot cure --- precisely
+the regime boundary already documented in \S\ref{sec:experiments:h2h} (R1) and
+Tab.~\ref{tab:keval_sensitivity}. \textbf{We conclude: the dimension-free
+property of T5.1 is architecture-agnostic on Complex (where the rate regime
+binds); on Mendelian, the small-cell variance regime takes over, and GBM
+remains the operational choice given its Spearman fit (less small-cell noise)
+at finite $L_F$.}

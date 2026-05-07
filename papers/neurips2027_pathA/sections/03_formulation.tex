@@ -10,9 +10,9 @@ Let $\D = \{(X_i, Y_i, C_i)\}_{i=1}^n$ with $X_i \in \X$, $Y_i \in \{0, 1\}$, an
 Variants from the same chromosome are exchangeable: $\{(X_i, Y_i) : C_i = c\} \overset{d}{=} \{(X_{\pi(i)}, Y_{\pi(i)}) : C_i = c\}$ for any permutation $\pi$ within chromosome $c$.
 \end{assumption}
 
-\begin{assumption}[A1$'$ chrom-wise i.i.d.]
+\begin{assumption}[A1$'$ chrom-wise i.i.d.\ (strengthening of A1)]
 \label{ass:A1prime}
-$\{(X_i, Y_i) : C_i = c\} \overset{i.i.d.}{\sim} P_c$.
+$\{(X_i, Y_i) : C_i = c\} \overset{i.i.d.}{\sim} P_c$. T3 and T5 use A1$'$ for the cleaner sampling argument; T3$'$ uses only A1 for robustness.
 \end{assumption}
 
 \begin{assumption}[A2 score stationarity across chromosomes]
@@ -27,7 +27,7 @@ Empirically, the cell-level KS audit (App.~\ref{app:data}, Tab.~\ref{tab:ks_audi
 For each class $k$, $\sup_{s} |F_{k,\sigma_1}(s) - F_{k,\sigma_2}(s)| \leq L_F |\sigma_1 - \sigma_2|$ for all $\sigma_1, \sigma_2 \in [\shat_{\min}, \shat_{\max}]$.
 \end{assumption}
 
-\ref{ass:ASL} is used only by T5 (§\ref{sec:theory:t5}) to derive the optimal bin count $K^\star$. Empirical audit of \ref{ass:ASL} via per-pair Lipschitz ratios on $\shat$-bin pairs (App.~\ref{app:data}, Fig.~\ref{fig:asl_audit}) gives noise-adjusted upper envelope $L_F^{(95\%)} = 13.8$ (Mendelian) and $8.1$ (Complex); LCLS estimator \citep{lcls2024lipschitz} gives a tighter typical-slope estimate $\hat L_F = 2.97$ / $4.51$.
+Assumption~\ref{ass:ASL} is used only by T5 (§\ref{sec:theory:t5}) to derive the optimal bin count $K^\star$. Empirical audit of Assumption~\ref{ass:ASL} via per-pair Lipschitz ratios on $\shat$-bin pairs (App.~\ref{app:data}, Fig.~\ref{fig:asl_audit}) gives noise-adjusted upper envelope $L_F^{(95\%)} = 13.8$ (Mendelian) and $8.0$ (Complex); LCLS estimator \citep{lcls2024lipschitz} gives a tighter typical-slope estimate $\hat L_F = 2.97$ / $4.51$.
 
 \subsection{Score and prediction set}
 \label{sec:formulation:score}

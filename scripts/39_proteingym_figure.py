@@ -64,14 +64,17 @@ def main() -> None:
                                     lw=0.5, alpha=0.6))
 
     # Panel B: distribution of σ̂-bin gap. Two reference lines (assay mean and
-    # TraitGym chrom-LOO) — median + trait-LOO floor were redundant clutter.
+    # TraitGym Mendelian marginal-bin reference from Tab. main) — median +
+    # trait-LOO floor were redundant clutter.
+    # Reference 0.020 = Mendelian HCCP σ̂-bin gap bootstrap mean from
+    # Tab.~\ref{tab:main} (marginal-bin metric, same as ProteinGym sigma_bin_range).
     ax2 = axes[1]
     ax2.hist(gaps, bins=12, color="#4477aa", alpha=0.8,
              edgecolor="black", linewidth=0.5)
     ax2.axvline(gaps.mean(), color="#cc3311", ls="-", lw=1.5,
                 label=fr"ProteinGym assay mean $= {gaps.mean():.3f}$")
-    ax2.axvline(0.077, color="#222222", ls=(0, (5, 3)), lw=1.5,
-                label=r"TraitGym chrom-LOO $= 0.077$")
+    ax2.axvline(0.020, color="#222222", ls=(0, (5, 3)), lw=1.5,
+                label=r"TraitGym Mendelian (marg.\ bin) $= 0.020$")
     ax2.set_xlabel(r"$\hat\sigma$-bin coverage gap")
     ax2.set_ylabel("number of assays")
     ax2.set_title(rf"HCCP $\hat\sigma$-bin gap across {len(valid)} assays")

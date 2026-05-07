@@ -23,9 +23,10 @@ We sweep $n \in \{500, 1k, 2k, 4k, 8k, 16k, 32k\}$, $\pi_{\min} \in \{0.1, 0.5\}
 
 \begin{table}[h]
 \centering
-\small
+\footnotesize
 \caption{Worst-cell coverage gap $G(\hat K_{\mathrm{CV}})$ (mean $\pm$ SE over 5 replicates) on synthetic data, $L_F = 4$. The dimension-free claim of T5.1 is visible as approximately matching values across $d$ at fixed $(n, \pi_{\min})$; the $\pi_{\min} = 0.50$ rows are smaller than $\pi_{\min} = 0.10$ at matched $n$, with empirical compensated-constant ratio $\bar C_{0.10} / \bar C_{0.50} = 1.62$ vs the T5.1 asymptotic upper bound $\sqrt{5} \approx 2.24$ (T5.1 bounds $G$ from above, so empirical ratios below $\sqrt{5}$ are consistent with the bound).}
 \label{tab:synthetic_t5}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{rrrrrrr}
 \toprule
 & \multicolumn{3}{c}{$\pi_{\min} = 0.10$} & \multicolumn{3}{c}{$\pi_{\min} = 0.50$} \\

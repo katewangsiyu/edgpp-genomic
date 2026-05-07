@@ -250,11 +250,10 @@ For each cell $(k, b)$,
 \begin{lemma}[T3$'$ bin-conditional coverage, robust]
 \label{thm:t3prime}
 Under \ref{ass:A1} alone (no A2 at any level), for each cell $(k, b)$ with $n_{k,b} \geq \lceil 1/\alpha\rceil$,
-\[
-P\bigl(Y \in \pset(X) \mid Y = k,\, b(X) = b\bigr) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k,b)},
-\qquad
-\bar\delta_{\mathrm{TV}}^{(k,b)} = \frac{1}{|\mathcal{C}| - 1}\!\!\sum_{c \neq c^\star}\!\! d_{\mathrm{TV}}\bigl(F_c^{(k,b)},\, F_{c^\star}^{(k,b)}\bigr).
-\]
+\begin{align*}
+&P\bigl(Y \in \pset(X) \mid Y = k,\, b(X) = b\bigr) \;\geq\; 1 - \alpha - \bar\delta_{\mathrm{TV}}^{(k,b)}, \\
+&\qquad \bar\delta_{\mathrm{TV}}^{(k,b)} = \frac{1}{|\mathcal{C}| - 1}\!\!\sum_{c \neq c^\star}\!\! d_{\mathrm{TV}}\bigl(F_c^{(k,b)},\, F_{c^\star}^{(k,b)}\bigr).
+\end{align*}
 \end{lemma}
 
 \begin{proof}
@@ -318,10 +317,10 @@ Since $Lr < \Delta / 2$, this $\shat$-interval has width $2Lr < \Delta$ and ther
 
 \textit{Step~3 (Convex decomposition).}
 Decompose the conditional coverage:
-\[
-P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k\bigr)
-= \sum_{b \in \{b_\star, b_\star + 1\}} w_b(x_0, r) \cdot P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k,\, b(X) = b\bigr),
-\]
+\begin{align*}
+&P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k\bigr) \\
+&\quad = \sum_{b \in \{b_\star, b_\star + 1\}} w_b(x_0, r) \cdot P\bigl(Y \in \pset(X) \mid X \in B_\ell(x_0, r),\, Y = k,\, b(X) = b\bigr),
+\end{align*}
 where $w_b(x_0, r) := P(b(X) = b \mid X \in B_\ell(x_0, r),\, Y = k)$ are non-negative and sum to~1.
 
 \textit{Step~4 (Within-cell restriction preserves $F_{kb}$).}
